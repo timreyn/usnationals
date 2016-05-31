@@ -8,3 +8,7 @@ class Round(ndb.Model):
   cutoff = ndb.IntegerProperty()
   time_limit = ndb.IntegerProperty()
   is_final = ndb.BooleanProperty()
+
+  @staticmethod
+  def Id(event_id, round_num):
+    return '%s_%d' % (event_id, round_num)

@@ -11,6 +11,15 @@ class Heat(ndb.Model):
   start_time = ndb.DateTimeProperty()
   end_time = ndb.DateTimeProperty()
 
+  @staticmethod
+  def Id(event_id, round_id, stage, number):
+    return '%s_%s_%d' % (Event.Id(event_id, round_id), stage, number)
+
+
 class HeatAssignment(ndb.Model):
   heat = ndb.KeyProperty(kind=Heat)
   competitor = ndb.KeyProperty(kind=Competitor)
+
+  @staticmethod
+  def Id(event_id, round_id, person_id):
+    return '%s_%s' % (Event.Id(event_id, round_id), person_id)
