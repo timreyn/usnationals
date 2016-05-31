@@ -13,7 +13,7 @@ class Heat(ndb.Model):
 
   @staticmethod
   def Id(event_id, round_id, stage, number):
-    return '%s_%s_%d' % (Event.Id(event_id, round_id), stage, number)
+    return '%s_%s_%d' % (Round.Id(event_id, round_id), stage, number)
 
 
 class HeatAssignment(ndb.Model):
@@ -22,4 +22,4 @@ class HeatAssignment(ndb.Model):
 
   @staticmethod
   def Id(event_id, round_id, person_id):
-    return '%s_%s' % (Event.Id(event_id, round_id), person_id)
+    return '%s_%s' % (Round.Id(event_id, round_id), person_id)
