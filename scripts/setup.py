@@ -39,8 +39,7 @@ def AddEvents(real_events=True):
       ('reg', 'Registration', 1),
     )
   for (event_id, event_name, num_rounds) in events:
-    event = Event.get_by_id(event_id) or Event()
-    event.id = event_id
+    event = Event.get_by_id(event_id) or Event(id = event_id)
     event.name = event_name
     event.priority = priority
     event.is_real = real_events
@@ -49,8 +48,7 @@ def AddEvents(real_events=True):
 
     for i in range(num_rounds):
       round_id = Round.Id(event_id, i + 1)
-      round = Round.get_by_id(round_id) or Round()
-      round.id = round_id
+      round = Round.get_by_id(round_id) or Round(id = round_id)
       round.event = event_key
       round.number = i + 1
       round.is_final = (i == num_rounds - 1)
@@ -75,8 +73,7 @@ def AddHeat(event_and_round, stage, number, start_minutes, end_minutes, day):
   end_time = datetime.datetime(2016, 7, day, end_hours, end_minutes, 0)
   heat_id = Heat.Id(event_id, round_id, stage, number)
 
-  heat = Heat.get_by_id(heat_id) or Heat()
-  heat.id = heat_id
+  heat = Heat.get_by_id(heat_id) or Heat(id = heat_id)
   heat.round = round.key
   heat.stage = Stage.get_by_id(stage).key
   heat.number = number
@@ -84,12 +81,20 @@ def AddHeat(event_and_round, stage, number, start_minutes, end_minutes, day):
   heat.end_time = end_time
   heat.put()
 
+def AddCompetitor(cusa_id, wca_id, name, is_staff):
+  cusa_id = str(cusa_id)
+  competitor = Competitor.get_by_id(cusa_id) or Competitor(id = cusa_id)
+  competitor.name = name
+  competitor.wca_id = wca_id
+  competitor.is_staff = is_staff == 1
+  competitor.is_admin = False
+  competitor.put()
+
 def AssignHeat(event, round, stage, heat, person_id):
   person_id = str(person_id)
   assignment_id = HeatAssignment.Id(event, round, person_id)
-  assignment = HeatAssignment.get_by_id(assignment_id) or HeatAssignment()
+  assignment = HeatAssignment.get_by_id(assignment_id) or HeatAssignment(id = assignment_id)
 
-  assignment.id = HeatAssignment.Id(event, round, person_id)
   assignment.heat = Heat.get_by_id(Heat.Id(event, round, stage, heat))
   assignment.competitor = Competitor.get_by_id(person_id)
   assignment.put()
