@@ -12,3 +12,13 @@ class Round(ndb.Model):
   @staticmethod
   def Id(event_id, round_num):
     return '%s_%d' % (event_id, round_num)
+
+  def ToDict(self):
+    return {
+        'id' : self.key.id(),
+        'event' : self.event.get().ToDict(),
+        'number' : self.number,
+        'cutoff' : self.cutoff,
+        'time_limit' : self.time_limit,
+        'is_final' : self.is_final,
+    }
