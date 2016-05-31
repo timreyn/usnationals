@@ -95,6 +95,14 @@ def AssignHeat(event, round, stage, heat, person_id):
   assignment_id = HeatAssignment.Id(event, round, person_id)
   assignment = HeatAssignment.get_by_id(assignment_id) or HeatAssignment(id = assignment_id)
 
-  assignment.heat = Heat.get_by_id(Heat.Id(event, round, stage, heat))
-  assignment.competitor = Competitor.get_by_id(person_id).key
+  heat = Heat.get_by_id(Heat.Id(event, round, stage, heat))
+  if not heat:
+    print 'Could not find heat ' + Heat.Id(event, round, stage, heat)
+    return
+  competitor = Competitor.get_by_id(person_id)
+  if not competitor:
+    print 'Could not find competitor ' + person_id
+    return
+  assignment.heat = heat.key
+  assignment.competitor = competitor.key
   assignment.put()
