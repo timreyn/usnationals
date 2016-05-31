@@ -12,11 +12,6 @@ def AddStages():
     Stage(id = name[0].lower(), name = name).put()
 
 def AddEvents(real_events=True):
-  for event in Event.query(Event.is_real == real_events).iter():
-    for round in Round.query(Round.event == event.key).iter():
-      round.key.delete()
-    event.key.delete()
-
   priority = 0
   if real_events:
     events = (
@@ -44,19 +39,24 @@ def AddEvents(real_events=True):
       ('reg', 'Registration', 1),
     )
   for (event_id, event_name, num_rounds) in events:
-    event_key = Event(id = event_id,
-                      name = event_name,
-                      priority = priority,
-                      is_real = real_events).put()
+    event = Event.get_by_id(event_id) or Event()
+    event.id = event_id
+    event.name = event_name
+    event.priority = priority
+    event.is_real = real_events
+    event_key = event.put()
     priority += 1
+
     for i in range(num_rounds):
       round_id = Round.Id(event_id, i + 1)
-      Round(id = round_id,
-            event = event_key,
-            number = i + 1,
-            is_final = (i == num_rounds - 1)).put()
+      round = Round.get_by_id(round_id) or Round()
+      round.id = round_id
+      round.event = event_key
+      round.number = i + 1
+      round.is_final = (i == num_rounds - 1)
+      round.put()
 
-def AddHeat(event_and_round, stage, heat, start_minutes, end_minutes, day):
+def AddHeat(event_and_round, stage, number, start_minutes, end_minutes, day):
   if '_' in event_and_round:
     event_id = event_and_round.split('_')[0]
     round_id = int(event_and_round.split('_')[1])
@@ -73,24 +73,23 @@ def AddHeat(event_and_round, stage, heat, start_minutes, end_minutes, day):
   end_minutes = end_minutes % 60
   start_time = datetime.datetime(2016, 7, day, start_hours, start_minutes, 0)
   end_time = datetime.datetime(2016, 7, day, end_hours, end_minutes, 0)
-  heat_id = Heat.Id(event_id, round_id, stage, heat)
-  old_heat = Heat.get_by_id(heat_id)
-  if old_heat:
-    old_heat.key.delete()
-  
-  Heat(id = heat_id,
-       round = round.key,
-       stage = Stage.get_by_id(stage).key,
-       number = heat,
-       start_time = start_time,
-       end_time = end_time).put()
+  heat_id = Heat.Id(event_id, round_id, stage, number)
+
+  heat = Heat.get_by_id(heat_id) or Heat()
+  heat.id = heat_id
+  heat.round = round.key
+  heat.stage = Stage.get_by_id(stage).key
+  heat.number = number
+  heat.start_time = start_time
+  heat.end_time = end_time
+  heat.put()
 
 def AssignHeat(event, round, stage, heat, person_id):
+  person_id = str(person_id)
   assignment_id = HeatAssignment.Id(event, round, person_id)
-  old_assignment = HeatAssignment.get_by_id(assignment_id)
-  if old_assignment:
-    old_assignment.key.delete()
+  assignment = HeatAssignment.get_by_id(assignment_id) or HeatAssignment()
 
-  HeatAssignment(id = HeatAssignment.Id(event, round, person_id),
-                 heat = Heat.get_by_id(Heat.Id(event, round, stage, heat)),
-                 competitor = Competitor.get_by_id(person_id)).put()
+  assignment.id = HeatAssignment.Id(event, round, person_id)
+  assignment.heat = Heat.get_by_id(Heat.Id(event, round, stage, heat))
+  assignment.competitor = Competitor.get_by_id(person_id)
+  assignment.put()
