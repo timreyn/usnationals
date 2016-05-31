@@ -96,5 +96,5 @@ def AssignHeat(event, round, stage, heat, person_id):
   assignment = HeatAssignment.get_by_id(assignment_id) or HeatAssignment(id = assignment_id)
 
   assignment.heat = Heat.get_by_id(Heat.Id(event, round, stage, heat))
-  assignment.competitor = Competitor.get_by_id(person_id)
+  assignment.competitor = Competitor.get_by_id(person_id).key
   assignment.put()
