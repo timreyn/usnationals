@@ -56,7 +56,7 @@ class AddData(webapp2.RequestHandler):
         day = int(row[7])
         ret_value = AddHeat(event_id, round_id, stage, number, start_minutes, end_minutes, day)
         if ret_value != 'ok':
-          return 'Bad heat ' + row + ': ' + ret_value
+          return 'Bad heat ' + str(row) + ': ' + ret_value
       elif row[0] == 'competitor':
         if len(row) != 5:
           return 'Bad competitor ' + row
@@ -71,11 +71,11 @@ class AddData(webapp2.RequestHandler):
         event_id = row[1]
         round_id = int(row[2])
         stage = row[3]
-        heat = row[4]
+        heat = int(row[4])
         person_id = row[5]
         ret_value = AssignHeat(event_id, round_id, stage, heat, person_id)
         if ret_value != 'ok':
-          return 'Bad heat assignment ' + row + ': ' + ret_value
+          return 'Bad heat assignment ' + str(row) + ': ' + ret_value
     return 'Success!'
     
         
@@ -100,13 +100,7 @@ def AddEvent(event_id, event_name, num_rounds, is_real, priority):
     round.is_final = (i == num_rounds - 1)
     round.put()
 
-def AddHeat(event_and_round, stage, number, start_minutes, end_minutes, day):
-  if '_' in event_and_round:
-    event_id = event_and_round.split('_')[0]
-    round_id = int(event_and_round.split('_')[1])
-  else:
-    event_id = event_and_round
-    round_id = 1
+def AddHeat(event_id, round_id, stage, number, start_minutes, end_minutes, day):
   round = Round.get_by_id(Round.Id(event_id, round_id))
   if not round:
     return 'Couldn\'t find a round with event %s and number %d' % (event_id, round_id)
@@ -140,10 +134,11 @@ def AssignHeat(event, round, stage, heat, person_id):
   person_id = str(person_id)
   assignment_id = HeatAssignment.Id(event, round, person_id)
   assignment = HeatAssignment.get_by_id(assignment_id) or HeatAssignment(id = assignment_id)
+  heat_id = Heat.Id(event, round, stage, heat)
 
-  heat = Heat.get_by_id(Heat.Id(event, round, stage, heat))
+  heat = Heat.get_by_id(heat_id)
   if not heat:
-    return 'Could not find heat ' + Heat.Id(event, round, stage, heat)
+    return 'Could not find heat ' + heat_id
   competitor = Competitor.get_by_id(person_id)
   if not competitor:
     return 'Could not find competitor ' + person_id
