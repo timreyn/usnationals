@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+<head>
+  <title>US Nationals Admin</title>
+</head>
+<body>
+  <h3>US Nationals Admin</h3>
+  <p>
+    <form action="{{ path }}" method="POST">
+      <textarea rows="20" cols="50" name="data">{{ data }}</textarea><br>
+      <button type="submit" name="submit">Submit</button>
+    </form>
+  </p>
+  <p>
+    {{ result }}
+  </p>
+</body>
+</html>
+{% endautoescape %}

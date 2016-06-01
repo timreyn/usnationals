@@ -1,0 +1,4 @@
+stage,r,Red
+stage,b,Blue
+stage,g,Green
+stage,o,Orange
