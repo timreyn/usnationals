@@ -1,2 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<items version="2" />
+<items version="2" >
+
+    <item
+        jar="/home/tim/src/usnationals2016/USNationalsApp/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jumboMode="true"
+        revision="23.0.3"
+        sha1="0bfdd1cd8f40df79543e01cae2bb40439b6b0994">
+        <dex dex="/home/tim/src/usnationals2016/USNationalsApp/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_89db395c6b74eb760bddffaf2e50f0947e6ad479/classes.dex" />
+    </item>
+
+</items>
