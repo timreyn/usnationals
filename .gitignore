@@ -1,2 +1,9 @@
 *.pyc
 *.swp
+*.iml
+USNationalsApp/.gradle
+USNationalsApp/local.properties
+USNationalsApp/.idea/workspace.xml
+USNationalsApp/.idea/libraries
+USNationalsApp/.DS_Store
+USNationalsApp/app/build
