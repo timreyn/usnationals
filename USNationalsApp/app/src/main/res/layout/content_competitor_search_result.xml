@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/competitor_search_result"
     android:layout_width="match_parent"
     android:layout_height="@dimen/competitor_search_result_height"
     android:layout_margin="@dimen/competitor_search_result_margin"
@@ -8,11 +9,11 @@
     tools:context="org.cubingusa.usnationals.CompetitorListActivity"
     tools:showIn="@layout/activity_competitor_list">
     <TextView
-        android:id="@+id/competitor_search_result"
+        android:id="@+id/competitor_search_result_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="@dimen/competitor_name_margin"
         android:textSize="@dimen/competitor_search_result_text_size"
-        android:text="Tim Reynolds"
+        android:text="@string/loading_competitors"
         android:gravity="left|center_vertical"/>
 </LinearLayout>

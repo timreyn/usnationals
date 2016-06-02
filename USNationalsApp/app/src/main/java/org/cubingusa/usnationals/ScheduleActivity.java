@@ -39,9 +39,8 @@ public class ScheduleActivity extends AppCompatActivity {
                 .scheme("http")
                 .authority(HOSTNAME)
                 .appendPath("get_schedule")
-                .appendPath(Integer.toString(intent.getIntExtra(COMPETITOR_EXTRA, 1)))
+                .appendPath(intent.getStringExtra(COMPETITOR_EXTRA))
                 .build();
-        Log.i(TAG,uri.toString());
         AsyncHttpClient client = new AsyncHttpClient();
         client.get(uri.toString(), new AsyncHttpResponseHandler() {
             @Override

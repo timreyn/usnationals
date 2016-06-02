@@ -23,7 +23,17 @@
             android:layout_height="match_parent"
             android:text="Hello World" />
     </LinearLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:id="@+id/search_result_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <include layout="@layout/content_competitor_search_result" />
+        </LinearLayout>
+    </ScrollView>
 
-    <include layout="@layout/content_competitor_search_result" />
 
 </LinearLayout>
