@@ -70,6 +70,7 @@ public class CompetitorListActivity extends AppCompatActivity {
 
     }
 
+    @UiThread
     private void parseJson(byte[] responseBody) throws IOException {
         JsonReader reader = new JsonReader(new InputStreamReader(new ByteArrayInputStream(responseBody)));
         try {
