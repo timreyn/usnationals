@@ -30,11 +30,12 @@ class AddData(webapp2.RequestHandler):
       if not row:
         continue
       if row[0] == 'stage':
-        if len(row) != 3:
+        if len(row) != 4:
           return 'Bad row ' + row
         stage_id = row[1]
         stage_name = row[2]
-        AddStage(stage_id, stage_name)
+        color_hex = row[3]
+        AddStage(stage_id, stage_name, color_hex)
       elif row[0] == 'event':
         if len(row) != 6:
           return 'Bad event ' + row
@@ -79,9 +80,10 @@ class AddData(webapp2.RequestHandler):
     return 'Success!'
     
         
-def AddStage(stage_id, stage_name):
+def AddStage(stage_id, stage_name, color_hex):
   stage = Stage.get_by_id(stage_id) or Stage(id = stage_id)
   stage.name = stage_name
+  stage.color_hex = color_hex
   stage.put()
 
 def AddEvent(event_id, event_name, num_rounds, is_real, priority):
