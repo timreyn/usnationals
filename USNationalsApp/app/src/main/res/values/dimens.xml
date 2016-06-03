@@ -1,7 +1,7 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">80dp</dimen>
     <dimen name="app_bar_height">160dp</dimen>
     <dimen name="text_margin">16dp</dimen>
     <dimen name="competitor_input_height">50dp</dimen>
@@ -10,4 +10,9 @@
     <dimen name="competitor_search_result_margin">10dp</dimen>
     <dimen name="competitor_search_result_text_size">20dp</dimen>
     <dimen name="competitor_name_margin">5dp</dimen>
+    <dimen name="schedule_item_height">60dp</dimen>
+    <dimen name="schedule_item_margin">5dp</dimen>
+    <dimen name="schedule_item_text_size">16dp</dimen>
+    <dimen name="schedule_item_time_width">50dp</dimen>
+    <dimen name="schedule_item_name_width">200dp</dimen>
 </resources>

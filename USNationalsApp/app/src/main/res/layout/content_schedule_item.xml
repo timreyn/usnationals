@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/schedule_item"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/schedule_item_height"
+    android:layout_margin="@dimen/schedule_item_margin"
+    android:background="@drawable/border"
+    tools:context="org.cubingusa.usnationals.ScheduleActivity"
+    tools:showIn="@layout/activity_schedule">
+    <TextView
+        android:id="@+id/schedule_item_time"
+        android:layout_width="@dimen/schedule_item_time_width"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/schedule_item_margin"
+        android:textSize="@dimen/schedule_item_text_size"
+        android:gravity="left|center_vertical"/>
+    <ImageView
+        android:id="@+id/schedule_item_icon"
+        android:layout_width="@dimen/schedule_item_height"
+        android:layout_height="match_parent" />
+    <TextView
+        android:id="@+id/schedule_item_name"
+        android:layout_width="@dimen/schedule_item_name_width"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/schedule_item_margin"
+        android:textSize="@dimen/schedule_item_text_size"
+        android:gravity="left|center_vertical"/>
+</LinearLayout>
