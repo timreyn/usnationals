@@ -101,7 +101,10 @@ public class ScheduleActivity extends AppCompatActivity {
         client.get(uri.toString(), new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                findViewById(R.id.schedule_spinner).setVisibility(View.GONE);
+                LinearLayout layout = (LinearLayout) findViewById(R.id.schedule_container);
+                if (layout != null) {
+                    layout.removeAllViewsInLayout();
+                }
                 try {
                     parseJson(responseBody);
                 } catch (IOException e) {
