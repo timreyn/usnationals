@@ -11,7 +11,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -65,8 +64,8 @@ public class ScheduleNotificationMessagingService extends FirebaseMessagingServi
                         .append(" stage!");
 
                 Intent notificationClickIntent = new Intent();
-                notificationClickIntent.setClass(this, ScheduleActivity.class);
-                notificationClickIntent.putExtra(ScheduleActivity.COMPETITOR_EXTRA, competitorId);
+                notificationClickIntent.setClass(this, CompetitorScheduleActivity.class);
+                notificationClickIntent.putExtra(CompetitorScheduleActivity.COMPETITOR_EXTRA, competitorId);
                 PendingIntent notificationClickPendingIntent =
                         PendingIntent.getActivity(
                                 this,

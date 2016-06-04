@@ -232,8 +232,8 @@ public class CompetitorListActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent();
-                        intent.setClass(CompetitorListActivity.this, ScheduleActivity.class);
-                        intent.putExtra(ScheduleActivity.COMPETITOR_EXTRA, competitor.id);
+                        intent.setClass(CompetitorListActivity.this, CompetitorScheduleActivity.class);
+                        intent.putExtra(CompetitorScheduleActivity.COMPETITOR_EXTRA, competitor.id);
                         startActivity(intent);
                     }
                 });

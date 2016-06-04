@@ -6,7 +6,7 @@
     android:layout_height="@dimen/schedule_item_height"
     android:layout_margin="@dimen/schedule_item_margin"
     android:background="@drawable/border"
-    tools:context="org.cubingusa.usnationals.ScheduleActivity"
+    tools:context=".CompetitorScheduleActivity"
     tools:showIn="@layout/activity_schedule">
     <TextView
         android:id="@+id/schedule_item_time"

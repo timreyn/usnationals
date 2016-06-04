@@ -34,8 +34,8 @@ import java.util.Set;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.ParseException;
 
-public class ScheduleActivity extends AppCompatActivity {
-    private static final String TAG = "ScheduleActivity";
+public class CompetitorScheduleActivity extends AppCompatActivity {
+    private static final String TAG = "CompetitorScheduleActivity";
 
     public static final String COMPETITOR_EXTRA = "COMPETITOR";
 
@@ -69,7 +69,7 @@ public class ScheduleActivity extends AppCompatActivity {
                 if (!isSubscribed) {
                     FirebaseMessaging.getInstance().subscribeToTopic(getTopic(mCompetitorId));
                     mNotificationIcon.setImageResource(R.drawable.bell);
-                    Toast.makeText(ScheduleActivity.this,
+                    Toast.makeText(CompetitorScheduleActivity.this,
                             R.string.subscribed, Toast.LENGTH_SHORT).show();
                 } else {
                     FirebaseMessaging.getInstance().unsubscribeFromTopic(getTopic(mCompetitorId));
@@ -88,7 +88,7 @@ public class ScheduleActivity extends AppCompatActivity {
                 if (!savedCompetitors.contains(mCompetitorId)) {
                     savedCompetitors.add(mCompetitorId);
                     mSaveIcon.setImageResource(R.drawable.star);
-                    Toast.makeText(ScheduleActivity.this,
+                    Toast.makeText(CompetitorScheduleActivity.this,
                             R.string.saved_competitor, Toast.LENGTH_SHORT).show();
                 } else {
                     savedCompetitors.remove(mCompetitorId);
