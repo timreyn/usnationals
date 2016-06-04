@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.JsonReader;
@@ -22,7 +23,11 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.ParseException;
@@ -34,8 +39,11 @@ public class ScheduleActivity extends AppCompatActivity {
     private static final String TAG = "ScheduleActivity";
 
     public static final String COMPETITOR_EXTRA = "COMPETITOR";
+    public static final String SAVED_COMPETITOR_PREFERENCE_KEY = "SAVED_COMPETITOR";
     private EventIcons eventIcons;
     boolean isSubscribed;
+    boolean isSaved;
+    Set<String> savedCompetitors;
 
 
     @Override
@@ -49,15 +57,26 @@ public class ScheduleActivity extends AppCompatActivity {
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
         final SharedPreferences.Editor editor = preferences.edit();
         final String competitorId = intent.getStringExtra(COMPETITOR_EXTRA);
-        final String preferenceKey = "subscription_" + competitorId;
+        final String notificationPreferenceKey = "subscription_" + competitorId;
         final ImageView notificationIcon = (ImageView) findViewById(R.id.notification_button);
+        final ImageView saveIcon = (ImageView) findViewById(R.id.save_button);
+        savedCompetitors = preferences.getStringSet(
+                SAVED_COMPETITOR_PREFERENCE_KEY, new HashSet<String>());
 
-        if (preferences.getBoolean(preferenceKey, false)) {
+        if (preferences.getBoolean(notificationPreferenceKey, false)) {
             isSubscribed = true;
             notificationIcon.setImageResource(R.drawable.bell);
         } else {
             isSubscribed = false;
             notificationIcon.setImageResource(R.drawable.bell_outline);
+        }
+
+        if (savedCompetitors.contains(competitorId)) {
+            isSaved = true;
+            saveIcon.setImageResource(R.drawable.star);
+        } else {
+            isSaved = false;
+            saveIcon.setImageResource(R.drawable.star_outline);
         }
 
         notificationIcon.setOnClickListener(new View.OnClickListener() {
@@ -72,7 +91,22 @@ public class ScheduleActivity extends AppCompatActivity {
                     isSubscribed = false;
                     notificationIcon.setImageResource(R.drawable.bell_outline);
                 }
-                editor.putBoolean(preferenceKey, isSubscribed);
+                editor.putBoolean(notificationPreferenceKey, isSubscribed);
+                editor.commit();
+            }
+        });
+
+        saveIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isSaved) {
+                    savedCompetitors.add(competitorId);
+                    saveIcon.setImageResource(R.drawable.star);
+                } else {
+                    savedCompetitors.remove(competitorId);
+                    saveIcon.setImageResource(R.drawable.star_outline);
+                }
+                editor.putStringSet(SAVED_COMPETITOR_PREFERENCE_KEY, savedCompetitors);
                 editor.commit();
             }
         });
