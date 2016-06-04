@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
@@ -36,12 +37,11 @@ public class CompetitorListActivity extends AppCompatActivity {
     private static final String TAG = "CompetitorListActivity";
     private static final int MAX_COMPETITORS_TO_SHOW = 20;
 
-    private SharedPreferences.Editor editor;
-    private static final Map<String, ImageView> competitorIdToSaveIcon = new HashMap<>();
-    private SharedPreferences sharedPreferences;
+    private static final Map<String, ImageView> mCompetitorIdToSaveIcon = new HashMap<>();
+    private SharedPreferences mSharedPreferences;
 
     private class Competitor implements Comparable<Competitor> {
-        private final Set<String> savedCompetitors;
+        private final Set<String> mSavedCompetitors;
         public String name;
         public String wcaId;
         public String id;
@@ -49,13 +49,13 @@ public class CompetitorListActivity extends AppCompatActivity {
         public String lowercaseWcaId;
 
         public Competitor(Set<String> savedCompetitors) {
-            this.savedCompetitors = savedCompetitors;
+            this.mSavedCompetitors = savedCompetitors;
         }
 
         @Override
-        public int compareTo(Competitor other) {
-            boolean isSaved = savedCompetitors.contains(id);
-            boolean otherIsSaved = savedCompetitors.contains(other.id);
+        public int compareTo(@NonNull Competitor other) {
+            boolean isSaved = mSavedCompetitors.contains(id);
+            boolean otherIsSaved = mSavedCompetitors.contains(other.id);
             if (isSaved && !otherIsSaved) {
                 return -1;
             }
@@ -80,9 +80,7 @@ public class CompetitorListActivity extends AppCompatActivity {
                 .appendPath("get_competitors")
                 .build();
         AsyncHttpClient client = new AsyncHttpClient();
-        sharedPreferences = getSharedPreferences(Constants.PREFRENCES, MODE_PRIVATE);
-
-        editor = sharedPreferences.edit();
+        mSharedPreferences = getSharedPreferences(Constants.PREFRENCES, MODE_PRIVATE);
         client.get(uri.toString(), new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
@@ -108,14 +106,14 @@ public class CompetitorListActivity extends AppCompatActivity {
     }
 
     void updateSaveIcons() {
-        Set<String> savedCompetitors = sharedPreferences.getStringSet(
+        Set<String> savedCompetitors = mSharedPreferences.getStringSet(
                 Constants.SAVED_COMPETITOR_PREFERENCE_KEY, new HashSet<String>());
-        for (String competitor : competitorIdToSaveIcon.keySet()) {
+        for (String competitor : mCompetitorIdToSaveIcon.keySet()) {
             if (savedCompetitors.contains(competitor)) {
-                competitorIdToSaveIcon.get(competitor)
+                mCompetitorIdToSaveIcon.get(competitor)
                         .setImageResource(R.drawable.star);
             } else {
-                competitorIdToSaveIcon.get(competitor)
+                mCompetitorIdToSaveIcon.get(competitor)
                         .setImageResource(R.drawable.star_outline);
             }
         }
@@ -123,7 +121,7 @@ public class CompetitorListActivity extends AppCompatActivity {
 
     @UiThread
     private void parseJson(byte[] responseBody) throws IOException {
-        Set<String> savedCompetitors = sharedPreferences.getStringSet(
+        Set<String> savedCompetitors = mSharedPreferences.getStringSet(
                 Constants.SAVED_COMPETITOR_PREFERENCE_KEY, new HashSet<String>());
         JsonReader reader = new JsonReader(new InputStreamReader(new ByteArrayInputStream(responseBody)));
         try {
@@ -132,17 +130,20 @@ public class CompetitorListActivity extends AppCompatActivity {
                 reader.beginObject();
                 Competitor competitor = new Competitor(savedCompetitors);
                 while (reader.hasNext()) {
-                    String name = reader.nextName();
-                    if (name.equals("wca_id")) {
-                        competitor.wcaId = reader.nextString();
-                        competitor.lowercaseWcaId = competitor.wcaId.toLowerCase();
-                    } else if (name.equals("id")) {
-                        competitor.id = reader.nextString();
-                    } else if (name.equals("name")) {
-                        competitor.name = reader.nextString();
-                        competitor.lowercaseName = competitor.name.toLowerCase();
-                    } else {
-                        reader.skipValue();
+                    switch (reader.nextName()) {
+                        case "wca_id":
+                            competitor.wcaId = reader.nextString();
+                            competitor.lowercaseWcaId = competitor.wcaId.toLowerCase();
+                            break;
+                        case "id":
+                            competitor.id = reader.nextString();
+                            break;
+                        case "name":
+                            competitor.name = reader.nextString();
+                            competitor.lowercaseName = competitor.name.toLowerCase();
+                            break;
+                        default:
+                            reader.skipValue();
                     }
                 }
                 competitors.add(competitor);
@@ -154,11 +155,12 @@ public class CompetitorListActivity extends AppCompatActivity {
         Collections.sort(competitors);
         displayMatchingCompetitors();
         TextInputEditText textInput = (TextInputEditText) findViewById(R.id.competitor_input);
+        if (textInput == null) {
+            return;
+        }
         textInput.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                return;
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -166,20 +168,24 @@ public class CompetitorListActivity extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-                return;
-            }
+            public void afterTextChanged(Editable s) {}
         });
     }
 
     @UiThread
     private void displayMatchingCompetitors() {
-        competitorIdToSaveIcon.clear();
-        final Set<String> savedCompetitors = sharedPreferences.getStringSet(
+        mCompetitorIdToSaveIcon.clear();
+        final Set<String> savedCompetitors = mSharedPreferences.getStringSet(
                 Constants.SAVED_COMPETITOR_PREFERENCE_KEY, new HashSet<String>());
         TextInputEditText textInput = (TextInputEditText) findViewById(R.id.competitor_input);
+        if (textInput == null) {
+            return;
+        }
         String[] searchQueryTerms = textInput.getText().toString().toLowerCase().split(" ");
         LinearLayout container = (LinearLayout) findViewById(R.id.search_result_container);
+        if (container == null) {
+            return;
+        }
         container.removeAllViewsInLayout();
         if (searchQueryTerms.length == 0) {
             return;
@@ -213,7 +219,7 @@ public class CompetitorListActivity extends AppCompatActivity {
                 TextView competitorName = (TextView) result.getChildAt(0);
                 competitorName.setText(competitor.name);
                 final ImageView saveIcon = (ImageView) result.getChildAt(1);
-                competitorIdToSaveIcon.put(competitor.id, saveIcon);
+                mCompetitorIdToSaveIcon.put(competitor.id, saveIcon);
                 saveIcon.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -224,9 +230,10 @@ public class CompetitorListActivity extends AppCompatActivity {
                             savedCompetitors.remove(competitor.id);
                             saveIcon.setImageResource(R.drawable.star_outline);
                         }
-                        editor.putStringSet(
-                                Constants.SAVED_COMPETITOR_PREFERENCE_KEY, savedCompetitors);
-                        editor.apply();
+                        mSharedPreferences.edit()
+                                .putStringSet(
+                                        Constants.SAVED_COMPETITOR_PREFERENCE_KEY, savedCompetitors)
+                                .apply();
                     }
                 });
                 numCompetitorsAdded++;
