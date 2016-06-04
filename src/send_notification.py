@@ -9,6 +9,8 @@ from src.models import HeatAssignment
 class SendNotification(webapp2.RequestHandler):
   # TODO: change this to post
   def get(self, event_id, round_id, stage_id, heat_number):
+    round_id = int(round_id)
+    heat_number = int(heat_number)
     heat_id = Heat.Id(event_id, round_id, stage_id, heat_number)
     heat = Heat.get_by_id(heat_id)
     if not heat:
@@ -31,7 +33,7 @@ class SendNotification(webapp2.RequestHandler):
     competitor = heat_assignment.competitor.get()
     headers = {'Content-Type': 'application/json',
                'Authorization': 'key=' + firebase_key.f_key}
-    conn = httplib.HTTPConnection("https://fcm.googleapis.com/fcm/send")
+    conn = httplib.HTTPSConnection("fcm.googleapis.com")
     data = {"type": "heatNotification",
             "heatAssignmentId": heat_assignment.key.id(),
             "eventId": event.key.id(),
@@ -40,8 +42,9 @@ class SendNotification(webapp2.RequestHandler):
             "competitorId": competitor.key.id(),
             "heatNumber": heat_number,
             "stageName": stage.name}
-    request = {"to": "competitor_" + competitor.key.id(),
+    request = {"to": "/topics/competitor_" + competitor.key.id(),
                "data": data}
-    conn.request("POST", json.dumps(request), {}, headers)
+    conn.request("POST", "/fcm/send", json.dumps(request), headers)
+    response = conn.getresponse()
     
     print response.status, response.reason, response.read()
