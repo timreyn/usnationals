@@ -30,7 +30,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-            <include layout="@layout/content_competitor_search_result" />
+            <ProgressBar
+                android:id="@+id/competitor_list_spinner"
+                android:layout_width="@dimen/spinner_size"
+                android:layout_height="@dimen/spinner_size"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_gravity="center_horizontal" />
         </LinearLayout>
     </ScrollView>
 

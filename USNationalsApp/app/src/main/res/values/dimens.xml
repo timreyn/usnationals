@@ -20,4 +20,5 @@
     <dimen name="schedule_item_name_width">200dp</dimen>
     <dimen name="toolbar_icon_size">40dp</dimen>
     <dimen name="toolbar_icon_margin">10dp</dimen>
+    <dimen name="spinner_size">100dp</dimen>
 </resources>

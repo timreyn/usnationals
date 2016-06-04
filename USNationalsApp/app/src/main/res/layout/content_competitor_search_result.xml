@@ -15,7 +15,6 @@
         android:layout_margin="@dimen/competitor_name_margin"
         android:layout_weight="1"
         android:textSize="@dimen/competitor_search_result_text_size"
-        android:text="@string/loading_competitors"
         android:gravity="left|center_vertical"/>
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/save_button"

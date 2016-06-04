@@ -2,5 +2,4 @@
     <string name="app_name">USNationals</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_competitor_list">Select a Competitor</string>
-    <string name="loading_competitors">Loading competitors...</string>
 </resources>
