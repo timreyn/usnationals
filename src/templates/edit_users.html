@@ -3,12 +3,19 @@
 <html>
 <head>
   <title>US Nationals Device Admin</title>
+  <style type="text/css">
+    table,td,th {
+      border: 1px solid black;
+      border-collapse: collapse;
+      padding: 5px;
+    }
+  </style>
 </head>
 <body>
   <h3>US Nationals Device Admin</h3>
   <table>
     <tr>
-      <th>Device Password</th>
+      <th>Device</th>
       <th>Admin?</th>
       <th>Competitor</th>
       <th></th>
@@ -20,7 +27,7 @@
           <td>
             <input type="checkbox"
                    name="is_admin"
-                   {% if device.is_admin %} checked{% endif %}></input>
+                   {% if device.is_authorized %} checked{% endif %}></input>
           </td>
           <td>
             <select name="competitor">

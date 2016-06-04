@@ -160,21 +160,22 @@ class SetFirebaseKey(webapp2.RequestHandler):
 class EditUsers(webapp2.RequestHandler):
   def post(self):
     user_password = self.request.get('password')
-    is_admin = self.request.get('is_admin')
+    is_admin = self.request.get('is_admin') != ''
     competitor_id = self.request.get('competitor')
     competitor = Competitor.get_by_id(competitor_id)
+    if not competitor:
+      return
 
     devices = AdminDevice.query(AdminDevice.password == user_password).iter()
     for device in devices:
+      device.competitor = competitor.key
       if not device.is_authorized and is_admin:
-        device.authorized_time = datetime.now()
+        device.authorized_time = datetime.datetime.now()
         self.NotifyDevice(device, is_admin)
       if device.is_authorized and not is_admin:
-        device.deauthorized_time = datetime.now()
+        device.deauthorized_time = datetime.datetime.now()
         self.NotifyDevice(device, is_admin)
       device.is_authorized = is_admin
-      if competitor:
-        device.competitor = competitor.key
       device.put()
     self.WriteOutput()
 
@@ -192,7 +193,9 @@ class EditUsers(webapp2.RequestHandler):
     }))
 
   def NotifyDevice(self, device, is_admin):
-    data = {"isAdmin": is_admin,
-            "competitorName": device.competitor.get().name}
-    topic = "/topics/device_" + device.key.id()
-    firebase.SendPushNotification(topic, data, "adminStatus")
+    data = {'isAdmin': '1' if is_admin else '0',
+            'deviceId': device.key.id(),
+            'competitorName': device.competitor.get().name,
+           }
+    topic = '/topics/device_' + device.key.id()
+    firebase.SendPushNotification(topic, data, 'adminStatus')

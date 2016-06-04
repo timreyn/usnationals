@@ -3,7 +3,7 @@ import json
 
 from src.models import FirebaseKey
 
-def SendPushNotification(topic, data, message_type)
+def SendPushNotification(topic, data, message_type):
   firebase_key = FirebaseKey.get_by_id("1")
   if not firebase_key:
     return
