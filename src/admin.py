@@ -5,6 +5,7 @@ import datetime
 import StringIO
 import webapp2
 
+from src import firebase
 from src.jinja import JINJA_ENVIRONMENT
 from src.models import *
 
@@ -167,8 +168,10 @@ class EditUsers(webapp2.RequestHandler):
     for device in devices:
       if not device.is_authorized and is_admin:
         device.authorized_time = datetime.now()
+        self.NotifyDevice(device, is_admin)
       if device.is_authorized and not is_admin:
         device.deauthorized_time = datetime.now()
+        self.NotifyDevice(device, is_admin)
       device.is_authorized = is_admin
       if competitor:
         device.competitor = competitor.key
@@ -187,3 +190,8 @@ class EditUsers(webapp2.RequestHandler):
         'competitors': competitors,
         'path' : webapp2.uri_for('edit_users'),
     }))
+
+  def NotifyDevice(self, device, is_admin):
+    data = {"isAdmin": is_admin}
+    topic = "/topics/device_" + device.key.id()
+    firebase.SendPushNotification(topic, data, "adminStatus")
