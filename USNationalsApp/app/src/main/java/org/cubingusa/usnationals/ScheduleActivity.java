@@ -10,10 +10,14 @@ import android.support.v7.widget.Toolbar;
 import android.util.JsonReader;
 import android.util.Log;
 import android.util.Pair;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.loopj.android.http.AsyncHttpClient;
@@ -65,11 +69,13 @@ public class ScheduleActivity extends AppCompatActivity {
                 if (!isSubscribed) {
                     FirebaseMessaging.getInstance().subscribeToTopic(getTopic(mCompetitorId));
                     mNotificationIcon.setImageResource(R.drawable.bell);
+                    Toast.makeText(ScheduleActivity.this,
+                            R.string.subscribed, Toast.LENGTH_SHORT).show();
                 } else {
                     FirebaseMessaging.getInstance().unsubscribeFromTopic(getTopic(mCompetitorId));
                     mNotificationIcon.setImageResource(R.drawable.bell_outline);
                 }
-                editor.putBoolean(mNotificationPreferenceKey, isSubscribed);
+                editor.putBoolean(mNotificationPreferenceKey, !isSubscribed);
                 editor.apply();
             }
         });
@@ -82,6 +88,8 @@ public class ScheduleActivity extends AppCompatActivity {
                 if (!savedCompetitors.contains(mCompetitorId)) {
                     savedCompetitors.add(mCompetitorId);
                     mSaveIcon.setImageResource(R.drawable.star);
+                    Toast.makeText(ScheduleActivity.this,
+                            R.string.saved_competitor, Toast.LENGTH_SHORT).show();
                 } else {
                     savedCompetitors.remove(mCompetitorId);
                     mSaveIcon.setImageResource(R.drawable.star_outline);
@@ -135,6 +143,23 @@ public class ScheduleActivity extends AppCompatActivity {
         } else {
             mNotificationIcon.setImageResource(R.drawable.bell_outline);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent = MenuHandler.menuOptionIntent(this, item);
+        if (intent == null) {
+            return super.onOptionsItemSelected(item);
+        }
+        startActivity(intent);
+        return true;
     }
 
     private String getTopic(String competitorId) {

@@ -1,10 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="org.cubingusa.usnationals.ScheduleActivity">
+    tools:context="org.cubingusa.usnationals.CompetitorListActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_competitor_list"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
+        android:title="@string/action_competitor_list"
         app:showAsAction="never" />
 </menu>

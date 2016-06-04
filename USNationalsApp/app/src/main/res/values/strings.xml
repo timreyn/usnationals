@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">USNationals</string>
-    <string name="action_settings">Settings</string>
     <string name="title_activity_competitor_list">Select a Competitor</string>
+    <string name="subscribed">Subscribed to alerts</string>
+    <string name="saved_competitor">Saved competitor as favorite</string>
+    <string name="action_competitor_list">Find a Competitor</string>
 </resources>
