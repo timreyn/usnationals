@@ -21,8 +21,7 @@ class SendNotification(webapp2.RequestHandler):
     # TODO: record the time, and don't send notifications too frequently
     for heat_assignment in HeatAssignment.query(HeatAssignment.heat == heat.key).iter():
       competitor = heat_assignment.competitor.get()
-      data = {"type": "heatNotification",
-              "heatAssignmentId": heat_assignment.key.id(),
+      data = {"heatAssignmentId": heat_assignment.key.id(),
               "eventId": event.key.id(),
               "eventName": event.name,
               "competitorName": competitor.name,
