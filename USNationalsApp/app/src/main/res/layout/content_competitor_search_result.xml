@@ -10,10 +10,18 @@
     tools:showIn="@layout/activity_competitor_list">
     <TextView
         android:id="@+id/competitor_search_result_text"
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:layout_margin="@dimen/competitor_name_margin"
+        android:layout_weight="1"
         android:textSize="@dimen/competitor_search_result_text_size"
         android:text="@string/loading_competitors"
         android:gravity="left|center_vertical"/>
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/save_button"
+        android:layout_width="@dimen/competitor_search_result_icon_size"
+        android:layout_height="@dimen/competitor_search_result_icon_size"
+        android:layout_gravity="right|center_vertical"
+        android:layout_margin="@dimen/competitor_search_result_icon_margin"
+        android:src="@drawable/star"/>
 </LinearLayout>

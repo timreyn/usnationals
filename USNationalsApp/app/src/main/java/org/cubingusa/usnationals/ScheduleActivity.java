@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.JsonReader;
@@ -23,28 +22,24 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.ParseException;
 
 public class ScheduleActivity extends AppCompatActivity {
-
-    // TODO: move this to shared preferences
-    private static final String HOSTNAME = "usnationals2016.appspot.com";
     private static final String TAG = "ScheduleActivity";
 
     public static final String COMPETITOR_EXTRA = "COMPETITOR";
-    public static final String SAVED_COMPETITOR_PREFERENCE_KEY = "SAVED_COMPETITOR";
-    private EventIcons eventIcons;
-    boolean isSubscribed;
-    boolean isSaved;
-    Set<String> savedCompetitors;
 
+    private EventIcons eventIcons;
+    private String competitorId;
+    private String notificationPreferenceKey;
+    private ImageView saveIcon;
+    private ImageView notificationIcon;
+    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,66 +49,49 @@ public class ScheduleActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         Intent intent = getIntent();
         eventIcons = new EventIcons(this);
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        preferences = getSharedPreferences(Constants.PREFRENCES, MODE_PRIVATE);
         final SharedPreferences.Editor editor = preferences.edit();
-        final String competitorId = intent.getStringExtra(COMPETITOR_EXTRA);
-        final String notificationPreferenceKey = "subscription_" + competitorId;
-        final ImageView notificationIcon = (ImageView) findViewById(R.id.notification_button);
-        final ImageView saveIcon = (ImageView) findViewById(R.id.save_button);
-        savedCompetitors = preferences.getStringSet(
-                SAVED_COMPETITOR_PREFERENCE_KEY, new HashSet<String>());
-
-        if (preferences.getBoolean(notificationPreferenceKey, false)) {
-            isSubscribed = true;
-            notificationIcon.setImageResource(R.drawable.bell);
-        } else {
-            isSubscribed = false;
-            notificationIcon.setImageResource(R.drawable.bell_outline);
-        }
-
-        if (savedCompetitors.contains(competitorId)) {
-            isSaved = true;
-            saveIcon.setImageResource(R.drawable.star);
-        } else {
-            isSaved = false;
-            saveIcon.setImageResource(R.drawable.star_outline);
-        }
+        competitorId = intent.getStringExtra(COMPETITOR_EXTRA);
+        notificationPreferenceKey = "subscription_" + competitorId;
+        notificationIcon = (ImageView) findViewById(R.id.notification_button);
+        saveIcon = (ImageView) findViewById(R.id.save_button);
 
         notificationIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                boolean isSubscribed = preferences.getBoolean(notificationPreferenceKey, false);
                 if (!isSubscribed) {
                     FirebaseMessaging.getInstance().subscribeToTopic(getTopic(competitorId));
-                    isSubscribed = true;
                     notificationIcon.setImageResource(R.drawable.bell);
                 } else {
                     FirebaseMessaging.getInstance().unsubscribeFromTopic(getTopic(competitorId));
-                    isSubscribed = false;
                     notificationIcon.setImageResource(R.drawable.bell_outline);
                 }
                 editor.putBoolean(notificationPreferenceKey, isSubscribed);
-                editor.commit();
+                editor.apply();
             }
         });
 
         saveIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!isSaved) {
+                Set<String> savedCompetitors = preferences.getStringSet(
+                        Constants.SAVED_COMPETITOR_PREFERENCE_KEY, new HashSet<String>());
+                if (!savedCompetitors.contains(competitorId)) {
                     savedCompetitors.add(competitorId);
                     saveIcon.setImageResource(R.drawable.star);
                 } else {
                     savedCompetitors.remove(competitorId);
                     saveIcon.setImageResource(R.drawable.star_outline);
                 }
-                editor.putStringSet(SAVED_COMPETITOR_PREFERENCE_KEY, savedCompetitors);
-                editor.commit();
+                editor.putStringSet(Constants.SAVED_COMPETITOR_PREFERENCE_KEY, savedCompetitors);
+                editor.apply();
             }
         });
 
         Uri uri = new Uri.Builder()
                 .scheme("http")
-                .authority(HOSTNAME)
+                .authority(Constants.HOSTNAME)
                 .appendPath("get_schedule")
                 .appendPath(competitorId)
                 .build();
@@ -133,6 +111,23 @@ public class ScheduleActivity extends AppCompatActivity {
                 Log.e(TAG, error.toString());
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Set<String> savedCompetitors = preferences.getStringSet(
+                Constants.SAVED_COMPETITOR_PREFERENCE_KEY, new HashSet<String>());
+        if (savedCompetitors.contains(competitorId)) {
+            saveIcon.setImageResource(R.drawable.star);
+        } else {
+            saveIcon.setImageResource(R.drawable.star_outline);
+        }
+        if (preferences.getBoolean(notificationPreferenceKey, false)) {
+            notificationIcon.setImageResource(R.drawable.bell);
+        } else {
+            notificationIcon.setImageResource(R.drawable.bell_outline);
+        }
     }
 
     private String getTopic(String competitorId) {
@@ -208,7 +203,6 @@ public class ScheduleActivity extends AppCompatActivity {
                                     String eventId = reader.nextString();
                                     schedule_item_icon.setImageDrawable(eventIcons.getDrawable(
                                             eventId));
-                                    Log.i(TAG, eventId);
                                 } else if (name.equals("name")) {
                                     event_name = reader.nextString();
                                 } else {
