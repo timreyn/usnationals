@@ -7,4 +7,9 @@
         android:orderInCategory="100"
         android:title="@string/action_competitor_list"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_admin"
+        android:orderInCategory="999"
+        android:title="@string/action_admin"
+        app:showAsAction="never" />
 </menu>

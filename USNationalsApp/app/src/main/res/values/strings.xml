@@ -4,4 +4,19 @@
     <string name="subscribed">Subscribed to alerts</string>
     <string name="saved_competitor">Saved competitor as favorite</string>
     <string name="action_competitor_list">Find a Competitor</string>
+    <string name="title_activity_admin">Admin Access</string>
+    <string name="request_access">Request Admin Access</string>
+    <string name="revoke_access">Revoke admin access</string>
+    <string name="request_access_info">
+        If you are a competition organizer, you may request admin access.  This request must be
+        approved by one of the organizers.
+    </string>
+    <string name="awaiting_access_info">
+        Please show the code below to Tim to get admin access.
+    </string>
+    <string name="has_access_info">
+        %1$s, you have admin access.  You can use the button below to revoke access.
+    </string>
+    <string name="action_admin">Admin</string>
+    <string name="admin_access_granted">You now have admin access!</string>
 </resources>

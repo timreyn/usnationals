@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:orientation="vertical"
+    tools:context="org.cubingusa.usnationals.AdminActivity"
+    tools:showIn="@layout/activity_admin">
+
+    <ProgressBar
+        android:id="@+id/admin_spinner"
+        android:layout_width="@dimen/spinner_size"
+        android:layout_height="@dimen/spinner_size"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_gravity="center_horizontal" />
+    <TextView
+        android:id="@+id/admin_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/admin_info_text_size"/>
+    <Button
+        android:id="@+id/request_access"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/request_access_height"
+        android:padding="@dimen/request_access_padding"
+        android:text="@string/request_access"
+        android:textSize="@dimen/request_access_text_size" />
+    <TextView
+        android:id="@+id/admin_password"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/request_access_height"
+        android:padding="@dimen/request_access_padding"
+        android:textSize="@dimen/android_password_text_size"
+        android:background="@drawable/border"/>
+    <Button
+        android:id="@+id/revoke_access"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/request_access_height"
+        android:padding="@dimen/request_access_padding"
+        android:text="@string/revoke_access"
+        android:textSize="@dimen/request_access_text_size" />
+
+</LinearLayout>
