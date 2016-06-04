@@ -164,6 +164,7 @@ class EditUsers(webapp2.RequestHandler):
     competitor_id = self.request.get('competitor')
     competitor = Competitor.get_by_id(competitor_id)
     if not competitor:
+      self.WriteOutput()
       return
 
     devices = AdminDevice.query(AdminDevice.password == user_password).iter()

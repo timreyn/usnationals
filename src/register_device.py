@@ -16,6 +16,7 @@ class RegisterDevice(webapp2.RequestHandler):
       return
     if not device:
       device = AdminDevice(id = device_id)
+    device.is_authorized = False
     device.creation_time = datetime.datetime.now()
     device.password = device_password
     device.put()
