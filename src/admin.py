@@ -1,5 +1,3 @@
-from google.appengine.ext import ndb
-
 import csv
 import datetime
 import StringIO
