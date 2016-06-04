@@ -2,14 +2,12 @@ package org.cubingusa.usnationals;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.JsonReader;
 import android.util.Log;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -26,13 +24,10 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.DateFormat;
-import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 
 import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.ParseException;
 
 public class CompetitorScheduleActivity extends AppCompatActivity {
     private static final String TAG = "CompetitorSchedule";
@@ -176,6 +171,8 @@ public class CompetitorScheduleActivity extends AppCompatActivity {
                     parseCompetitor(reader);
                 } else if (name.equals("heats")) {
                     parseHeats(reader);
+                } else {
+                    reader.skipValue();
                 }
             }
         } finally {
@@ -203,133 +200,13 @@ public class CompetitorScheduleActivity extends AppCompatActivity {
             reader.endArray();
             return;
         }
-        int numHeatsAdded = 0;
+        ScheduleParser scheduleParser =
+                new ScheduleParser(this, getLayoutInflater(), scheduleContainer);
         while (reader.hasNext()) {
             reader.beginObject();
-            getLayoutInflater().inflate(
-                    R.layout.content_schedule_item, scheduleContainer);
-            LinearLayout scheduleItem = (LinearLayout) scheduleContainer.getChildAt(numHeatsAdded);
-            TextView scheduleItemTime = (TextView) scheduleItem.getChildAt(0);
-            ImageView scheduleItemIcon = (ImageView) scheduleItem.getChildAt(1);
-            TextView scheduleItemName = (TextView) scheduleItem.getChildAt(2);
-            String stageName = "";
-            int heatNumber = 0;
-            String eventName = "";
-            while (reader.hasNext()) {
-                switch (reader.nextName()) {
-                    case "start_time":
-                        GregorianCalendar time = parseTime(reader);
-                        DateFormat format = DateFormat.getTimeInstance(DateFormat.SHORT);
-                        try {
-                            scheduleItemTime.setText(format.format(time.getTime()));
-                        } catch (ParseException e) {
-                            Log.e(TAG, e.toString());
-                        }
-                        break;
-                    case "stage":
-                        stageName = parseStage(reader, scheduleItem);
-                        break;
-                    case "round":
-                        reader.beginObject();
-                        Pair<String, String> eventIdAndName = parseRound(reader);
-                        reader.endObject();
-                        scheduleItemIcon.setImageDrawable(
-                                mEventIcons.getDrawable(eventIdAndName.first));
-                        eventName = eventIdAndName.second;
-                        break;
-                    case "number":
-                        heatNumber = reader.nextInt();
-                        break;
-                    default:
-                        reader.skipValue();
-                }
-            }
-            StringBuilder builder = new StringBuilder();
-            builder.append(eventName);
-            builder.append(" ");
-            if (!stageName.equals("")) {
-                builder.append(stageName);
-                builder.append(" ");
-            }
-            builder.append(heatNumber);
-            scheduleItemName.setText(builder.toString());
+            scheduleParser.parseHeat(reader);
             reader.endObject();
-            numHeatsAdded++;
         }
         reader.endArray();
-    }
-
-    private GregorianCalendar parseTime(JsonReader reader) throws IOException {
-        reader.beginObject();
-        GregorianCalendar time = new GregorianCalendar();
-        while (reader.hasNext()) {
-            switch (reader.nextName()) {
-                case "year":
-                    time.set(GregorianCalendar.YEAR, reader.nextInt());
-                    break;
-                case "month":
-                    time.set(GregorianCalendar.MONTH, reader.nextInt());
-                    break;
-                case "day":
-                    time.set(GregorianCalendar.DAY_OF_MONTH, reader.nextInt());
-                    break;
-                case "hour":
-                    time.set(GregorianCalendar.HOUR_OF_DAY, reader.nextInt());
-                    break;
-                case "minute":
-                    time.set(GregorianCalendar.MINUTE, reader.nextInt());
-                    break;
-                default:
-                    reader.skipValue();
-            }
-        }
-        reader.endObject();
-        return time;
-    }
-
-    private String parseStage(JsonReader reader, LinearLayout layout) throws IOException {
-        reader.beginObject();
-        String stageName = "";
-        while (reader.hasNext()) {
-            switch(reader.nextName()) {
-                case "color_hex":
-                    layout.setBackgroundColor(Color.parseColor(reader.nextString()));
-                    break;
-                case "name":
-                    stageName = reader.nextString();
-                    break;
-                default:
-                    reader.skipValue();
-            }
-        }
-        reader.endObject();
-        return stageName;
-    }
-
-    private Pair<String, String> parseRound(JsonReader reader) throws IOException {
-        String eventId = "";
-        String eventName = "";
-        while (reader.hasNext()) {
-            String name = reader.nextName();
-            if (name.equals("event")) {
-                reader.beginObject();
-                while (reader.hasNext()) {
-                    switch (reader.nextName()) {
-                        case "id":
-                            eventId = reader.nextString();
-                            break;
-                        case "name":
-                            eventName = reader.nextString();
-                            break;
-                        default:
-                            reader.skipValue();
-                    }
-                }
-                reader.endObject();
-            } else {
-                reader.skipValue();
-            }
-        }
-        return new Pair<String, String>(eventId, eventName);
     }
 }
