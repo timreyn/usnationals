@@ -78,8 +78,7 @@ class AddData(webapp2.RequestHandler):
         if ret_value != 'ok':
           return 'Bad heat assignment ' + str(row) + ': ' + ret_value
     return 'Success!'
-    
-        
+
 def AddStage(stage_id, stage_name, color_hex):
   stage = Stage.get_by_id(stage_id) or Stage(id = stage_id)
   stage.name = stage_name
@@ -148,3 +147,11 @@ def AssignHeat(event, round, stage, heat, person_id):
   assignment.competitor = competitor.key
   assignment.put()
   return 'ok'
+
+class SetFirebaseKey(webapp2.RequestHandler):
+  # This should really be a POST...but it's easier this way.
+  def get(self, key):
+    firebase_key = FirebaseKey.get_by_id('1') or FirebaseKey(id = '1')
+    firebase_key.key = key
+    firebase_key.put()
+    self.response.write('Success!')
