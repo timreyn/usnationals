@@ -155,3 +155,35 @@ class SetFirebaseKey(webapp2.RequestHandler):
     firebase_key.f_key = key
     firebase_key.put()
     self.response.write('Success!')
+
+class EditUsers(webapp2.RequestHandler):
+  def post(self):
+    user_password = self.request.get('password')
+    is_admin = self.request.get('is_admin')
+    competitor_id = self.request.get('competitor')
+    competitor = Competitor.get_by_id(competitor_id)
+
+    devices = AdminDevice.query(AdminDevice.password == user_password).iter()
+    for device in devices:
+      if not device.is_authorized and is_admin:
+        device.authorized_time = datetime.now()
+      if device.is_authorized and not is_admin:
+        device.deauthorized_time = datetime.now()
+      device.is_authorized = is_admin
+      if competitor:
+        device.competitor = competitor.key
+      device.put()
+    self.WriteOutput()
+
+  def get(self):
+    self.WriteOutput()
+
+  def WriteOutput(self):
+    template = JINJA_ENVIRONMENT.get_template('edit_users.html')
+    devices = AdminDevice.query().order(-AdminDevice.creation_time).iter()
+    competitors = [competitor for competitor in Competitor.query().iter()]
+    self.response.write(template.render({
+        'devices': devices,
+        'competitors': competitors,
+        'path' : webapp2.uri_for('edit_users'),
+    }))
