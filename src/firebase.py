@@ -4,14 +4,14 @@ import json
 from src.models import FirebaseKey
 
 def SendPushNotification(topic, data, message_type):
-  firebase_key = FirebaseKey.get_by_id('1')
+  firebase_key = FirebaseKey.query().get()
   if not firebase_key:
     raise Exception('No firebase credentials found!')
-    return
   headers = {'Content-Type': 'application/json',
              'Authorization': 'key=' + firebase_key.f_key}
   conn = httplib.HTTPSConnection('fcm.googleapis.com')
-  data['message_type'] = message_type
+  data['type'] = message_type
   request = {'to': topic,
              'data': data}
   conn.request('POST', '/fcm/send', json.dumps(request), headers)
+  return conn.getresponse()
