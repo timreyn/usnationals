@@ -5,11 +5,13 @@ from src import get_competitors
 from src import register_device
 from src import send_notification
 from src import schedule
+from src import stage_schedule
 
 app = webapp2.WSGIApplication([
-    webapp2.Route(r'/get_schedule/<person_id:\d*>', handler=schedule.GetSchedule, name='get_schedule'),
+    webapp2.Route(r'/get_schedule/<person_id:\d*>', handler=schedule.GetSchedule),
     webapp2.Route('/get_competitors', handler=get_competitors.GetCompetitors),
     webapp2.Route('/register_device', handler=register_device.RegisterDevice),
+    webapp2.Route(r'/stage_schedule/<stages:.*>', handler=stage_schedule.GetStageSchedule),
     webapp2.Route('/admin/add_data', handler=admin.AddData, name='add_data'),
     webapp2.Route('/admin/edit_users', handler=admin.EditUsers, name='edit_users'),
     webapp2.Route(r'/admin/set_firebase_key/<key:.*>', handler=admin.SetFirebaseKey),
