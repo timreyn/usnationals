@@ -192,6 +192,7 @@ class EditUsers(webapp2.RequestHandler):
     }))
 
   def NotifyDevice(self, device, is_admin):
-    data = {"isAdmin": is_admin}
+    data = {"isAdmin": is_admin,
+            "competitorName": device.competitor.get().name}
     topic = "/topics/device_" + device.key.id()
     firebase.SendPushNotification(topic, data, "adminStatus")
