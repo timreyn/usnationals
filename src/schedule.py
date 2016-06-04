@@ -12,10 +12,11 @@ class GetSchedule(webapp2.RequestHandler):
         'competitor': competitor.ToDict(),
         'heats' : []
     }
-    heats_by_time = {}
+    heats_by_time = collections.defaultdict(list)
     for heat_assignment in heat_assignments:
       heat = heat_assignment.heat.get()
-      heats_by_time[heat.start_time] = heat
+      heats_by_time[heat.start_time].append(heat)
     for time in sorted(heats_by_time):
-      schedule_dict['heats'].append(heats_by_time[time].ToDict())
+      for heat in heats_by_time[time]:
+        schedule_dict['heats'].append(heat.ToDict())
     self.response.write(json.dumps(schedule_dict))
