@@ -35,7 +35,7 @@ import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.ParseException;
 
 public class CompetitorScheduleActivity extends AppCompatActivity {
-    private static final String TAG = "CompetitorScheduleActivity";
+    private static final String TAG = "CompetitorSchedule";
 
     public static final String COMPETITOR_EXTRA = "COMPETITOR";
 
