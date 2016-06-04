@@ -5,6 +5,8 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.IBinder;
@@ -24,14 +26,15 @@ public class ScheduleNotificationMessagingService extends FirebaseMessagingServi
     private NotificationManager notificationManager;
 
     public ScheduleNotificationMessagingService() {
-        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         icons = new EventIcons(this);
     }
 
     @Override
     public void onMessageReceived(RemoteMessage message) {
-        if (message.getMessageType().equals("heatNotification")) {
-            Map<String, String> data = message.getData();
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        Map<String, String> data = message.getData();
+        if (data.get("type").equals("heatNotification")) {
             String heatAssignmentId = data.get("heatAssignmentId");
             String eventId = data.get("eventId");
             String eventName = data.get("eventName");
@@ -68,10 +71,13 @@ public class ScheduleNotificationMessagingService extends FirebaseMessagingServi
                             PendingIntent.FLAG_UPDATE_CURRENT);
 
             Uri ringtoneUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            Bitmap largeIcon = BitmapFactory.decodeResource(
+                    getResources(), icons.getDrawableId(eventId));
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                     .setContentTitle(titleBuffer.toString())
-                    .setContentText(titleBuffer.toString())
-                    .setSmallIcon(icons.getDrawableId(eventId))
+                    .setContentText(contentBuffer.toString())
+                    .setSmallIcon(icons.getTransparentDrawableId(eventId))
+                    .setLargeIcon(largeIcon)
                     .setAutoCancel(true)
                     .setContentIntent(notificationClickPendingIntent)
                     .setSound(ringtoneUri);
@@ -79,8 +85,7 @@ public class ScheduleNotificationMessagingService extends FirebaseMessagingServi
             heatAssignmentToNotificationId.put(heatAssignmentId, nextNotificationId);
             notificationManager.notify(nextNotificationId, builder.build());
             nextNotificationId++;
-        } else if (message.getMessageType().equals("cancelHeatNotification")) {
-            Map<String, String> data = message.getData();
+        } else if (data.get("type").equals("cancelHeatNotification")) {
             String heatAssignmentId = data.get("heatAssignmentId");
             if (!heatAssignmentToNotificationId.containsKey(heatAssignmentId)) {
                 return;
