@@ -164,10 +164,10 @@ class EditUsers(webapp2.RequestHandler):
     competitor_id = self.request.get('competitor')
     competitor = Competitor.get_by_id(competitor_id)
     if not competitor:
-      self.WriteOutput()
-      return
+      raise Exception('No matching competitor found!')
 
     devices = AdminDevice.query(AdminDevice.password == user_password).iter()
+    devices_found = False
     for device in devices:
       device.competitor = competitor.key
       if not device.is_authorized and is_admin:
@@ -178,6 +178,9 @@ class EditUsers(webapp2.RequestHandler):
         self.NotifyDevice(device, is_admin)
       device.is_authorized = is_admin
       device.put()
+      devices_found = True
+    if not devices_found:
+      raise Exception('No matching devices found!')
     self.WriteOutput()
 
   def get(self):
