@@ -10,6 +10,7 @@ import java.util.Map;
 public class EventIcons {
     private final Context context;
     private Map<String, Integer> drawableMap;
+    private Map<String, Integer> transparentDrawableMap;
 
     public EventIcons(Context context) {
         this.context = context;
@@ -32,6 +33,26 @@ public class EventIcons {
         drawableMap.put("pyram", R.drawable.e_pyram);
         drawableMap.put("skewb", R.drawable.e_skewb);
         drawableMap.put("sq1", R.drawable.e_sq1);
+
+        transparentDrawableMap = new HashMap<String, Integer>();
+        transparentDrawableMap.put("222", R.drawable.e_222_transparent);
+        transparentDrawableMap.put("333", R.drawable.e_333_transparent);
+        transparentDrawableMap.put("333bf", R.drawable.e_333bf_transparent);
+        transparentDrawableMap.put("333fm", R.drawable.e_333fm_transparent);
+        transparentDrawableMap.put("333ft", R.drawable.e_333ft_transparent);
+        transparentDrawableMap.put("333mbf", R.drawable.e_333mbf_transparent);
+        transparentDrawableMap.put("333oh", R.drawable.e_333oh_transparent);
+        transparentDrawableMap.put("444", R.drawable.e_444_transparent);
+        transparentDrawableMap.put("444bf", R.drawable.e_444bf_transparent);
+        transparentDrawableMap.put("555", R.drawable.e_555_transparent);
+        transparentDrawableMap.put("555bf", R.drawable.e_555bf_transparent);
+        transparentDrawableMap.put("666", R.drawable.e_666_transparent);
+        transparentDrawableMap.put("777", R.drawable.e_777_transparent);
+        transparentDrawableMap.put("clock", R.drawable.e_clock_transparent);
+        transparentDrawableMap.put("minx", R.drawable.e_minx_transparent);
+        transparentDrawableMap.put("pyram", R.drawable.e_pyram_transparent);
+        transparentDrawableMap.put("skewb", R.drawable.e_skewb_transparent);
+        transparentDrawableMap.put("sq1", R.drawable.e_sq1_transparent);
     }
 
     public Drawable getDrawable(String eventId) {
@@ -44,6 +65,20 @@ public class EventIcons {
     public int getDrawableId(String eventId) {
         if (drawableMap.containsKey(eventId)) {
             return drawableMap.get(eventId);
+        }
+        return -1;
+    }
+
+    public Drawable getTransparentDrawable(String eventId) {
+        if (transparentDrawableMap.containsKey(eventId)) {
+            return ContextCompat.getDrawable(context, transparentDrawableMap.get(eventId));
+        }
+        return null;
+    }
+
+    public int getTransparentDrawableId(String eventId) {
+        if (transparentDrawableMap.containsKey(eventId)) {
+            return transparentDrawableMap.get(eventId);
         }
         return -1;
     }
