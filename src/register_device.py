@@ -11,6 +11,7 @@ class RegisterDevice(webapp2.RequestHandler):
     if self.request.get('unregister') == '1':
       if device:
         device.deauthorized_time = datetime.now()
+        device.is_authorized = False
         device.put()
       return
     if not device:
