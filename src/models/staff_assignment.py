@@ -17,12 +17,12 @@ class StaffAssignment(ndb.Model):
 
   def ToDict(self):
     output = {
-        'heat': self.heat.ToDict(),
-        'staff_member': self.staff_member.ToDict(),
+        'heat': self.heat.get().ToDict(),
+        'staff_member': self.staff_member.get().ToDict(),
         'job': self.job,
     }
     if self.station:
       output['station'] = self.station
-    if self.long_event_round:
-      output['long_event'] = self.long_event.ToDict()
+    if self.long_event:
+      output['long_event'] = self.long_event.get().ToDict()
     return output
