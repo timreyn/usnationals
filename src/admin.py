@@ -9,7 +9,7 @@ from src.models import *
 
 class AddData(webapp2.RequestHandler):
   def post(self):
-    memfile = StringIO.StringIO(self.request.get('data'))
+    memfile = StringIO.StringIO(self.request.get('data').replace('\t', '').replace(';', '\n'))
     result = self.ReadData(memfile)
     template = JINJA_ENVIRONMENT.get_template('add_data.html')
     self.response.write(template.render({
@@ -30,14 +30,14 @@ class AddData(webapp2.RequestHandler):
         continue
       if row[0] == 'stage':
         if len(row) != 4:
-          return 'Bad row ' + row
+          return 'Bad row ' + str(row)
         stage_id = row[1]
         stage_name = row[2]
         color_hex = row[3]
         AddStage(stage_id, stage_name, color_hex)
       elif row[0] == 'event':
         if len(row) != 6:
-          return 'Bad event ' + row
+          return 'Bad event ' + str(row)
         event_id = row[1]
         event_name = row[2]
         num_rounds = int(row[3])
@@ -46,7 +46,7 @@ class AddData(webapp2.RequestHandler):
         AddEvent(event_id, event_name, num_rounds, is_real, priority)
       elif row[0] == 'heat':
         if len(row) != 8:
-          return 'Bad heat ' + row
+          return 'Bad heat ' + str(row)
         event_id = row[1]
         round_id = int(row[2])
         stage = row[3]
@@ -59,7 +59,7 @@ class AddData(webapp2.RequestHandler):
           return 'Bad heat ' + str(row) + ': ' + ret_value
       elif row[0] == 'competitor':
         if len(row) != 5:
-          return 'Bad competitor ' + row
+          return 'Bad competitor ' + str(row)
         cusa_id = row[1]
         wca_id = row[2]
         name = row[3]
@@ -67,7 +67,7 @@ class AddData(webapp2.RequestHandler):
         AddCompetitor(cusa_id, wca_id, name, is_staff)
       elif row[0] == 'heat_assignment':
         if len(row) != 6:
-          return 'Bad heat assignment ' + row
+          return 'Bad heat assignment ' + str(row)
         event_id = row[1]
         round_id = int(row[2])
         stage = row[3]
@@ -76,6 +76,25 @@ class AddData(webapp2.RequestHandler):
         ret_value = AssignHeat(event_id, round_id, stage, heat, person_id)
         if ret_value != 'ok':
           return 'Bad heat assignment ' + str(row) + ': ' + ret_value
+      elif row[0] == 'staff_assignment':
+        if len(row) not in (7, 8, 9):
+          return 'Bad staff assignment ' + str(row)
+        event_id = row[1]
+        round_id = int(row[2])
+        stage = row[3]
+        heat = int(row[4])
+        staff_id = row[5]
+        job = row[6]
+        long_event = None
+        if len(row) >= 8:
+          long_event = row[7]
+        misc = ''
+        if len(row) >= 9:
+          misc = row[8]
+        ret_value = AddStaffAssignment(event_id, round_id, stage, heat, staff_id, job, long_event, misc)
+        if ret_value != 'ok':
+          return 'Bad staff assignment ' + str(row) + ': ' + ret_value
+      
     return 'Success!'
 
 def AddStage(stage_id, stage_name, color_hex):
@@ -144,6 +163,32 @@ def AssignHeat(event, round, stage, heat, person_id):
     return 'Could not find competitor ' + person_id
   assignment.heat = heat.key
   assignment.competitor = competitor.key
+  assignment.put()
+  return 'ok'
+        
+def AddStaffAssignment(event_id, round_id, stage, heat_num, staff_id, job, long_event, misc):
+  staff_id = str(staff_id)
+  heat_id = Heat.Id(event_id, round_id, stage, heat_num)
+  heat = Heat.get_by_id(heat_id)
+  if not heat:
+    return 'Could not find heat ' + heat_id
+  staff_member = Competitor.get_by_id(staff_id)
+  if not staff_member:
+    return 'Could not find competitor ' + staff_id
+  assignment_id = StaffAssignment.Id(event_id, round_id, stage, heat_num, staff_id)
+  assignment = StaffAssignment.get_by_id(assignment_id) or StaffAssignment(id = assignment_id)
+  assignment.heat = heat.key
+  assignment.staff_member = staff_member.key
+  assignment.job = job
+  if long_event:
+    long_event_round_id = Round.Id(long_event, 1)
+    long_event_round = Round.get_by_id(long_event_round_id)
+    if not long_event_round:
+      return 'Could not find event ' + long_event_round_id
+    assignment.long_event = long_event_round.key
+  if misc:
+    assignment.misc = misc
+  assignment.station = None
   assignment.put()
   return 'ok'
 
