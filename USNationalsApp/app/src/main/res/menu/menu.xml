@@ -13,6 +13,16 @@
         android:title="@string/action_stage_schedule"
         app:showAsAction="never" />
     <item
+        android:id="@+id/action_cubingusa_link"
+        android:orderInCategory="200"
+        android:title="@string/action_cubingusa_link"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_cubecomps_link"
+        android:orderInCategory="250"
+        android:title="@string/action_cubecomps_link"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_admin"
         android:orderInCategory="999"
         android:title="@string/action_admin"
