@@ -17,3 +17,4 @@ event,555bf,5x5 Cube Blindfolded,1,1,15
 event,333mbf,Rubik's Cube Multiple Blindfolded,1,1,16
 event,lun,Lunch,1,0,17
 event,reg,Registration,1,0,18
+event,misc,Miscellaneous,1,0,19
