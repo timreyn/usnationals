@@ -12,7 +12,10 @@ import android.widget.TextView;
 
 import java.io.IOException;
 import java.text.DateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 import cz.msebera.android.httpclient.ParseException;
 
@@ -24,6 +27,7 @@ public class ScheduleParser {
     private final LayoutInflater mInflater;
     private EventIcons mEventIcons;
     private int mItemsAdded = 0;
+    private GregorianCalendar mLastHeatDate = null;
 
     public ScheduleParser(Context context, LayoutInflater inflater, LinearLayout container) {
         this.mContext = context;
@@ -37,35 +41,36 @@ public class ScheduleParser {
         public String eventName = "";
         public int heatNumber = 0;
         public String stageName = "";
+        public String stageColorHex = "#000000";
     }
 
     public Heat parseHeat(JsonReader reader) throws IOException {
-        mInflater.inflate(R.layout.content_schedule_item, mContainer);
         Heat heat = new Heat();
-        LinearLayout scheduleItem = (LinearLayout) mContainer.getChildAt(mItemsAdded);
-        TextView scheduleItemTime = (TextView) scheduleItem.getChildAt(0);
-        ImageView scheduleItemIcon = (ImageView) scheduleItem.getChildAt(1);
-        TextView scheduleItemName = (TextView) scheduleItem.getChildAt(2);
+
+        GregorianCalendar currentDate = null;
+
+        String timeString = "";
+        String eventId = "";
+
         while (reader.hasNext()) {
             switch (reader.nextName()) {
                 case "start_time":
-                    GregorianCalendar time = parseTime(reader);
+                    currentDate = parseTime(reader);
                     DateFormat format = DateFormat.getTimeInstance(DateFormat.SHORT);
                     try {
-                        scheduleItemTime.setText(format.format(time.getTime()));
+                        timeString = format.format(currentDate.getTime());
                     } catch (ParseException e) {
                         Log.e(TAG, e.toString());
                     }
                     break;
                 case "stage":
-                    heat.stageName = parseStage(reader, scheduleItem);
+                    parseStage(reader, heat);
                     break;
                 case "round":
                     reader.beginObject();
                     Pair<String, String> eventIdAndName = parseRound(reader);
                     reader.endObject();
-                    scheduleItemIcon.setImageDrawable(
-                            mEventIcons.getDrawable(eventIdAndName.first));
+                    eventId = eventIdAndName.first;
                     heat.eventName = eventIdAndName.second;
                     break;
                 case "number":
@@ -75,6 +80,28 @@ public class ScheduleParser {
                     reader.skipValue();
             }
         }
+        if (currentDate != null) {
+            if (mLastHeatDate == null ||
+                    currentDate.get(Calendar.DAY_OF_YEAR) != mLastHeatDate.get(Calendar.DAY_OF_YEAR)) {
+                mInflater.inflate(R.layout.content_divider, mContainer);
+                LinearLayout divider = (LinearLayout) mContainer.getChildAt(mItemsAdded);
+                ((TextView) divider.getChildAt(0)).setText(currentDate.getDisplayName(
+                        Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault()));
+                mItemsAdded++;
+            }
+            mLastHeatDate = currentDate;
+        }
+
+        mInflater.inflate(R.layout.content_schedule_item, mContainer);
+        LinearLayout scheduleItem = (LinearLayout) mContainer.getChildAt(mItemsAdded);
+        TextView scheduleItemTime = (TextView) scheduleItem.getChildAt(0);
+        ImageView scheduleItemIcon = (ImageView) scheduleItem.getChildAt(1);
+        TextView scheduleItemName = (TextView) scheduleItem.getChildAt(2);
+
+        scheduleItemTime.setText(timeString);
+        scheduleItem.setBackgroundColor(Color.parseColor(heat.stageColorHex));
+        scheduleItemIcon.setImageDrawable(mEventIcons.getDrawable(eventId));
+
         StringBuilder builder = new StringBuilder();
         builder.append(heat.eventName);
         builder.append(" ");
@@ -118,23 +145,21 @@ public class ScheduleParser {
         return time;
     }
 
-    private String parseStage(JsonReader reader, LinearLayout layout) throws IOException {
+    private void parseStage(JsonReader reader, Heat heat) throws IOException {
         reader.beginObject();
-        String stageName = "";
         while (reader.hasNext()) {
             switch(reader.nextName()) {
                 case "color_hex":
-                    layout.setBackgroundColor(Color.parseColor(reader.nextString()));
+                    heat.stageColorHex = reader.nextString();
                     break;
                 case "name":
-                    stageName = reader.nextString();
+                    heat.stageName = reader.nextString();
                     break;
                 default:
                     reader.skipValue();
             }
         }
         reader.endObject();
-        return stageName;
     }
 
     private Pair<String, String> parseRound(JsonReader reader) throws IOException {
