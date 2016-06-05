@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -34,7 +33,6 @@ public class CompetitorScheduleActivity extends AppCompatActivity {
 
     public static final String COMPETITOR_EXTRA = "COMPETITOR";
 
-    private EventIcons mEventIcons;
     private String mCompetitorId;
     private String mNotificationPreferenceKey;
     private ImageView mSaveIcon;
@@ -48,7 +46,6 @@ public class CompetitorScheduleActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Intent intent = getIntent();
-        mEventIcons = new EventIcons(this);
         mSharedPreferences = getSharedPreferences(Constants.PREFRENCES, MODE_PRIVATE);
         final SharedPreferences.Editor editor = mSharedPreferences.edit();
         mCompetitorId = intent.getStringExtra(COMPETITOR_EXTRA);
