@@ -239,7 +239,27 @@ public class CompetitorListActivity extends AppCompatActivity {
                 });
                 TextView competitorName = (TextView) result.getChildAt(0);
                 competitorName.setText(competitor.name);
-                final ImageView saveIcon = (ImageView) result.getChildAt(1);
+                final ImageView wcaIcon = (ImageView) result.getChildAt(1);
+                if (competitor.wcaId.isEmpty()) {
+                    wcaIcon.setVisibility(View.GONE);
+                } else {
+                    wcaIcon.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Uri wcaUri = new Uri.Builder()
+                                    .scheme("https")
+                                    .authority(Constants.WCA_HOSTNAME)
+                                    .appendPath("results")
+                                    .appendPath("p.php")
+                                    .appendQueryParameter("i", competitor.wcaId)
+                                    .build();
+
+                            Intent intent = new Intent(Intent.ACTION_VIEW, wcaUri);
+                            startActivity(intent);
+                        }
+                    });
+                }
+                final ImageView saveIcon = (ImageView) result.getChildAt(2);
                 mCompetitorIdToSaveIcon.put(competitor.id, saveIcon);
                 saveIcon.setOnClickListener(new View.OnClickListener() {
                     @Override
