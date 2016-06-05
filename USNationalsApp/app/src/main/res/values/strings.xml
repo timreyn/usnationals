@@ -19,4 +19,6 @@
     </string>
     <string name="action_admin">Admin</string>
     <string name="admin_access_granted">You now have admin access!</string>
+    <string name="title_activity_stage_schedule">Schedule</string>
+    <string name="action_stage_schedule">View the Schedule</string>
 </resources>

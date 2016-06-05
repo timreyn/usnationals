@@ -14,6 +14,9 @@ public class MenuHandler {
             case R.id.action_admin:
                 intent.setClass(context, AdminActivity.class);
                 return intent;
+            case R.id.action_stage_schedule:
+                intent.setClass(context, StageScheduleActivity.class);
+                return intent;
             default:
                 return null;
         }

@@ -26,4 +26,6 @@
     <dimen name="request_access_text_size">20sp</dimen>
     <dimen name="android_password_text_size">30sp</dimen>
     <dimen name="admin_info_text_size">20dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="stage_chip_padding">5dp</dimen>
 </resources>

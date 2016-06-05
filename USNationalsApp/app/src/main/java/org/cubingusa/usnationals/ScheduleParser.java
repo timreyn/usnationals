@@ -23,7 +23,7 @@ public class ScheduleParser {
     private final Context mContext;
     private final LayoutInflater mInflater;
     private EventIcons mEventIcons;
-    private int mNumItemsAdded = 0;
+    private int mItemsAdded = 0;
 
     public ScheduleParser(Context context, LayoutInflater inflater, LinearLayout container) {
         this.mContext = context;
@@ -32,15 +32,20 @@ public class ScheduleParser {
         this.mEventIcons = new EventIcons(mContext);
     }
 
-    public void parseHeat(JsonReader reader) throws IOException {
+    public class Heat {
+        public LinearLayout layout;
+        public String eventName = "";
+        public int heatNumber = 0;
+        public String stageName = "";
+    }
+
+    public Heat parseHeat(JsonReader reader) throws IOException {
         mInflater.inflate(R.layout.content_schedule_item, mContainer);
-        LinearLayout scheduleItem = (LinearLayout) mContainer.getChildAt(mNumItemsAdded);
+        Heat heat = new Heat();
+        LinearLayout scheduleItem = (LinearLayout) mContainer.getChildAt(mItemsAdded);
         TextView scheduleItemTime = (TextView) scheduleItem.getChildAt(0);
         ImageView scheduleItemIcon = (ImageView) scheduleItem.getChildAt(1);
         TextView scheduleItemName = (TextView) scheduleItem.getChildAt(2);
-        String stageName = "";
-        int heatNumber = 0;
-        String eventName = "";
         while (reader.hasNext()) {
             switch (reader.nextName()) {
                 case "start_time":
@@ -53,7 +58,7 @@ public class ScheduleParser {
                     }
                     break;
                 case "stage":
-                    stageName = parseStage(reader, scheduleItem);
+                    heat.stageName = parseStage(reader, scheduleItem);
                     break;
                 case "round":
                     reader.beginObject();
@@ -61,25 +66,28 @@ public class ScheduleParser {
                     reader.endObject();
                     scheduleItemIcon.setImageDrawable(
                             mEventIcons.getDrawable(eventIdAndName.first));
-                    eventName = eventIdAndName.second;
+                    heat.eventName = eventIdAndName.second;
                     break;
                 case "number":
-                    heatNumber = reader.nextInt();
+                    heat.heatNumber = reader.nextInt();
                     break;
                 default:
                     reader.skipValue();
             }
         }
         StringBuilder builder = new StringBuilder();
-        builder.append(eventName);
+        builder.append(heat.eventName);
         builder.append(" ");
-        if (!stageName.equals("")) {
-            builder.append(stageName);
+        if (!heat.stageName.equals("")) {
+            builder.append(heat.stageName);
             builder.append(" ");
         }
-        builder.append(heatNumber);
+        builder.append(heat.heatNumber);
         scheduleItemName.setText(builder.toString());
-        mNumItemsAdded++;
+        heat.layout = scheduleItem;
+        mItemsAdded++;
+
+        return heat;
     }
 
     private GregorianCalendar parseTime(JsonReader reader) throws IOException {

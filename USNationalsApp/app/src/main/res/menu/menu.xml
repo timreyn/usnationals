@@ -8,6 +8,11 @@
         android:title="@string/action_competitor_list"
         app:showAsAction="never" />
     <item
+        android:id="@+id/action_stage_schedule"
+        android:orderInCategory="150"
+        android:title="@string/action_stage_schedule"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_admin"
         android:orderInCategory="999"
         android:title="@string/action_admin"

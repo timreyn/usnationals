@@ -39,6 +39,10 @@
         <activity
             android:name=".AdminActivity"
             android:label="@string/title_activity_admin"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".StageScheduleActivity"
+            android:label="@string/title_activity_stage_schedule"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
