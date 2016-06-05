@@ -6,7 +6,7 @@ from src.models import AdminDevice
 from src.models import Heat
 
 class GetStageSchedule(webapp2.RequestHandler):
-  def get(self, stages):
+  def get(self, stages='all'):
     device_id = self.request.get('device_id')
     if device_id:
       device = AdminDevice.get_by_id(device_id)
@@ -20,7 +20,7 @@ class GetStageSchedule(webapp2.RequestHandler):
     heats = Heat.query().iter()
     heats_by_time = collections.defaultdict(list)
     for heat in heats:
-      if heat.stage.id() in stages:
+      if stages == 'all' or heat.stage.id() in stages:
         heats_by_time[heat.start_time].append(heat)
     for time in sorted(heats_by_time):
       for heat in heats_by_time[time]:

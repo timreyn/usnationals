@@ -11,6 +11,7 @@ from src import stage_schedule
 app = webapp2.WSGIApplication([
     webapp2.Route(r'/get_schedule/<person_id:\d*>', handler=schedule.GetSchedule),
     webapp2.Route(r'/stage_schedule/<stages:.*>', handler=stage_schedule.GetStageSchedule),
+    webapp2.Route('/full_schedule', handler=stage_schedule.GetStageSchedule),
     webapp2.Route('/get_competitors', handler=get_competitors.GetCompetitors),
     webapp2.Route('/get_stages', handler=get_stages.GetStages),
     webapp2.Route('/register_device', handler=register_device.RegisterDevice),
