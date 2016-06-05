@@ -148,10 +148,10 @@ public class AdminActivity extends AppCompatActivity {
         textView.setText(R.string.request_access_info);
         textView.setVisibility(View.VISIBLE);
 
-        setVisibility(findViewById(R.id.admin_password), View.INVISIBLE);
-        setVisibility(findViewById(R.id.revoke_access), View.INVISIBLE);
+        setVisibility(findViewById(R.id.admin_password), View.GONE);
+        setVisibility(findViewById(R.id.revoke_access), View.GONE);
         setVisibility(findViewById(R.id.request_access), View.VISIBLE);
-        setVisibility(findViewById(R.id.admin_spinner), View.INVISIBLE);
+        setVisibility(findViewById(R.id.admin_spinner), View.GONE);
     }
 
     private void showAwaitingAdminStatus() {
@@ -169,9 +169,9 @@ public class AdminActivity extends AppCompatActivity {
         adminPassword.setText(DeviceId.getDevicePassword(mPreferences));
 
         setVisibility(findViewById(R.id.admin_password), View.VISIBLE);
-        setVisibility(findViewById(R.id.revoke_access), View.INVISIBLE);
-        setVisibility(findViewById(R.id.request_access), View.INVISIBLE);
-        setVisibility(findViewById(R.id.admin_spinner), View.INVISIBLE);
+        setVisibility(findViewById(R.id.revoke_access), View.GONE);
+        setVisibility(findViewById(R.id.request_access), View.GONE);
+        setVisibility(findViewById(R.id.admin_spinner), View.GONE);
     }
 
     private void showHasAdminStatus() {
@@ -183,17 +183,17 @@ public class AdminActivity extends AppCompatActivity {
                 mPreferences.getString(Constants.ADMIN_NAME_PREFERENCE_KEY, "")));
         textView.setVisibility(View.VISIBLE);
 
-        setVisibility(findViewById(R.id.admin_password), View.INVISIBLE);
+        setVisibility(findViewById(R.id.admin_password), View.GONE);
         setVisibility(findViewById(R.id.revoke_access), View.VISIBLE);
-        setVisibility(findViewById(R.id.request_access), View.INVISIBLE);
-        setVisibility(findViewById(R.id.admin_spinner), View.INVISIBLE);
+        setVisibility(findViewById(R.id.request_access), View.GONE);
+        setVisibility(findViewById(R.id.admin_spinner), View.GONE);
     }
 
     private void showSpinner() {
-        setVisibility(findViewById(R.id.admin_info), View.INVISIBLE);
-        setVisibility(findViewById(R.id.admin_password), View.INVISIBLE);
-        setVisibility(findViewById(R.id.revoke_access), View.INVISIBLE);
-        setVisibility(findViewById(R.id.request_access), View.INVISIBLE);
+        setVisibility(findViewById(R.id.admin_info), View.GONE);
+        setVisibility(findViewById(R.id.admin_password), View.GONE);
+        setVisibility(findViewById(R.id.revoke_access), View.GONE);
+        setVisibility(findViewById(R.id.request_access), View.GONE);
         setVisibility(findViewById(R.id.admin_spinner), View.VISIBLE);
     }
 
