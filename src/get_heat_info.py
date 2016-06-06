@@ -14,7 +14,7 @@ class GetHeatInfo(webapp2.RequestHandler):
     heat_info = {
         'heat': heat.ToDict(),
         'competitors': [],
-        'staff': collections.defaultdict(list),
+        'staff': [],
     }
     heat_assignments = HeatAssignment.query(HeatAssignment.heat == heat.key).iter()
     for heat_assignment in heat_assignments:
@@ -22,6 +22,6 @@ class GetHeatInfo(webapp2.RequestHandler):
 
     staff_assignments = StaffAssignment.query(StaffAssignment.heat == heat.key).iter()
     for staff_assignment in staff_assignments:
-      heat_info['staff'][staff_assignment.job].append(staff_assignment.ToDict())
+      heat_info['staff'].append(staff_assignment.ToDict())
 
     self.response.write(json.dumps(heat_info))
