@@ -9,8 +9,14 @@
     tools:context="org.cubingusa.usnationals.CompetitorListActivity"
     tools:showIn="@layout/activity_competitor_list">
     <TextView
+        android:layout_width="@dimen/competitor_search_result_number_width"
+        android:layout_height="match_parent"
+        android:layout_gravity="left|center_vertical"
+        android:textSize="@dimen/competitor_search_result_text_size"
+        android:visibility="gone"/>
+    <TextView
         android:id="@+id/competitor_search_result_text"
-        android:layout_width="fill_parent"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_margin="@dimen/competitor_name_margin"
         android:layout_weight="1"

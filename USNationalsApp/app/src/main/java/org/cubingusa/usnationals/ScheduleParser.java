@@ -45,10 +45,9 @@ public class ScheduleParser {
         if (heat.startTime != null) {
             if (mLastHeatDate == null ||
                     heat.startTime.get(Calendar.DAY_OF_YEAR) != mLastHeatDate.get(Calendar.DAY_OF_YEAR)) {
-                mInflater.inflate(R.layout.content_divider, mContainer);
-                LinearLayout divider = (LinearLayout) mContainer.getChildAt(mItemsAdded);
-                ((TextView) divider.getChildAt(0)).setText(heat.startTime.getDisplayName(
-                        Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault()));
+                Util.addDivider(heat.startTime.getDisplayName(
+                        Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault()),
+                        mInflater, mContainer);
                 mItemsAdded++;
             }
             mLastHeatDate = heat.startTime;

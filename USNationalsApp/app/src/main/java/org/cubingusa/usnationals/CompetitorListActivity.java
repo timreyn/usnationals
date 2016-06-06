@@ -15,11 +15,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -150,8 +147,6 @@ public class CompetitorListActivity extends AppCompatActivity {
     @UiThread
     private void displayMatchingCompetitors() {
         mCompetitorIdToSaveIcon.clear();
-        final Set<String> savedCompetitors = mSharedPreferences.getStringSet(
-                Constants.SAVED_COMPETITOR_PREFERENCE_KEY, new HashSet<String>());
         TextInputEditText textInput = (TextInputEditText) findViewById(R.id.competitor_input);
         if (textInput == null) {
             return;
@@ -179,60 +174,8 @@ public class CompetitorListActivity extends AppCompatActivity {
                 }
             }
             if (matchesSearch) {
-                getLayoutInflater().inflate(
-                        R.layout.content_competitor_search_result, container);
-                LinearLayout result = (LinearLayout) container.getChildAt(numCompetitorsAdded);
-                result.getChildAt(0).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent();
-                        intent.setClass(CompetitorListActivity.this, CompetitorScheduleActivity.class);
-                        intent.putExtra(CompetitorScheduleActivity.COMPETITOR_EXTRA, competitor.id);
-                        startActivity(intent);
-                    }
-                });
-                TextView competitorName = (TextView) result.getChildAt(0);
-                competitorName.setText(competitor.name);
-                final ImageView wcaIcon = (ImageView) result.getChildAt(1);
-                if (competitor.wcaId.isEmpty()) {
-                    wcaIcon.setVisibility(View.GONE);
-                } else {
-                    wcaIcon.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Uri wcaUri = new Uri.Builder()
-                                    .scheme("https")
-                                    .authority(Constants.WCA_HOSTNAME)
-                                    .appendPath("results")
-                                    .appendPath("p.php")
-                                    .appendQueryParameter("i", competitor.wcaId)
-                                    .build();
-
-                            Intent intent = new Intent(Intent.ACTION_VIEW, wcaUri);
-                            startActivity(intent);
-                        }
-                    });
-                }
-                final ImageView saveIcon = (ImageView) result.getChildAt(2);
-                mCompetitorIdToSaveIcon.put(competitor.id, saveIcon);
-                saveIcon.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (!savedCompetitors.contains(competitor.id)) {
-                            savedCompetitors.add(competitor.id);
-                            saveIcon.setImageResource(R.drawable.star);
-                            Toast.makeText(CompetitorListActivity.this,
-                                    R.string.saved_competitor, Toast.LENGTH_SHORT).show();
-                        } else {
-                            savedCompetitors.remove(competitor.id);
-                            saveIcon.setImageResource(R.drawable.star_outline);
-                        }
-                        mSharedPreferences.edit()
-                                .putStringSet(
-                                        Constants.SAVED_COMPETITOR_PREFERENCE_KEY, savedCompetitors)
-                                .apply();
-                    }
-                });
+                competitor.addChipToLayout(this, getLayoutInflater(), container);
+                mCompetitorIdToSaveIcon.put(competitor.id, competitor.saveIcon);
                 numCompetitorsAdded++;
             }
         }

@@ -23,4 +23,9 @@
     <string name="action_stage_schedule">View the Schedule</string>
     <string name="action_cubingusa_link">Competition Website</string>
     <string name="action_cubecomps_link">Results on Cubecomps</string>
+    <string name="title_activity_heat_info">HeatInfoActivity</string>
+    <string name="competitors_divider">Competitors</string>
+    <string name="scramblers_divider">Scramblers</string>
+    <string name="runners_divider">Runners</string>
+    <string name="judges_divider">Judges</string>
 </resources>
