@@ -242,6 +242,7 @@ public class HeatInfoActivity extends AppCompatActivity {
         for (int i = 0; i < judges.size(); ++i) {
             Competitor judge = judges.get(i);
             judge.addChipToLayout(this, getLayoutInflater(), mContainer, i + 1);
+            mCompetitorIdToSaveIcon.put(judge.id, judge.saveIcon);
         }
     }
 }
