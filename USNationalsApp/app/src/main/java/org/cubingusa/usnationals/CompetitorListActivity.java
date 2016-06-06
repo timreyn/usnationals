@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
@@ -43,34 +42,7 @@ public class CompetitorListActivity extends AppCompatActivity {
 
     private static final Map<String, ImageView> mCompetitorIdToSaveIcon = new HashMap<>();
     private SharedPreferences mSharedPreferences;
-
-    private class Competitor implements Comparable<Competitor> {
-        private final Set<String> mSavedCompetitors;
-        public String name;
-        public String wcaId;
-        public String id;
-        public String lowercaseName;
-        public String lowercaseWcaId;
-
-        public Competitor(Set<String> savedCompetitors) {
-            this.mSavedCompetitors = savedCompetitors;
-        }
-
-        @Override
-        public int compareTo(@NonNull Competitor other) {
-            boolean isSaved = mSavedCompetitors.contains(id);
-            boolean otherIsSaved = mSavedCompetitors.contains(other.id);
-            if (isSaved && !otherIsSaved) {
-                return -1;
-            }
-            if (!isSaved && otherIsSaved) {
-                return 1;
-            }
-            return name.compareTo(other.name);
-        }
-    }
-
-    private ArrayList<Competitor> competitors = new ArrayList<Competitor>();
+    private ArrayList<Competitor> mCompetitors = new ArrayList<Competitor>();
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -148,32 +120,14 @@ public class CompetitorListActivity extends AppCompatActivity {
         try {
             reader.beginArray();
             while (reader.hasNext()) {
-                reader.beginObject();
                 Competitor competitor = new Competitor(savedCompetitors);
-                while (reader.hasNext()) {
-                    switch (reader.nextName()) {
-                        case "wca_id":
-                            competitor.wcaId = reader.nextString();
-                            competitor.lowercaseWcaId = competitor.wcaId.toLowerCase();
-                            break;
-                        case "id":
-                            competitor.id = reader.nextString();
-                            break;
-                        case "name":
-                            competitor.name = reader.nextString();
-                            competitor.lowercaseName = competitor.name.toLowerCase();
-                            break;
-                        default:
-                            reader.skipValue();
-                    }
-                }
-                competitors.add(competitor);
-                reader.endObject();
+                competitor.parseFromJson(reader);
+                mCompetitors.add(competitor);
             }
         } finally {
             reader.close();
         }
-        Collections.sort(competitors);
+        Collections.sort(mCompetitors);
         displayMatchingCompetitors();
         TextInputEditText textInput = (TextInputEditText) findViewById(R.id.competitor_input);
         if (textInput == null) {
@@ -212,7 +166,7 @@ public class CompetitorListActivity extends AppCompatActivity {
             return;
         }
         int numCompetitorsAdded = 0;
-        for (final Competitor competitor : competitors) {
+        for (final Competitor competitor : mCompetitors) {
             if (numCompetitorsAdded >= MAX_COMPETITORS_TO_SHOW) {
                 break;
             }

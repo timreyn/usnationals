@@ -31,8 +31,10 @@ import cz.msebera.android.httpclient.Header;
 public class CompetitorScheduleActivity extends AppCompatActivity {
     private static final String TAG = "CompetitorSchedule";
 
-    public static final String COMPETITOR_EXTRA = "COMPETITOR";
+    public static final String COMPETITOR_EXTRA =
+            "org.cubingusa.usnationals.COMPETITOR";
 
+    private Competitor mCompetitor;
     private String mCompetitorId;
     private String mNotificationPreferenceKey;
     private ImageView mSaveIcon;
@@ -163,13 +165,15 @@ public class CompetitorScheduleActivity extends AppCompatActivity {
         try {
             reader.beginObject();
             while (reader.hasNext()) {
-                String name = reader.nextName();
-                if (name.equals("competitor")) {
-                    parseCompetitor(reader);
-                } else if (name.equals("heats")) {
-                    parseHeats(reader);
-                } else {
-                    reader.skipValue();
+                switch (reader.nextName()) {
+                    case "competitor":
+                        parseCompetitor(reader);
+                        break;
+                    case "heats":
+                        parseHeats(reader);
+                        break;
+                    default:
+                        reader.skipValue();
                 }
             }
         } finally {
@@ -178,16 +182,10 @@ public class CompetitorScheduleActivity extends AppCompatActivity {
     }
 
     private void parseCompetitor(JsonReader reader) throws IOException {
-        reader.beginObject();
-        while (reader.hasNext()) {
-            String name = reader.nextName();
-            if (name.equals("name")) {
-                setTitle(reader.nextString());
-            } else {
-                reader.skipValue();
-            }
-        }
-        reader.endObject();
+        mCompetitor = new Competitor(mSharedPreferences.getStringSet(
+                Constants.SAVED_COMPETITOR_PREFERENCE_KEY, new HashSet<String>()));
+        mCompetitor.parseFromJson(reader);
+        setTitle(mCompetitor.name);
     }
 
     private void parseHeats(JsonReader reader) throws IOException {
@@ -200,9 +198,7 @@ public class CompetitorScheduleActivity extends AppCompatActivity {
         ScheduleParser scheduleParser =
                 new ScheduleParser(this, getLayoutInflater(), scheduleContainer);
         while (reader.hasNext()) {
-            reader.beginObject();
             scheduleParser.parseHeat(reader);
-            reader.endObject();
         }
         reader.endArray();
     }

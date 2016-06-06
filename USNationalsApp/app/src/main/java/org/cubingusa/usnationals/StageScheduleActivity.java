@@ -1,18 +1,13 @@
 package org.cubingusa.usnationals;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.JsonReader;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -174,11 +169,13 @@ public class StageScheduleActivity extends AppCompatActivity {
                 new ScheduleParser(this, getLayoutInflater(), scheduleContainer);
         while (reader.hasNext()) {
             reader.beginObject();
-            ScheduleParser.Heat heat = scheduleParser.parseHeat(reader);
-            if (!mStageColorToLayouts.containsKey(heat.stageName)) {
-                mStageColorToLayouts.put(heat.stageName, new ArrayList<LinearLayout>());
+            Pair<Heat, LinearLayout> heatAndLayout = scheduleParser.parseHeat(reader);
+            Heat heat = heatAndLayout.first;
+            LinearLayout layout = heatAndLayout.second;
+            if (!mStageColorToLayouts.containsKey(heat.stage.name)) {
+                mStageColorToLayouts.put(heat.stage.name, new ArrayList<LinearLayout>());
             }
-            mStageColorToLayouts.get(heat.stageName).add(heat.layout);
+            mStageColorToLayouts.get(heat.stage.name).add(layout);
             reader.endObject();
         }
         reader.endArray();
