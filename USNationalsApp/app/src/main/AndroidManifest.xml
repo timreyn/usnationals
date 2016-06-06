@@ -43,6 +43,10 @@
         <activity
             android:name=".StageScheduleActivity"
             android:label="@string/title_activity_stage_schedule"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".HeatInfoActivity"
+            android:label="@string/title_activity_heat_info"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

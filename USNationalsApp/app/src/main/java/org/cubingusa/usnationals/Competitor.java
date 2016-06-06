@@ -88,7 +88,7 @@ public class Competitor implements Comparable<Competitor> {
         });
         if (number != -1) {
             TextView competitorNumber = (TextView) result.getChildAt(0);
-            competitorNumber.setText(number);
+            competitorNumber.setText(Integer.toString(number));
             competitorNumber.setVisibility(View.VISIBLE);
         }
         TextView competitorName = (TextView) result.getChildAt(1);

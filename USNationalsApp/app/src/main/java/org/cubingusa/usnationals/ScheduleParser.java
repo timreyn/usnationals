@@ -1,11 +1,11 @@
 package org.cubingusa.usnationals;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.content.Intent;
 import android.util.JsonReader;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -13,11 +13,8 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
-
-import cz.msebera.android.httpclient.ParseException;
 
 public class ScheduleParser {
     private static final String TAG = "ScheduleParser";
@@ -37,7 +34,7 @@ public class ScheduleParser {
     }
 
     public Pair<Heat, LinearLayout> parseHeat(JsonReader reader) throws IOException {
-        Heat heat = new Heat();
+        final Heat heat = new Heat();
         heat.parseFromJson(reader);
 
         DateFormat format = DateFormat.getTimeInstance(DateFormat.SHORT);
@@ -62,6 +59,19 @@ public class ScheduleParser {
         scheduleItemTime.setText(format.format(heat.startTime.getTime()));
         scheduleItem.setBackgroundColor(heat.stage.color);
         scheduleItemIcon.setImageDrawable(mEventIcons.getDrawable(heat.event.id));
+
+        scheduleItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(mContext, HeatInfoActivity.class);
+                intent.putExtra(HeatInfoActivity.HEAT_ID_EXTRA, heat.number);
+                intent.putExtra(HeatInfoActivity.STAGE_ID_EXTRA, heat.stage.id);
+                intent.putExtra(HeatInfoActivity.ROUND_ID_EXTRA, heat.round.number);
+                intent.putExtra(HeatInfoActivity.EVENT_ID_EXTRA, heat.event.id);
+                mContext.startActivity(intent);
+            }
+        });
 
         StringBuilder builder = new StringBuilder();
         builder.append(heat.event.name);

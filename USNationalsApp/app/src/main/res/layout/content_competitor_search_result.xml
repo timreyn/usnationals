@@ -12,6 +12,7 @@
         android:layout_width="@dimen/competitor_search_result_number_width"
         android:layout_height="match_parent"
         android:layout_gravity="left|center_vertical"
+        android:layout_margin="@dimen/competitor_search_result_number_margin"
         android:textSize="@dimen/competitor_search_result_text_size"
         android:visibility="gone"/>
     <TextView
