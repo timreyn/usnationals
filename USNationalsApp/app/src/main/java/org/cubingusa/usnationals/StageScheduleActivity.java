@@ -168,7 +168,6 @@ public class StageScheduleActivity extends AppCompatActivity {
         ScheduleParser scheduleParser =
                 new ScheduleParser(this, getLayoutInflater(), scheduleContainer);
         while (reader.hasNext()) {
-            reader.beginObject();
             Pair<Heat, LinearLayout> heatAndLayout = scheduleParser.parseHeat(reader);
             Heat heat = heatAndLayout.first;
             LinearLayout layout = heatAndLayout.second;
@@ -176,7 +175,6 @@ public class StageScheduleActivity extends AppCompatActivity {
                 mStageColorToLayouts.put(heat.stage.name, new ArrayList<LinearLayout>());
             }
             mStageColorToLayouts.get(heat.stage.name).add(layout);
-            reader.endObject();
         }
         reader.endArray();
     }

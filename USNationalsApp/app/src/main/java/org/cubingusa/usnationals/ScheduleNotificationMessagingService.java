@@ -120,6 +120,79 @@ public class ScheduleNotificationMessagingService extends FirebaseMessagingServi
                     DeviceId.revokeDeviceId(preferences);
                 }
                 break;
+
+            case "staffNotification":
+                String staffAssignmentId = data.get("staffAssignmentId");
+                if (data.containsKey("eventId")) {
+                    eventId = data.get("eventId");
+                } else {
+                    eventId = "333";
+                }
+                competitorName = data.get("competitorName");
+                competitorId = data.get("competitorId");
+                stageName = data.get("stageName");
+                String jobName = data.get("jobName");
+                String jobId = data.get("jobId");
+
+
+                String location = "";
+                switch (jobId) {
+                    case "J":
+                    case "S":
+                    case "R":
+                        location = new StringBuffer().append(" on the ")
+                                .append(stageName)
+                                .append(" stage")
+                                .toString();
+                        break;
+                    case "L":
+                    case "U":
+                        location = " in the long room";
+                        break;
+                }
+                titleBuffer = new StringBuffer()
+                        .append(jobName)
+                        .append(location)
+                        .append("!");
+
+                contentBuffer = new StringBuffer()
+                        .append("It's time for ")
+                        .append(competitorName)
+                        .append(" to ")
+                        .append(jobName);
+                if (data.containsKey("station")) {
+                    contentBuffer.append(" station ")
+                            .append(data.get("station"));
+                }
+                contentBuffer.append(location)
+                        .append("!");
+
+                notificationClickIntent = new Intent();
+                notificationClickIntent.setClass(this, CompetitorScheduleActivity.class);
+                notificationClickIntent.putExtra(CompetitorScheduleActivity.COMPETITOR_EXTRA, competitorId);
+                notificationClickPendingIntent =
+                        PendingIntent.getActivity(
+                                this,
+                                0,
+                                notificationClickIntent,
+                                PendingIntent.FLAG_UPDATE_CURRENT);
+
+                ringtoneUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                largeIcon = BitmapFactory.decodeResource(
+                        getResources(), mIcons.getDrawableId(eventId));
+                builder = new NotificationCompat.Builder(this)
+                        .setContentTitle(titleBuffer.toString())
+                        .setContentText(contentBuffer.toString())
+                        .setSmallIcon(mIcons.getTransparentDrawableId(eventId))
+                        .setLargeIcon(largeIcon)
+                        .setAutoCancel(true)
+                        .setContentIntent(notificationClickPendingIntent)
+                        .setSound(ringtoneUri);
+
+                mHeatAssignmentToNotificationId.put(staffAssignmentId, mNextNotificationId);
+                mNotificationManager.notify(mNextNotificationId, builder.build());
+                mNextNotificationId++;
+                break;
         }
     }
 
