@@ -46,7 +46,7 @@ class SendNotification(webapp2.RequestHandler):
       if dry_run:
         self.response.write(json.dumps(data))
       else:
-        firebase.SendPushNotification(topic, data, 'heatNotification', dry_run)
+        firebase.SendPushNotification(topic, data, 'heatNotification')
 
     for staff_assignment in StaffAssignment.query(StaffAssignment.heat == heat.key).iter():
       staff_member = staff_assignment.staff_member.get()
@@ -75,8 +75,9 @@ class SendNotification(webapp2.RequestHandler):
           'D': 'do Data Entry',
       }
       data['jobName'] = job_id_to_name[staff_assignment.job]
+      topic = '/topics/competitor_' + staff_member.key.id()
       if staff_assignment.job in ('L', 'U'):
-        data['eventId'] = staff_assignment.long_event.get().event.key.id()
+        data['eventId'] = staff_assignment.long_event.get().event.id()
       else:
         data['eventId'] = event.key.id()
       if dry_run:
