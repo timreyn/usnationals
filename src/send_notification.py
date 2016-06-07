@@ -5,8 +5,13 @@ from src.models import Heat
 from src.models import HeatAssignment
 
 class SendNotification(webapp2.RequestHandler):
-  # TODO: change this to post
-  def get(self, event_id, round_id, stage_id, heat_number):
+  def post(self, event_id, round_id, stage_id, heat_number):
+    device_id = self.request.get('device_id')
+    admin_device = AdminDevice.get_by_id(device_id)
+    if not admin_device or not admin_device.is_authorized:
+      self.response.set_status(401)
+      self.response.write('Unauthorized')
+      return
     round_id = int(round_id)
     heat_number = int(heat_number)
     heat_id = Heat.Id(event_id, round_id, stage_id, heat_number)

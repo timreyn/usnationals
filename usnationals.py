@@ -20,11 +20,11 @@ app = webapp2.WSGIApplication([
         handler=get_heat_info.GetHeatInfo),
     webapp2.Route('/get_stages', handler=get_stages.GetStages),
     webapp2.Route('/register_device', handler=register_device.RegisterDevice),
+    webapp2.Route(r'/send_notification' +
+                  r'/<event_id:.*>/<round_id:\d*>/<stage_id:.*>/<heat_number:\d*>',
+                  handler=send_notification.SendNotification),
     webapp2.Route('/admin/add_data', handler=admin.AddData, name='add_data'),
     webapp2.Route('/admin/assign_stations', handler=assign_stations.AssignStations),
     webapp2.Route('/admin/edit_users', handler=admin.EditUsers, name='edit_users'),
     webapp2.Route(r'/admin/set_firebase_key/<key:.*>', handler=admin.SetFirebaseKey),
-    webapp2.Route(r'/admin/send_notification' +
-                  r'/<event_id:.*>/<round_id:\d*>/<stage_id:.*>/<heat_number:\d*>',
-                  handler=send_notification.SendNotification)
 ], debug=True)
