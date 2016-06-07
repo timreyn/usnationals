@@ -12,6 +12,7 @@ public class StaffAssignment {
     public Competitor staffMember = null;
     public String job = "";
     public int station = -1;
+    public String misc = "";
 
     public StaffAssignment(Set<String> savedCompetitors) {
         mSavedCompetitors = savedCompetitors;

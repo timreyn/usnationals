@@ -198,7 +198,20 @@ public class CompetitorScheduleActivity extends AppCompatActivity {
         ScheduleParser scheduleParser =
                 new ScheduleParser(this, getLayoutInflater(), scheduleContainer);
         while (reader.hasNext()) {
-            scheduleParser.parseHeat(reader);
+            reader.beginObject();
+            while (reader.hasNext()) {
+                switch (reader.nextName()) {
+                    case "competing":
+                        scheduleParser.parseHeat(reader);
+                        break;
+                    case "staff":
+                        scheduleParser.parseStaffAssignment(reader);
+                        break;
+                    default:
+                        reader.skipValue();
+                }
+            }
+            reader.endObject();
         }
         reader.endArray();
     }

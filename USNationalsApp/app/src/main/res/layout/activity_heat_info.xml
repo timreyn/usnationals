@@ -17,7 +17,17 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            app:popupTheme="@style/AppTheme.PopupOverlay" >
+
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/notification_button"
+                android:layout_width="@dimen/toolbar_icon_size"
+                android:layout_height="@dimen/toolbar_icon_size"
+                android:src="@drawable/bell_ring"
+                android:layout_gravity="right"
+                android:layout_margin="@dimen/toolbar_icon_margin"
+                android:visibility="gone"/>
+        </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
 

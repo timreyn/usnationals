@@ -37,4 +37,6 @@
     <string name="heat_info_start_time">
         Start Time: %1$s %2$s
     </string>
+    <string name="successfully_notified">Heat notification sent!</string>
+    <string name="unsuccessful_notification">Failed to notify competitors: %1$s</string>
 </resources>

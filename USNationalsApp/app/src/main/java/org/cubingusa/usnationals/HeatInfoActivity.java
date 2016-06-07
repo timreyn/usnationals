@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -72,10 +73,10 @@ public class HeatInfoActivity extends AppCompatActivity {
 
         mCompetitors = new ArrayList<>();
 
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
 
         Uri uri = new Uri.Builder()
-                .scheme("http")
+                .scheme("https")
                 .authority(Constants.HOSTNAME)
                 .appendPath("get_heat_info")
                 .appendPath(intent.getStringExtra(EVENT_ID_EXTRA))
@@ -83,8 +84,9 @@ public class HeatInfoActivity extends AppCompatActivity {
                 .appendPath(intent.getStringExtra(STAGE_ID_EXTRA))
                 .appendPath(Integer.toString(intent.getIntExtra(HEAT_ID_EXTRA, 1)))
                 .build();
-        AsyncHttpClient client = new AsyncHttpClient();
+        final AsyncHttpClient client = new AsyncHttpClient();
         mSharedPreferences = getSharedPreferences(Constants.PREFRENCES, MODE_PRIVATE);
+
         client.get(uri.toString(), new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
@@ -101,6 +103,49 @@ public class HeatInfoActivity extends AppCompatActivity {
                 Log.e(TAG, error.toString());
             }
         });
+
+        if (mSharedPreferences.getInt(Constants.ADMIN_STATUS_PREFERENCE_KEY,
+                Constants.ADMIN_STATUS_NOT_REQUESTED) == Constants.ADMIN_STATUS_GRANTED) {
+            View notificationButton = findViewById(R.id.notification_button);
+            if (notificationButton != null) {
+                notificationButton.setVisibility(View.VISIBLE);
+                notificationButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Uri uri = new Uri.Builder()
+                                .scheme("https")
+                                .authority(Constants.HOSTNAME)
+                                .appendPath("send_notification")
+                                .appendPath(intent.getStringExtra(EVENT_ID_EXTRA))
+                                .appendPath(Integer.toString(intent.getIntExtra(ROUND_ID_EXTRA, 1)))
+                                .appendPath(intent.getStringExtra(STAGE_ID_EXTRA))
+                                .appendPath(Integer.toString(intent.getIntExtra(HEAT_ID_EXTRA, 1)))
+                                .build();
+                        RequestParams params = new RequestParams();
+                        params.add("device_id", DeviceId.getDeviceId(mSharedPreferences));
+                        client.post(uri.toString(), params, new AsyncHttpResponseHandler() {
+                            @Override
+                            public void onSuccess(
+                                    int statusCode, Header[] headers, byte[] responseBody) {
+                                Toast.makeText(HeatInfoActivity.this,
+                                        R.string.successfully_notified,
+                                        Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onFailure(
+                                    int statusCode, Header[] headers, byte[] responseBody,
+                                    Throwable error) {
+                                Toast.makeText(HeatInfoActivity.this,
+                                        getString(R.string.unsuccessful_notification, responseBody),
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                    }
+                });
+            }
+        }
     }
 
     @Override
