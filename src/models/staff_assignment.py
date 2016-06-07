@@ -10,6 +10,7 @@ class StaffAssignment(ndb.Model):
   staff_member = ndb.KeyProperty(kind=Competitor)
   job = ndb.StringProperty()
   station = ndb.IntegerProperty()
+  misc = ndb.StringProperty()
 
   @staticmethod
   def Id(event_id, round_id, stage, heat_number, competitor_id):
@@ -25,4 +26,6 @@ class StaffAssignment(ndb.Model):
       output['station'] = self.station
     if self.long_event:
       output['long_event'] = self.long_event.get().ToDict()
+    if self.misc:
+      output['misc'] = self.misc
     return output
