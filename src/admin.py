@@ -41,7 +41,7 @@ class AddData(webapp2.RequestHandler):
         event_id = row[1]
         event_name = row[2]
         num_rounds = int(row[3])
-        is_real = bool(row[4])
+        is_real = row[4] == '1'
         priority = int(row[5])
         AddEvent(event_id, event_name, num_rounds, is_real, priority)
       elif row[0] == 'heat':
@@ -63,7 +63,7 @@ class AddData(webapp2.RequestHandler):
         cusa_id = row[1]
         wca_id = row[2]
         name = row[3]
-        is_staff = bool(row[4])
+        is_staff = row[4] == '1'
         AddCompetitor(cusa_id, wca_id, name, is_staff)
       elif row[0] == 'heat_assignment':
         if len(row) != 6:
