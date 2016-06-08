@@ -14,6 +14,9 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.JsonReader;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -152,6 +155,23 @@ public class HeatInfoActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         updateSaveIcons();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent = MenuHandler.menuOptionIntent(this, item);
+        if (intent == null) {
+            return super.onOptionsItemSelected(item);
+        }
+        startActivity(intent);
+        return true;
     }
 
     void updateSaveIcons() {
