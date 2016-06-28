@@ -127,8 +127,8 @@ def AddHeat(event_id, round_id, stage, number, start_minutes, end_minutes, day):
   start_minutes = start_minutes % 60
   end_hours = end_minutes / 60
   end_minutes = end_minutes % 60
-  start_time = datetime.datetime(2016, 6, day, start_hours, start_minutes, 0)
-  end_time = datetime.datetime(2016, 6, day, end_hours, end_minutes, 0)
+  start_time = datetime.datetime(2016, 7, day, start_hours, start_minutes, 0)
+  end_time = datetime.datetime(2016, 7, day, end_hours, end_minutes, 0)
   heat_id = Heat.Id(event_id, round_id, stage, number)
 
   heat = Heat.get_by_id(heat_id) or Heat(id = heat_id)
