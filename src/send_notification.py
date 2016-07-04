@@ -29,10 +29,17 @@ class SendNotification(webapp2.RequestHandler):
       self.response.set_status(400)
       self.response.write('No heat found for ' + heat_id)
       return
+    if heat.call_time:
+      self.response.set_status(403)
+      self.resonse.write('Heat has already been called')
+      return
+    if not dry_run:
+      heat.call_time = datetime.now()
+      heat.call_device = admin_device.key()
+      heat.put()
     event = heat.round.get().event.get()
     stage = heat.stage.get()
 
-    # TODO: record the time, and don't send notifications too frequently
     for heat_assignment in HeatAssignment.query(HeatAssignment.heat == heat.key).iter():
       competitor = heat_assignment.competitor.get()
       data = {'heatAssignmentId': heat_assignment.key.id(),
