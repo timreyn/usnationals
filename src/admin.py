@@ -143,6 +143,8 @@ def AddHeat(event_id, round_id, stage, number, start_minutes, end_minutes, day):
   heat.number = number
   heat.start_time = start_time
   heat.end_time = end_time
+  heat.call_time = None
+  heat.call_device = None
   heat.put()
   return 'ok'
 
