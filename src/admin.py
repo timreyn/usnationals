@@ -122,7 +122,7 @@ def AddEvent(event_id, event_name, num_rounds, is_real, priority):
     round = Round.get_by_id(round_id) or Round(id = round_id)
     round.event = event_key
     round.number = i + 1
-    round.is_final = (i == num_rounds - 1)
+    round.is_final = (i == num_rounds - 1) or event_id in ('333fm', '333mbf')
     round.put()
 
 def AddHeat(event_id, round_id, stage, number, start_minutes, end_minutes, day):
