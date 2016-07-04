@@ -5,7 +5,7 @@ android {
         config {
             keyAlias 'usnationals'
             keyPassword 'socorro2017'
-            storeFile file('/home/tim/src/keystore/usnationals')
+            storeFile file('/home/tim/src/keystore/usnationals.keystore')
             storePassword 'socorro2017'
         }
     }
