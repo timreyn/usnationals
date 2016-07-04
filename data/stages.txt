@@ -2,3 +2,4 @@ stage,r,Red,#ff0000
 stage,b,Blue,#0000ff
 stage,g,Green,#00ff00
 stage,o,Orange,#ff8800
+stage,y,Yellow,#ffff00
