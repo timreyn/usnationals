@@ -52,7 +52,7 @@ public class Heat {
                     time.set(GregorianCalendar.YEAR, reader.nextInt());
                     break;
                 case "month":
-                    time.set(GregorianCalendar.MONTH, reader.nextInt() + 1);
+                    time.set(GregorianCalendar.MONTH, reader.nextInt() - 1);
                     break;
                 case "day":
                     time.set(GregorianCalendar.DAY_OF_MONTH, reader.nextInt());
