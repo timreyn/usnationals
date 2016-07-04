@@ -3,6 +3,8 @@ import datetime
 import StringIO
 import webapp2
 
+from google.appengine.ext import ndb
+
 from src import firebase
 from src.jinja import JINJA_ENVIRONMENT
 from src.models import *
@@ -94,6 +96,10 @@ class AddData(webapp2.RequestHandler):
         ret_value = AddStaffAssignment(event_id, round_id, stage, heat, staff_id, job, long_event, misc)
         if ret_value != 'ok':
           return 'Bad staff assignment ' + str(row) + ': ' + ret_value
+      elif row[0] == 'DELETE_DATA':
+        if len(row) != 2:
+          return 'Bad deletion ' + str(row)
+        DeleteData(row[1])
       
     return 'Success!'
 
@@ -191,6 +197,21 @@ def AddStaffAssignment(event_id, round_id, stage, heat_num, staff_id, job, long_
   assignment.station = None
   assignment.put()
   return 'ok'
+
+def DeleteData(data_type):
+  if data_type == 'stage':
+    ndb.delete_multi(Stage.query().iter(keys_only=True))
+  elif data_type == 'event':
+    ndb.delete_multi(Event.query().iter(keys_only=True))
+    ndb.delete_multi(Round.query().iter(keys_only=True))
+  elif data_type == 'heat':
+    ndb.delete_multi(Heat.query().iter(keys_only=True))
+  elif data_type == 'competitor':
+    ndb.delete_multi(Competitor.query().iter(keys_only=True))
+  elif data_type == 'heat_assignment':
+    ndb.delete_multi(HeatAssignment.query().iter(keys_only=True))
+  elif data_type == 'staff_assignment':
+    ndb.delete_multi(StaffAssignment.query().iter(keys_only=True))
 
 class SetFirebaseKey(webapp2.RequestHandler):
   # This should really be a POST...but it's easier this way.
