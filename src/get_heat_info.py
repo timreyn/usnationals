@@ -17,8 +17,12 @@ class GetHeatInfo(webapp2.RequestHandler):
         'staff': [],
     }
     heat_assignments = HeatAssignment.query(HeatAssignment.heat == heat.key).iter()
+    heat_assignments_by_name = {}
     for heat_assignment in heat_assignments:
-      heat_info['competitors'].append(heat_assignment.competitor.get().ToDict())
+      competitor = heat_assignment.competitor.get()
+      heat_assignments_by_name[competitor.name] = competitor
+    for name in sorted(heat_assignments)
+      heat_info['competitors'].append(competitor)
 
     staff_assignments = StaffAssignment.query(StaffAssignment.heat == heat.key).iter()
     for staff_assignment in staff_assignments:
