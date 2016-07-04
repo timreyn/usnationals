@@ -36,6 +36,13 @@ public class ScheduleNotificationMessagingService extends FirebaseMessagingServi
 
         Map<String, String> data = message.getData();
         Log.d(TAG, "Message received of type " + data.get("type"));
+
+        SharedPreferences preferences =
+                getSharedPreferences(Constants.PREFRENCES, MODE_PRIVATE);
+        boolean enableNotifications =
+                preferences.getInt(Constants.ADMIN_STATUS_PREFERENCE_KEY,
+                        Constants.ADMIN_STATUS_NOT_REQUESTED) == Constants.ADMIN_STATUS_GRANTED;
+
         switch (data.get("type")) {
             case "heatNotification":
                 String heatAssignmentId = data.get("heatAssignmentId");
@@ -86,7 +93,9 @@ public class ScheduleNotificationMessagingService extends FirebaseMessagingServi
                         .setSound(ringtoneUri);
 
                 mHeatAssignmentToNotificationId.put(heatAssignmentId, mNextNotificationId);
-                mNotificationManager.notify(mNextNotificationId, builder.build());
+                if (enableNotifications) {
+                    mNotificationManager.notify(mNextNotificationId, builder.build());
+                }
                 mNextNotificationId++;
                 break;
 
@@ -95,13 +104,14 @@ public class ScheduleNotificationMessagingService extends FirebaseMessagingServi
                 if (!mHeatAssignmentToNotificationId.containsKey(heatAssignment)) {
                     return;
                 }
-                mNotificationManager.cancel(mHeatAssignmentToNotificationId.get(heatAssignment));
+                if (enableNotifications) {
+                    mNotificationManager.cancel(
+                            mHeatAssignmentToNotificationId.get(heatAssignment));
+                }
                 break;
 
             case "adminStatus":
                 boolean isAdmin = data.get("isAdmin").equals("1");
-                SharedPreferences preferences =
-                        getSharedPreferences(Constants.PREFRENCES, MODE_PRIVATE);
                 if (!DeviceId.getDeviceId(preferences).equals(data.get("deviceId"))) {
                     return;
                 }
@@ -190,7 +200,9 @@ public class ScheduleNotificationMessagingService extends FirebaseMessagingServi
                         .setSound(ringtoneUri);
 
                 mHeatAssignmentToNotificationId.put(staffAssignmentId, mNextNotificationId);
-                mNotificationManager.notify(mNextNotificationId, builder.build());
+                if (enableNotifications) {
+                    mNotificationManager.notify(mNextNotificationId, builder.build());
+                }
                 mNextNotificationId++;
                 break;
         }
