@@ -1,9 +1,9 @@
 import json
-import webapp2
 
+from src.handler import CacheHandler
 from src.models import Stage
 
-class GetStages(webapp2.RequestHandler):
-  def get(self):
+class GetStages(CacheHandler):
+  def GetCached(self):
     stage_list = [stage.ToDict() for stage in Stage.query().iter()]
-    self.response.write(json.dumps(stage_list))
+    return json.dumps(stage_list), 15 * 60

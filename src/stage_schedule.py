@@ -1,12 +1,12 @@
 import collections
 import json
-import webapp2
 
+from src.handler import CacheHandler
 from src.models import AdminDevice
 from src.models import Heat
 
-class GetStageSchedule(webapp2.RequestHandler):
-  def get(self, stages='all'):
+class GetStageSchedule(CacheHandler):
+  def GetCached(self, stages='all'):
     device_id = self.request.get('device_id')
     if device_id:
       device = AdminDevice.get_by_id(device_id)
@@ -25,4 +25,4 @@ class GetStageSchedule(webapp2.RequestHandler):
     for time in sorted(heats_by_time):
       for heat in heats_by_time[time]:
         output_dict['heats'].append(heat.ToDict())
-    self.response.write(json.dumps(output_dict))
+    return json.dumps(output_dict), 15 * 60

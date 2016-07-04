@@ -1,16 +1,16 @@
 import collections
 import json
-import webapp2
 
+from src.handler import CacheHandler
 from src.models import Heat
 from src.models import HeatAssignment
 from src.models import StaffAssignment
 
-class GetHeatInfo(webapp2.RequestHandler):
-  def get(self, event_id, round_id, stage, number):
+class GetHeatInfo(CacheHandler):
+  def GetCached(self, event_id, round_id, stage, number):
     heat = Heat.get_by_id(Heat.Id(event_id, int(round_id), stage, int(number)))
     if not heat:
-      return
+      return '', 60
     heat_info = {
         'heat': heat.ToDict(),
         'competitors': [],
@@ -28,4 +28,4 @@ class GetHeatInfo(webapp2.RequestHandler):
     for staff_assignment in staff_assignments:
       heat_info['staff'].append(staff_assignment.ToDict())
 
-    self.response.write(json.dumps(heat_info))
+    return json.dumps(heat_info), 60

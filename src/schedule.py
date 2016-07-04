@@ -1,13 +1,13 @@
 import collections
 import json
-import webapp2
 
+from src.handler import CacheHandler
 from src.models import Competitor
 from src.models import HeatAssignment
 from src.models import StaffAssignment
 
-class GetSchedule(webapp2.RequestHandler):
-  def get(self, person_id):
+class GetSchedule(CacheHandler):
+  def GetCached(self, person_id):
     competitor = Competitor.get_by_id(person_id)
     heat_assignments = HeatAssignment.query(HeatAssignment.competitor == competitor.key).iter()
     staff_assignments = StaffAssignment.query(StaffAssignment.staff_member == competitor.key).iter()
@@ -28,4 +28,4 @@ class GetSchedule(webapp2.RequestHandler):
         schedule_dict['heats'].append({'competing': heat.ToDict()})
       for job in jobs_by_time[time]:
         schedule_dict['heats'].append({'staff': job.ToDict()})
-    self.response.write(json.dumps(schedule_dict))
+    return json.dumps(schedule_dict), 60
