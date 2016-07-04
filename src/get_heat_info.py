@@ -21,7 +21,7 @@ class GetHeatInfo(webapp2.RequestHandler):
     for heat_assignment in heat_assignments:
       competitor = heat_assignment.competitor.get()
       heat_assignments_by_name[competitor.name] = competitor
-    for name in sorted(heat_assignments)
+    for name in sorted(heat_assignments):
       heat_info['competitors'].append(competitor)
 
     staff_assignments = StaffAssignment.query(StaffAssignment.heat == heat.key).iter()
