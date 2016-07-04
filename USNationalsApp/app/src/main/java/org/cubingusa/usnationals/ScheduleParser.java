@@ -77,35 +77,37 @@ public class ScheduleParser {
                 builder.append("Judge ");
                 builder.append(staffAssignment.longEvent.event.name);
                 event = staffAssignment.longEvent.event;
-                color = Color.parseColor("#FFFFFF");
+                color = Color.parseColor("#FFFF00");
                 break;
             case "U":
                 builder.append("Scramble ");
                 builder.append(staffAssignment.longEvent.event.name);
                 event = staffAssignment.longEvent.event;
-                color = Color.parseColor("#FFFFFF");
+                color = Color.parseColor("#FFFF00");
                 break;
             case "D":
                 builder.append("Data entry");
                 event = null;
-                color = Color.parseColor("#FF0000");
+                color = Color.parseColor("#FFFFFF");
                 break;
             case "H":
                 builder.append("Help desk");
                 event = null;
-                color = Color.parseColor("#FF0000");
+                color = Color.parseColor("#FFFFFF");
                 break;
             case "Y":
                 builder.append(staffAssignment.misc);
                 event = null;
-                color = Color.parseColor("#FF0000");
+                color = Color.parseColor("#FFFFFF");
                 break;
         }
-        builder.append(" - ");
-        builder.append(staffAssignment.heat.event.id);
-        if (staffAssignment.heat.event.isReal) {
-            builder.append(" heat ");
-            builder.append(staffAssignment.heat.number);
+        if (staffAssignment.job != "Y") {
+            builder.append(" - ");
+            builder.append(staffAssignment.heat.event.id);
+            if (staffAssignment.heat.event.isReal) {
+                builder.append(" heat ");
+                builder.append(staffAssignment.heat.number);
+            }
         }
 
         addScheduleItem(staffAssignment.heat, builder.toString(), event, color);
