@@ -33,4 +33,5 @@
     <dimen name="competitor_search_result_number_margin">5dp</dimen>
     <dimen name="heat_info_header_margin">5dp</dimen>
     <dimen name="heat_info_header_text_size">20sp</dimen>
+    <dimen name="schedule_bottom_margin">16dp</dimen>
 </resources>
