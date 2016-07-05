@@ -35,7 +35,7 @@ class SendNotification(webapp2.RequestHandler):
       return
     if not dry_run:
       heat.call_time = datetime.now()
-      heat.call_device = admin_device.key()
+      heat.call_device = admin_device.key.id()
       heat.put()
     event = heat.round.get().event.get()
     stage = heat.stage.get()

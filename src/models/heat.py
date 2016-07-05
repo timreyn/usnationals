@@ -28,7 +28,7 @@ class Heat(ndb.Model):
         'start_time' : common.DatetimeToDict(self.start_time),
         'end_time' : common.DatetimeToDict(self.end_time),
     }
-    if call_time:
+    if self.call_time:
       output['call_time'] = common.DatetimeToDict(self.call_time)
     return output
 
