@@ -26,6 +26,8 @@ class GetHeatInfo(CacheHandler):
 
     staff_assignments = StaffAssignment.query(StaffAssignment.heat == heat.key).iter()
     for staff_assignment in staff_assignments:
-      heat_info['staff'].append(staff_assignment.ToDict())
+      assignment_dict = staff_assignment.ToDict()
+      del assignment_dict['heat']
+      heat_info['staff'].append(assignment_dict)
 
     return json.dumps(heat_info), 60
