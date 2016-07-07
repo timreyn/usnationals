@@ -9,3 +9,7 @@ USNationalsApp/.DS_Store
 USNationalsApp/build
 USNationalsApp/app/build
 USNationalsApp/app/google-services.json
+scripts/scorecards/*.aux
+scripts/scorecards/*.log
+scripts/scorecards/*.pdf
+scripts/scorecards/*.tex

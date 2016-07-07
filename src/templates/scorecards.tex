@@ -1,0 +1,7 @@
+\documentclass[12pt]{article}
+\usepackage{newscoresheets}
+\begin{document}
+{% for page in pages %}
+\scoresheetpagewithheats{ US Nationals 2016 | {{ page.event }} {{ page.round }} }{% for competitor in page.competitors %}{\bf {{ competitor.name|safe }}}{ {{ competitor.heat }} }{% endfor %}
+{% endfor %}
+\end{document}

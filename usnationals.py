@@ -6,8 +6,9 @@ from src import get_competitors
 from src import get_heat_info
 from src import get_stages
 from src import register_device
-from src import send_notification
 from src import schedule
+from src import scorecards
+from src import send_notification
 from src import stage_schedule
 
 app = webapp2.WSGIApplication([
@@ -20,6 +21,7 @@ app = webapp2.WSGIApplication([
         handler=get_heat_info.GetHeatInfo),
     webapp2.Route('/get_stages', handler=get_stages.GetStages),
     webapp2.Route('/register_device', handler=register_device.RegisterDevice),
+    webapp2.Route('/scorecards', handler=scorecards.GetScorecards),
     webapp2.Route(r'/send_notification' +
                   r'/<event_id:.*>/<round_id:\d*>/<stage_id:.*>/<heat_number:\d*>',
                   handler=send_notification.SendNotification),

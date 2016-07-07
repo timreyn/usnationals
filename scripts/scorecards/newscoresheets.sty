@@ -1,0 +1,71 @@
+\ProvidesPackage{newscoresheets}%Remember to do \documentclass[12pt]
+\usepackage{multirow}
+\usepackage[landscape]{geometry}
+\usepackage{fullpage}
+\usepackage{array}
+\usepackage{simplemargins}
+\renewcommand{\arraystretch}{1.44}
+\setallmargins{.05in}
+\setleftmargin{0in}
+\setrightmargin{0in}
+
+\newcommand{\scoresheet}[2]{
+\begin{tabular}{|>{\centering\arraybackslash}p{.75in}|>{\centering\arraybackslash}p{2.25in}|>{\centering\arraybackslash}p{.75in}|>{\centering\arraybackslash}p{.75in}|}\hline
+\multicolumn{4}{|c|}{#1}\\
+\hline
+\multirow{2}{*}{Name}&\multicolumn{3}{|c|}{\multirow{2}{*}{#2}}\\
+&\multicolumn{3}{|c|}{}\\
+\hline
+&Solve Time&Judge&Comp\\
+\hline
+\multirow{2}{*}{Solve 1}&&&\\&&&\\\hline
+\multirow{2}{*}{Solve 2}&&&\\&&&\\\hline
+\multirow{2}{*}{Solve 3}&&&\\&&&\\\hline
+\multirow{2}{*}{Solve 4}&&&\\&&&\\\hline
+\multirow{2}{*}{Solve 5}&&&\\&&&\\\hline
+\end{tabular}
+}
+
+\newcommand{\scoresheetwithheat}[3]{
+\begin{tabular}{|>{\centering\arraybackslash}p{.75in}|>{\centering\arraybackslash}p{2.25in}|>{\centering\arraybackslash}p{.75in}|>{\centering\arraybackslash}p{.75in}|}\hline
+\multicolumn{4}{|c|}{#1}\\
+\hline
+\multirow{2}{*}{Name}&\multicolumn{2}{|c|}{\multirow{2}{*}{#2}}&\multirow{2}{*}{\Huge{\textbf{#3}}}\\
+&\multicolumn{2}{|c|}{}&\\
+\hline
+&Solve Time&Judge&Comp\\
+\hline
+\multirow{2}{*}{Solve 1}&&&\\&&&\\\hline
+\multirow{2}{*}{Solve 2}&&&\\&&&\\\hline
+\multirow{2}{*}{Solve 3}&&&\\&&&\\\hline
+\multirow{2}{*}{Solve 4}&&&\\&&&\\\hline
+\multirow{2}{*}{Solve 5}&&&\\&&&\\\hline
+\end{tabular}
+}
+
+
+\newcommand{\scoresheetpage}[5]{
+\thispagestyle{empty}
+\scoresheet{#1}{#2}\hspace{.05in}
+\scoresheet{#1}{#3}
+
+\vspace{.05in}
+
+\scoresheet{#1}{#4}\hspace{.05in}
+\scoresheet{#1}{#5}
+
+\newpage
+}
+
+\newcommand{\scoresheetpagewithheats}[9]{
+\thispagestyle{empty}
+\scoresheetwithheat{#1}{#2}{#3}\hspace{.05in}
+\scoresheetwithheat{#1}{#4}{#5}
+
+\vspace{.05in}
+
+\scoresheetwithheat{#1}{#6}{#7}\hspace{.05in}
+\scoresheetwithheat{#1}{#8}{#9}
+
+\newpage
+}
