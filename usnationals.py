@@ -2,6 +2,7 @@ import webapp2
 
 from src import admin
 from src import assign_stations
+from src import clear_notifications
 from src import get_competitors
 from src import get_heat_info
 from src import get_stages
@@ -29,4 +30,5 @@ app = webapp2.WSGIApplication([
     webapp2.Route(r'/admin/assign_stations/<stage_id:.>', handler=assign_stations.AssignStations),
     webapp2.Route('/admin/edit_users', handler=admin.EditUsers, name='edit_users'),
     webapp2.Route(r'/admin/set_firebase_key/<key:.*>', handler=admin.SetFirebaseKey),
+    webapp2.Route('/admin/clear_notifications', handler=clear_notifications.ClearNotifications),
 ], debug=True)
