@@ -24,5 +24,6 @@ class GetStageSchedule(CacheHandler):
         heats_by_time[heat.start_time].append(heat)
     for time in sorted(heats_by_time):
       for heat in heats_by_time[time]:
-        output_dict['heats'].append(heat.ToDict())
+        if heat.round.get().event.get().is_real:
+          output_dict['heats'].append(heat.ToDict())
     return json.dumps(output_dict), 15 * 60
