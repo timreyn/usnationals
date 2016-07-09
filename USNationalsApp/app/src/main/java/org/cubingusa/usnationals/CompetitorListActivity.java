@@ -45,6 +45,7 @@ public class CompetitorListActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_competitor_list);
+        setTitle(R.string.title_activity_competitor_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Uri uri = new Uri.Builder()

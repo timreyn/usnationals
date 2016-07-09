@@ -18,7 +18,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".CompetitorListActivity"
-            android:label="@string/title_activity_competitor_list"
+            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -47,7 +47,7 @@
         <activity
             android:name=".HeatInfoActivity"
             android:label="@string/title_activity_heat_info"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
