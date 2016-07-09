@@ -114,12 +114,14 @@ public class StageScheduleActivity extends AppCompatActivity {
         stageNameToBorderBackground.put("Green", R.drawable.border_green);
         stageNameToBorderBackground.put("Orange", R.drawable.border_orange);
         stageNameToBorderBackground.put("Red", R.drawable.border_red);
+        stageNameToBorderBackground.put("Yellow", R.drawable.border_yellow);
 
         final Map<String, Integer> stageNameToColorBackground = new HashMap<>();
         stageNameToColorBackground.put("Blue", R.drawable.solid_blue);
         stageNameToColorBackground.put("Green", R.drawable.solid_green);
         stageNameToColorBackground.put("Orange", R.drawable.solid_orange);
         stageNameToColorBackground.put("Red", R.drawable.solid_red);
+        stageNameToColorBackground.put("Yellow", R.drawable.solid_yellow);
 
         View spinner = findViewById(R.id.schedule_spinner);
         if (spinner != null) {
