@@ -24,7 +24,7 @@ class GetScorecards(webapp2.RequestHandler):
       for heat in Heat.query(Heat.round == r.key).iter():
         if self.request.get('s') and heat.stage.id() not in self.request.get('s'):
           continue
-        heat_string = '%s%d' % (heat.stage.id(), heat.number)
+        heat_string = '%s%d' % (heat.stage.id().upper(), heat.number)
         for heat_assignment in HeatAssignment.query(HeatAssignment.heat == heat.key).iter():
           competitor = heat_assignment.competitor.get()
           competitors.append({'name': competitor.name, 'heat': heat_string, 'id': competitor.wca_id})
