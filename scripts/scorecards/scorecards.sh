@@ -1,4 +1,6 @@
-URL="http://usnationals2016.appspot.com/scorecards?$2&$3"
+URL="http://localhost:8080/scorecards?$2&$3"
+
+set -e
 
 OUTPUT_DIR=$(dirname $0)
 TEX_FILE=$1.tex
@@ -10,5 +12,6 @@ echo "Fetching $URL"
 wget -O $TEX_FILE $URL
 
 pdflatex $TEX_FILE > /dev/null
+evince $1.pdf
 
 cd $ORIGINAL_DIR

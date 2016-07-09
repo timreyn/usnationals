@@ -1,7 +1,20 @@
 \documentclass[12pt]{article}
 \usepackage{newscoresheets}
 \begin{document}
-{% for page in pages %}
-\scoresheetpagewithheats{ US Nationals 2016 | {{ page.event }} {{ page.round }} }{% for competitor in page.competitors %}{\bf {{ competitor.name|safe }}}{ {{ competitor.heat }} }{% endfor %}
-{% endfor %}
+{% for page in pages -%}
+\thispagestyle{empty}
+{% for competitor in page.competitors -%}
+\scoresheetwithheat{US Nationals 2016 | {{ page.event }} {{ page.round }} }{\bf {{ competitor.name|safe }} }{ {{ competitor.id }} }{ {{ competitor.heat }} }{# -#}
+{% if loop.index in (1, 3) -%}
+\hspace{.05in}
+{% endif -%}
+{% if loop.index == 2 -%}
+
+\vspace{.05in}
+
+{% endif -%}
+{% endfor -%}
+
+\newpage
+{% endfor -%}
 \end{document}
