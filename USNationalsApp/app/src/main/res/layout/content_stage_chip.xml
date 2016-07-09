@@ -4,7 +4,8 @@
     android:orientation="vertical"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:padding="@dimen/stage_chip_padding">
+    android:padding="@dimen/stage_chip_padding"
+    android:layout_margin="@dimen/stage_chip_margin">
     <TextView
         android:id="@+id/stage_chip_content"
         android:layout_width="wrap_content"
