@@ -7,8 +7,9 @@ skip_files:
  - ^(.*/)?.*\.py[co]$
  - ^(.*/)?.*/RCS/.*$
  - ^(.*/)?\..*$
- - USNationalsApp
+ - USNationalsApp/
  - external/icons
+ - scripts/
 
 libraries:
  - name: webapp2
