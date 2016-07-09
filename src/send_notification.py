@@ -35,8 +35,8 @@ class SendNotification(webapp2.RequestHandler):
       self.resonse.write('Heat has already been called')
       return
     if not dry_run:
-      heat.call_time = datetime.now()
-      heat.call_device = admin_device.key.id()
+      heat.call_time = datetime.datetime.now()
+      heat.call_device = admin_device.key
       heat.put()
     event = heat.round.get().event.get()
     stage = heat.stage.get()
