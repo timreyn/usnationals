@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,18 +7,52 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
     tools:context=".CompetitorScheduleActivity"
     tools:showIn="@layout/activity_schedule">
     <LinearLayout
-        android:id="@+id/schedule_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <ProgressBar
-            android:id="@+id/schedule_spinner"
-            android:layout_width="@dimen/spinner_size"
-            android:layout_height="@dimen/spinner_size"
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_gravity="center_horizontal" />
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/schedule_option"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="@dimen/schedule_option_height"
+            android:text="@string/schedule_option"
+            android:background="@drawable/border_on_gray"
+            android:textStyle="bold"
+            android:padding="@dimen/schedule_option_padding"
+            android:gravity="center_vertical|center_horizontal"/>
+        <Button
+            android:id="@+id/results_option"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="@dimen/schedule_option_height"
+            android:text="@string/results_option"
+            android:background="@drawable/border"
+            android:padding="@dimen/schedule_option_padding"
+            android:gravity="center_vertical|center_horizontal"/>
     </LinearLayout>
-</ScrollView>
+    <ScrollView
+        android:id="@+id/schedule_scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:id="@+id/schedule_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <ProgressBar
+                android:id="@+id/schedule_spinner"
+                android:layout_width="@dimen/spinner_size"
+                android:layout_height="@dimen/spinner_size"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_gravity="center_horizontal" />
+        </LinearLayout>
+    </ScrollView>
+    <WebView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:id="@+id/schedule_results_webview" />
+</LinearLayout>

@@ -2,6 +2,7 @@ package org.cubingusa.usnationals;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,8 +13,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -40,6 +43,11 @@ public class CompetitorScheduleActivity extends AppCompatActivity {
     private ImageView mSaveIcon;
     private ImageView mNotificationIcon;
     private SharedPreferences mSharedPreferences;
+    private TextView mScheduleOption;
+    private TextView mResultsOption;
+    private View mScroll;
+    private WebView mResultsWebView;
+    private boolean mResultsLoaded;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +62,12 @@ public class CompetitorScheduleActivity extends AppCompatActivity {
         mNotificationPreferenceKey = "subscription_" + mCompetitorId;
         mNotificationIcon = (ImageView) findViewById(R.id.notification_button);
         mSaveIcon = (ImageView) findViewById(R.id.save_button);
+        mScheduleOption = (TextView) findViewById(R.id.schedule_option);
+        mResultsOption = (TextView) findViewById(R.id.results_option);
+        mScroll = findViewById(R.id.schedule_scrollview);
+        mResultsWebView = (WebView) findViewById(R.id.schedule_results_webview);
+        mResultsWebView.getSettings().setJavaScriptEnabled(true);
+        mResultsLoaded = false;
 
         mNotificationIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,6 +104,39 @@ public class CompetitorScheduleActivity extends AppCompatActivity {
                 }
                 editor.putStringSet(Constants.SAVED_COMPETITOR_PREFERENCE_KEY, savedCompetitors);
                 editor.apply();
+            }
+        });
+
+        mResultsOption.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!mResultsLoaded) {
+                    Uri cubecompsUri = new Uri.Builder()
+                            .scheme("http")
+                            .authority("m.cubecomps.com")
+                            .appendPath("competitions")
+                            .appendPath("1639")
+                            .appendPath("competitors")
+                            .appendPath(mCompetitorId)
+                            .build();
+                    Log.d(TAG, "Loading " + cubecompsUri.toString());
+                    mResultsWebView.loadUrl(cubecompsUri.toString());
+                    mResultsLoaded = true;
+                }
+                mResultsWebView.setVisibility(View.VISIBLE);
+                mScroll.setVisibility(View.GONE);
+                setActive(mResultsOption);
+                setInactive(mScheduleOption);
+            }
+        });
+
+        mScheduleOption.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mScroll.setVisibility(View.VISIBLE);
+                mResultsWebView.setVisibility(View.GONE);
+                setActive(mScheduleOption);
+                setInactive(mResultsOption);
             }
         });
 
@@ -154,6 +201,16 @@ public class CompetitorScheduleActivity extends AppCompatActivity {
         }
         startActivity(intent);
         return true;
+    }
+
+    private void setActive(TextView view) {
+        view.setTypeface(null, Typeface.BOLD);
+        view.setBackgroundResource(R.drawable.border_on_gray);
+    }
+
+    private void setInactive(TextView view) {
+        view.setTypeface(null, Typeface.NORMAL);
+        view.setBackgroundResource(R.drawable.border);
     }
 
     private String getTopic(String competitorId) {

@@ -37,4 +37,6 @@
     <dimen name="stage_chip_margin">5dp</dimen>
     <dimen name="schedule_top_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="schedule_option_height">40dp</dimen>
+    <dimen name="schedule_option_padding">5dp</dimen>
 </resources>
