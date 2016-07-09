@@ -1,4 +1,4 @@
-URL="http://localhost:8080/scorecards?$2&$3"
+URL="http://usnationals2016.appspot.com/scorecards?$2&$3"
 
 set -e
 
