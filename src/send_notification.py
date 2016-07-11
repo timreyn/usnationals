@@ -32,7 +32,7 @@ class SendNotification(webapp2.RequestHandler):
       return
     if heat.call_time:
       self.response.set_status(403)
-      self.resonse.write('Heat has already been called')
+      self.response.write('Heat has already been called')
       return
     if not dry_run:
       heat.call_time = datetime.datetime.now()
