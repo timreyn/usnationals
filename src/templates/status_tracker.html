@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+<head>
+  <title>US Nationals Status</title>
+  <style type="text/css">
+    table#master {
+      border: 1px solid black;
+      border-collapse: collapse;
+    }
+    td.heatcolumn {
+      border-left: 1px solid black;
+      border-right: 1px solid black;
+    }
+    table.inner {
+      width: 100%;
+    }
+    td.deltacell {
+      text-align: right;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h3>US Nationals Status</h3>
+  <p>
+    {% for day in all_days %}
+      {% if day[2] %}
+        <b>{{ day[1] }}</b>&nbsp;
+      {% else %}
+        <a href="{{ path }}?day={{ day[0] }}">{{ day[1] }}</a>&nbsp;
+      {% endif %}
+    {% endfor %}
+  </p>
+  <table id="master">
+    <tr>
+      {% for stage in all_stages %}
+        <th style="background-color: {{ stage.color_hex }}">{{ stage.name }}</th>
+      {% endfor %}
+    </tr>
+    {% for hour in all_hours %}
+      <tr>
+        {% for stage in all_stages %}
+          {% set heats = heat_dict[hour][stage.key.id()] %}
+          <td class="heatcolumn">
+            <table class="inner">
+              {% for heat in heats %}
+                <tr>
+                  <td>{{ Formatters.FormatTime(heat) }}</td>
+                  <td>{{ Formatters.FormatHeat(heat) }}</td>
+                  <td class="deltacell" style="color: {{ Formatters.DeltaColor(heat) }}">
+                    {{ Formatters.FormatDelta(heat) }}
+                  </td>
+                </tr>
+              {% endfor %}
+            </table>
+          </td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </table>
+</body>
+</html>
+{% endautoescape %}
