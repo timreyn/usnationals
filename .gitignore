@@ -3,6 +3,7 @@
 *.iml
 USNationalsApp/.gradle
 USNationalsApp/local.properties
+USNationalsApp/.idea/misc.xml
 USNationalsApp/.idea/workspace.xml
 USNationalsApp/.idea/libraries
 USNationalsApp/.DS_Store
