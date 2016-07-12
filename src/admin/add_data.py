@@ -100,6 +100,10 @@ class AddData(webapp2.RequestHandler):
         if len(row) != 2:
           return 'Bad deletion ' + str(row)
         DeleteData(row[1])
+      elif row[0] == 'DELETE_STAFF_ASSIGNMENT':
+        if len(row) != 2:
+          return 'Bad staff assignment deletion ' + str(row)
+        DeleteStaffAssignment(row[1])
       
     return 'Success!'
 
@@ -214,3 +218,7 @@ def DeleteData(data_type):
     ndb.delete_multi(HeatAssignment.query().iter(keys_only=True))
   elif data_type == 'staff_assignment':
     ndb.delete_multi(StaffAssignment.query().iter(keys_only=True))
+
+def DeleteStaffAssignment(heat_id):
+  heat = Heat.get_by_id(heat_id)
+  ndb.delete_multi(StaffAssignment.query(StaffAssignment.heat == heat.key).iter(keys_only=True))
