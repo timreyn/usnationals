@@ -9,4 +9,5 @@ class CacheHandler(webapp2.RequestHandler):
       data, cache_time = self.GetCached(**kwargs)
       if cache_time > 0:
         memcache.add(key=self.request.url, value=data, time=cache_time)
+    self.response.headers.add_header("Access-Control-Allow-Origin", "*")
     self.response.write(data)
