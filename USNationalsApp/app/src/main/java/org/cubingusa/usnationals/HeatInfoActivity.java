@@ -162,8 +162,12 @@ public class HeatInfoActivity extends AppCompatActivity {
             public void onFailure(
                     int statusCode, Header[] headers, byte[] responseBody,
                     Throwable error) {
+                String response = "null";
+                if (responseBody != null) {
+                    response = new String(responseBody);
+                }
                 Toast.makeText(HeatInfoActivity.this,
-                        getString(R.string.unsuccessful_notification, responseBody),
+                        getString(R.string.unsuccessful_notification, response),
                         Toast.LENGTH_SHORT).show();
             }
         });
