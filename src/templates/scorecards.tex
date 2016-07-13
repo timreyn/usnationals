@@ -4,7 +4,7 @@
 {% for page in pages -%}
 \thispagestyle{empty}
 {% for competitor in page.competitors -%}
-\scoresheetwithheat{US Nationals 2016 | {{ page.event }} {{ page.round }} }{\bf {{ competitor.name|safe }} }{ {{ competitor.id }} }{ {{ competitor.heat }} }{# -#}
+\scoresheetwithheat{US Nationals 2016 | {{ page.event }} {{ page.round }} }{\bf {{ competitor.name|safe }} }{ {{ competitor.wcaid }} }{ {{ competitor.id }} }{ {{ competitor.heat }} }{# -#}
 {% if loop.index in (1, 3) -%}
 \hspace{.05in}
 {% endif -%}

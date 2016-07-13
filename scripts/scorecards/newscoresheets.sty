@@ -9,11 +9,17 @@
 \setleftmargin{0in}
 \setrightmargin{0in}
 
-\newcommand{\scoresheetwithheat}[4]{
-\begin{tabular}{|>{\centering\arraybackslash}p{.75in}|>{\centering\arraybackslash}p{2.75in}|>{\centering\arraybackslash}p{.75in}|>{\centering\arraybackslash}p{.75in}|}\hline
+% Arguments:
+% Competition and Event
+% Name
+% wca id
+% cubecomps id
+% heat
+\newcommand{\scoresheetwithheat}[5]{
+\begin{tabular}{|>{\centering\arraybackslash}p{.75in}|>{\centering\arraybackslash}p{2.25in}|>{\centering\arraybackslash}p{.75in}|>{\centering\arraybackslash}p{.75in}|}\hline
 \multicolumn{4}{|c|}{#1}\\
 \hline
-\multirow{2}{*}{#4}&\multicolumn{2}{|c|}{\multirow{2}{*}{\begin{tabular}{c}\multirow{2}{*}{\large{#2}}\\\tiny{#3}\end{tabular}}}&\multirow{2}{*}{\Huge{\textbf{#4}}}\\
+\multirow{2}{*}{\Huge{\textbf{#4}}}&\multicolumn{2}{|c|}{\multirow{2}{*}{\begin{tabular}{c}\multirow{2}{*}{\large{#2}}\\\tiny{#3}\end{tabular}}}&\multirow{2}{*}{\Huge{\textbf{#5}}}\\
 &\multicolumn{2}{|c|}{}&\\
 \hline
 &Solve Time&Judge&Comp\\

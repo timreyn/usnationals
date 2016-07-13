@@ -27,12 +27,12 @@ class GetScorecards(webapp2.RequestHandler):
         heat_string = '%s%d' % (heat.stage.id().upper(), heat.number)
         for heat_assignment in HeatAssignment.query(HeatAssignment.heat == heat.key).iter():
           competitor = heat_assignment.competitor.get()
-          competitors.append({'name': competitor.name, 'heat': heat_string, 'id': competitor.wca_id})
+          competitors.append({'name': competitor.name, 'heat': heat_string, 'wcaid': competitor.wca_id, 'id': competitor.key.id()})
           if len(competitors) == 4:
             pages.append({'event': event_name, 'competitors': competitors})
             competitors = []
       if competitors:
         while len(competitors) < 4:
-          competitors.append({'name': '', 'heat': '', 'id': ''})
+          competitors.append({'name': '', 'heat': '', 'wcaid': '', 'id': ''})
         pages.append({'event': event_name, 'competitors': competitors})
     self.response.write(template.render({'pages': pages}))
