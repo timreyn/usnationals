@@ -1,3 +1,4 @@
+from google.appengine.ext import deferred
 from google.appengine.ext import ndb
 
 import datetime
@@ -54,7 +55,7 @@ class SendNotification(webapp2.RequestHandler):
       if dry_run:
         self.response.write(json.dumps(data))
       else:
-        firebase.SendPushNotification(topic, data, 'heatNotification')
+        deferred.defer(firebase.SendPushNotification, topic, data, 'heatNotification')
 
     for staff_assignment in StaffAssignment.query(StaffAssignment.heat == heat.key).iter():
       staff_member = staff_assignment.staff_member.get()
@@ -91,5 +92,5 @@ class SendNotification(webapp2.RequestHandler):
       if dry_run:
         self.response.write(json.dumps(data))
       else:
-        firebase.SendPushNotification(topic, data, 'staffNotification')
+        deferred.defer(firebase.SendPushNotification, topic, data, 'staffNotification')
     self.response.set_status(200)

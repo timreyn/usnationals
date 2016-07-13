@@ -10,6 +10,8 @@ skip_files:
  - USNationalsApp/
  - external/icons
  - scripts/
+builtins:
+ - deferred: on
 
 libraries:
  - name: webapp2
