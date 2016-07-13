@@ -92,3 +92,4 @@ class SendNotification(webapp2.RequestHandler):
         self.response.write(json.dumps(data))
       else:
         firebase.SendPushNotification(topic, data, 'staffNotification')
+    self.response.set_status(200)
