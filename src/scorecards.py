@@ -16,7 +16,9 @@ class GetScorecards(webapp2.RequestHandler):
       r = Round.get_by_id(round_id)
       if not r:
         continue
-      if r.is_final:
+      if r.event.id() == '333mbf':
+        event_name = 'Multiple Blindfolded Attempt %d' % r.number
+      elif r.is_final:
         event_name = r.event.get().name + ' Final'
       else:
         event_name = '%s Round %d' % (r.event.get().name, r.number)
