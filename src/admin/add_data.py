@@ -5,7 +5,6 @@ import webapp2
 
 from google.appengine.ext import ndb
 
-from src import firebase
 from src.jinja import JINJA_ENVIRONMENT
 from src.models import *
 
