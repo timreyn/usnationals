@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+<head>
+  <title>Assign Heats</title>
+</head>
+<body>
+  <h3>{{ round.event.get().name }} Round {{ round.number }}</h3>
+  <form action="{{ path }}" method="POST">
+    <input type="hidden" name="r" value="{{ round.key.id() }}"</input>
+    <table>
+      {% for c in competitors %}
+        <tr>
+          <td>{{ c.name }}{% if c.is_staff %} (staff) {% endif %}</td>
+          <td>
+            <select name="c_{{ c.key.id() }}">
+              <option name="null"></option>
+              {% for h in round_heats %}
+                <option name="{{ h.key.id() }}" {% if h == assignments[c.key.id()] %}selected{% endif %}>
+                  {{ h.stage.id().capitalize() }}{{ h.number }} ({{ h.start_time.strftime(format) }})
+                </option>
+              {% endfor %}
+            </select>
+          </td>
+          {% if c.key.id() in assignments %}
+            <td>{{ assignments[c.key.id()].key.id() }}</td>
+          {% else %}
+            <td>N/A</td>
+          {% endif %}
+          {% for h, text in competitor_to_conflicting_heats[c.key.id()] %}
+            <td>{{ h.start_time.strftime(format) }}: <b>{{ text }}</b> ({{ h.key.id() }})</td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </table>
+    <p>
+      <button type="submit" name="submit_heats">Submit</button>
+    </p>
+  </form>
+</body>
+</html>
+{% endautoescape %}

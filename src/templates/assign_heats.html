@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+<head>
+  <title>Assign Heats</title>
+</head>
+<body>
+  <h3>Assign Heats</h3>
+  <form action="{{ path }}" method="POST">
+    <p>
+      <select name="r">
+        <option name="default"></option>
+        {% for r in rounds %}
+          <option name="{{ r.key.id() }}">{{ r.key.id() }}</option>
+        {% endfor %}
+      </select>
+    </p>
+    <p>
+      <textarea rows="40" cols="20" name="ids"></textarea><br>
+    </p>
+    <p>
+      <button type="submit" name="submit">Submit</button>
+    </p>
+  </form>
+  {% if unknown_round %}
+  <p>
+    Unknown round id: {{ unknown_round }}
+  </p>
+  {% endif %}
+  {% if unknown_competitor %}
+  <p>
+    Unknown competitor id: {{ unknown_competitor }}
+  </p>
+  {% endif %}
+</body>
+</html>
+{% endautoescape %}
