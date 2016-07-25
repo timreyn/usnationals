@@ -3,6 +3,7 @@ import webapp2
 from src import get_competitors
 from src import get_heat_info
 from src import get_stages
+from src import job_schedule
 from src import register_device
 from src import schedule
 from src import scorecards
@@ -30,6 +31,8 @@ app = webapp2.WSGIApplication([
     webapp2.Route(r'/send_notification' +
                   r'/<event_id:.*>/<round_id:\d*>/<stage_id:.*>/<heat_number:\d*>',
                   handler=send_notification.SendNotification),
+    webapp2.Route(r'/job_schedule/<stage_id:.>/<job:.>', handler=job_schedule.JobSchedule),
+    webapp2.Route(r'/job_schedule/<stage_id:.>/<job:.>/<station:\d*>', handler=job_schedule.JobSchedule),
     webapp2.Route('/admin/add_data', handler=add_data.AddData, name='add_data'),
     webapp2.Route(r'/admin/assign_stations/<stage_id:.>', handler=assign_stations.AssignStations),
     webapp2.Route('/admin/edit_users', handler=edit_users.EditUsers, name='edit_users'),
