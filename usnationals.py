@@ -9,6 +9,7 @@ from src import schedule
 from src import scorecards
 from src import send_notification
 from src import stage_schedule
+from src import twiml
 from src.admin import add_data
 from src.admin import assign_heats
 from src.admin import assign_stations
@@ -31,7 +32,8 @@ app = webapp2.WSGIApplication([
     webapp2.Route(r'/send_notification' +
                   r'/<event_id:.*>/<round_id:\d*>/<stage_id:.*>/<heat_number:\d*>',
                   handler=send_notification.SendNotification),
-    webapp2.Route(r'/job_schedule', handler=job_schedule.JobSchedule),
+    webapp2.Route('/job_schedule', handler=job_schedule.JobSchedule),
+    webapp2.Route('/twiml', handler=twiml.Twiml),
     webapp2.Route('/admin/add_data', handler=add_data.AddData, name='add_data'),
     #webapp2.Route(r'/admin/assign_stations/<stage_id:.>', handler=assign_stations.AssignStations),
     webapp2.Route('/admin/edit_users', handler=edit_users.EditUsers, name='edit_users'),
