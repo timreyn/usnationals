@@ -22,9 +22,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -32,8 +35,14 @@ public class StageScheduleActivity extends AppCompatActivity {
     private static final String TAG = "StageSchedule";
 
     private boolean mIsAdmin = false;
-    private final Map<String, List<LinearLayout>> mStageColorToLayouts =
-            new HashMap<String, List<LinearLayout>>();
+    private final Map<String, List<LayoutContainer>> mStageColorToLayouts =
+            new HashMap<>();
+
+    private class LayoutContainer {
+        public LinearLayout layout = null;
+        public boolean canShowColor = true;
+        public boolean canShowRound = true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,10 +156,10 @@ public class StageScheduleActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     if (isActive) {
-                        toggleChips(stageName, View.GONE);
+                        toggleChips(stageName, false);
                         stageChip.setBackgroundResource(borderBackground);
                     } else {
-                        toggleChips(stageName, View.VISIBLE);
+                        toggleChips(stageName, true);
                         stageChip.setBackgroundResource(colorBackground);
                     }
                     isActive = !isActive;
@@ -169,22 +178,63 @@ public class StageScheduleActivity extends AppCompatActivity {
         }
         ScheduleParser scheduleParser =
                 new ScheduleParser(this, getLayoutInflater(), scheduleContainer);
+        final Map<String, List<LayoutContainer>> roundToLayouts = new HashMap<>();
         while (reader.hasNext()) {
             Pair<Heat, LinearLayout> heatAndLayout = scheduleParser.parseHeat(reader);
-            Heat heat = heatAndLayout.first;
-            LinearLayout layout = heatAndLayout.second;
-            if (!mStageColorToLayouts.containsKey(heat.stage.name)) {
-                mStageColorToLayouts.put(heat.stage.name, new ArrayList<LinearLayout>());
+            final Heat heat = heatAndLayout.first;
+            LayoutContainer layoutContainer = new LayoutContainer();
+            layoutContainer.layout = heatAndLayout.second;
+            if (heat.number > 0) {
+                layoutContainer.canShowRound = false;
+                layoutContainer.layout.setVisibility(View.GONE);
+                final String roundStageKey = heat.round.id + "_" + heat.stage.id;
+                if (!roundToLayouts.containsKey(roundStageKey)) {
+                    roundToLayouts.put(roundStageKey, new ArrayList<LayoutContainer>());
+                    final LinearLayout container = scheduleParser.addScheduleItem(
+                            heat, heat.event.name, heat.event, heat.stage.color);
+                    final LayoutContainer containerContainer = new LayoutContainer();
+                    containerContainer.layout = container;
+                    containerContainer.canShowRound = true;
+                    container.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            container.setVisibility(View.GONE);
+                            for (LayoutContainer child : roundToLayouts.get(roundStageKey)) {
+                                child.canShowRound = true;
+                                if (child.canShowColor && child.canShowRound) {
+                                    child.layout.setVisibility(View.VISIBLE);
+                                } else {
+                                    child.layout.setVisibility(View.GONE);
+                                }
+                            }
+                            containerContainer.canShowRound = false;
+                        }
+                    });
+                    if (!mStageColorToLayouts.containsKey(heat.stage.name)) {
+                        mStageColorToLayouts.put(heat.stage.name, new ArrayList<LayoutContainer>());
+                    }
+                    mStageColorToLayouts.get(heat.stage.name).add(containerContainer);
+                }
+                roundToLayouts.get(roundStageKey).add(layoutContainer);
             }
-            mStageColorToLayouts.get(heat.stage.name).add(layout);
+            if (!mStageColorToLayouts.containsKey(heat.stage.name)) {
+                mStageColorToLayouts.put(heat.stage.name, new ArrayList<LayoutContainer>());
+            }
+            mStageColorToLayouts.get(heat.stage.name).add(layoutContainer);
         }
         reader.endArray();
     }
 
-    private void toggleChips(String stageName, int visibility) {
-        List<LinearLayout> chips = mStageColorToLayouts.get(stageName);
-        for (LinearLayout chip : chips) {
-            chip.setVisibility(visibility);
+    private void toggleChips(String stageName, boolean isVisible) {
+        List<LayoutContainer> chips = mStageColorToLayouts.get(stageName);
+        for (LayoutContainer chip : chips) {
+            chip.canShowColor = isVisible;
+            if (chip.canShowColor && chip.canShowRound) {
+                chip.layout.setVisibility(View.VISIBLE);
+            } else {
+                chip.layout.setVisibility(View.GONE);
+            }
         }
     }
 }
+

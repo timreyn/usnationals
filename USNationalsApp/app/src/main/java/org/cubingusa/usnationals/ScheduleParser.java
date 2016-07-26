@@ -101,7 +101,7 @@ public class ScheduleParser {
                 color = Color.parseColor("#FFFFFF");
                 break;
         }
-        if (staffAssignment.job != "Y") {
+        if (!staffAssignment.job.equals("Y")) {
             builder.append(" - ");
             builder.append(staffAssignment.heat.event.id);
             if (staffAssignment.heat.event.isReal) {
@@ -143,6 +143,7 @@ public class ScheduleParser {
             scheduleItemIcon.setImageDrawable(mEventIcons.getDrawable(event.id));
         }
 
+
         scheduleItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -155,6 +156,7 @@ public class ScheduleParser {
                 mContext.startActivity(intent);
             }
         });
+
 
         scheduleItemName.setText(text);
         mItemsAdded++;
