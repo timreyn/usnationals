@@ -95,6 +95,13 @@ class AddData(webapp2.RequestHandler):
         ret_value = AddStaffAssignment(event_id, round_id, stage, heat, staff_id, job, long_event, misc)
         if ret_value != 'ok':
           return 'Bad staff assignment ' + str(row) + ': ' + ret_value
+      elif row[0] == 'twilio':
+        if len(row) != 4:
+          return 'Bad twilio data ' + str(row)
+        phone_number = row[1]
+        account_sid = row[2]
+        auth_token = row[3]
+        AddTwilioData(phone_number, account_sid, auth_token)
       elif row[0] == 'DELETE_DATA':
         if len(row) != 2:
           return 'Bad deletion ' + str(row)
@@ -202,6 +209,13 @@ def AddStaffAssignment(event_id, round_id, stage, heat_num, staff_id, job, long_
   assignment.station = None
   assignment.put()
   return 'ok'
+
+def AddTwilioData(phone_number, account_sid, auth_token):
+  twilio_config = TwilioConfig.get_by_id("1") or TwilioConfig(id = "1")
+  twilio_config.phone_number = phone_number
+  twilio_config.account_sid = account_sid
+  twilio_config.auth_token = auth_token
+  twilio_config.put()
 
 def DeleteData(data_type):
   if data_type == 'stage':
