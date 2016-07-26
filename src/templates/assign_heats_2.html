@@ -3,9 +3,20 @@
 <html>
 <head>
   <title>Assign Heats</title>
+  <style type="text/css">
+    span.heatContainer {
+      padding: 5px;
+    }
+  </style>
 </head>
 <body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   <h3>{{ round.event.get().name }} Round {{ round.number }}</h3>
+  <p>
+    {% for h in round_heats %}
+      <span class="heatContainer">{{ h.stage.id().capitalize() }}{{ h.number }}: <span class="heatCount" id="{{ h.key.id() }}">0</span></span>
+    {% endfor %}
+  </p>
   <form action="{{ path }}" method="POST">
     <input type="hidden" name="r" value="{{ round.key.id() }}"</input>
     <table>
@@ -13,7 +24,7 @@
         <tr>
           <td>{{ c.name }}{% if c.is_staff %} (staff) {% endif %}</td>
           <td>
-            <select name="c_{{ c.key.id() }}">
+            <select name="c_{{ c.key.id() }}" class="heatSelector">
               <option name="null"></option>
               {% for h in round_heats %}
                 <option name="{{ h.key.id() }}" {% if h == assignments[c.key.id()] %}selected{% endif %}>
@@ -37,6 +48,7 @@
       <button type="submit" name="submit_heats">Submit</button>
     </p>
   </form>
+  <script src="/static/assign_heats.js" type="text/javascript"></script>
 </body>
 </html>
 {% endautoescape %}

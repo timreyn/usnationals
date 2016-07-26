@@ -24,6 +24,8 @@ handlers:
    script: usnationals.app
    secure: always
    login: admin
+ - url: /static
+   static_dir: src/static
  - url: /.*
    script: usnationals.app
    secure: always

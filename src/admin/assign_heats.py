@@ -116,7 +116,6 @@ class AssignHeats(webapp2.RequestHandler):
         'round': r,
         'competitors': competitors,
         'round_heats': round_heats,
-        'conflicting_heats': conflicting_heats,
         'format': '%I:%M %p',
         'assignments': assignments,
         'competitor_to_conflicting_heats': competitor_to_conflicting_heats,
