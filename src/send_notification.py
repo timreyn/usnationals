@@ -58,8 +58,8 @@ class SendNotification(webapp2.RequestHandler):
         self.response.write(json.dumps(data))
       else:
         deferred.defer(firebase.SendPushNotification, topic, data, 'heatNotification')
-      for subscriber in SMSSubscriber.query(SMSSubscriber.competitor == competitor.key):
-        deferred.defer(twilio_sms.SendSMS, heat_assignment, subscriber)
+        for subscriber in SMSSubscriber.query(SMSSubscriber.competitor == competitor.key):
+          deferred.defer(twilio_sms.SendSMS, heat_assignment, subscriber)
 
     for staff_assignment in StaffAssignment.query(StaffAssignment.heat == heat.key).iter():
       staff_member = staff_assignment.staff_member.get()
