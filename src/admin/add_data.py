@@ -102,6 +102,12 @@ class AddData(webapp2.RequestHandler):
         account_sid = row[2]
         auth_token = row[3]
         AddTwilioData(phone_number, account_sid, auth_token)
+      elif row[0] == 'sms_subscriber':
+        if len(row) != 3:
+          return 'Bad subscriber ' + str(row)
+        phone_number = row[1]
+        competitor = int(row[2])
+        AddSMSSubscriber(phone_number, competitor)
       elif row[0] == 'DELETE_DATA':
         if len(row) != 2:
           return 'Bad deletion ' + str(row)
@@ -216,6 +222,16 @@ def AddTwilioData(phone_number, account_sid, auth_token):
   twilio_config.account_sid = account_sid
   twilio_config.auth_token = auth_token
   twilio_config.put()
+
+def AddSMSSubscriber(phone_number, competitor_id):
+  competitor = Competitor.get_by_id(str(competitor_id))
+  if not competitor:
+    return
+  subscriber_id = '%s_%d' % (phone_number, competitor_id)
+  subscriber = SMSSubscriber.get_by_id(subscriber_id) or SMSSubscriber(id = subscriber_id)
+  subscriber.competitor = competitor.key
+  subscriber.phone_number = phone_number
+  subscriber.put()
 
 def DeleteData(data_type):
   if data_type == 'stage':

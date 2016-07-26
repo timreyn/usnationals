@@ -6,9 +6,11 @@ import json
 import webapp2
 
 from src import firebase
+from src import twilio_sms
 from src.models import AdminDevice
 from src.models import Heat
 from src.models import HeatAssignment
+from src.models import SMSSubscriber
 from src.models import StaffAssignment
 
 class SendNotification(webapp2.RequestHandler):
@@ -56,6 +58,8 @@ class SendNotification(webapp2.RequestHandler):
         self.response.write(json.dumps(data))
       else:
         deferred.defer(firebase.SendPushNotification, topic, data, 'heatNotification')
+      for subscriber in SMSSubscriber.query(SMSSubscriber.competitor == competitor.key):
+        deferred.defer(twilio_sms.SendSMS, heat_assignment, subscriber)
 
     for staff_assignment in StaffAssignment.query(StaffAssignment.heat == heat.key).iter():
       staff_member = staff_assignment.staff_member.get()
