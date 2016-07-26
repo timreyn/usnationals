@@ -44,29 +44,32 @@ class JobSchedule(webapp2.RequestHandler):
       if stage and heat.stage.id() != stage_id:
         continue
       jobs_by_time[heat.start_time].append(staff_assignment)
-    active_staff = collections.defaultdict(list)
-    for time in sorted(jobs_by_time.keys()):
-      for job in jobs_by_time[time]:
-        active_staff[job.staff_member.id()].append(job)
+    for day in (29, 30, 31):
+      active_staff = collections.defaultdict(list)
+      for time in sorted(jobs_by_time.keys()):
+        if time.day != day:
+          continue
+        for job in jobs_by_time[time]:
+          active_staff[job.staff_member.id()].append(job)
+        for staff, jobs in active_staff.iteritems():
+          if not jobs:
+            continue
+          contains_current_time = False
+          for job in jobs:
+            if job.heat.get().end_time >= time:
+              contains_current_time = True
+              break
+          if contains_current_time:
+            continue
+          output['all_assignments'].append({
+              'staff_member': jobs[0].staff_member.get(),
+              'jobs': jobs,
+          })
+          active_staff[staff] = []
       for staff, jobs in active_staff.iteritems():
-        if not jobs:
-          continue
-        contains_current_time = False
-        for job in jobs:
-          if job.heat.get().start_time == time:
-            contains_current_time = True
-            break
-        if contains_current_time:
-          continue
-        output['all_assignments'].append({
-            'staff_member': jobs[0].staff_member.get(),
-            'jobs': jobs,
-        })
-        active_staff[staff] = []
-    for staff, jobs in active_staff.iteritems():
-      if jobs:
-        output['all_assignments'].append({
-            'staff_member': jobs[0].staff_member.get(),
-            'jobs': jobs,
-        })
+        if jobs:
+          output['all_assignments'].append({
+              'staff_member': jobs[0].staff_member.get(),
+              'jobs': jobs,
+          })
     self.response.write(JINJA_ENVIRONMENT.get_template('job_schedule.html').render(output))
