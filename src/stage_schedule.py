@@ -1,4 +1,5 @@
 import collections
+import datetime
 import json
 
 from src.handler import CacheHandler
@@ -20,10 +21,12 @@ class GetStageSchedule(CacheHandler):
     heats = Heat.query().iter()
     heats_by_time = collections.defaultdict(list)
     for heat in heats:
+      if heat.call_time and datetime.datetime.now() - heat.call_time > datetime.timedelta(minutes = 30):
+        continue
       if stages == 'all' or heat.stage.id() in stages:
         heats_by_time[heat.start_time].append(heat)
     for time in sorted(heats_by_time):
       for heat in heats_by_time[time]:
         if heat.round.get().event.get().is_real:
           output_dict['heats'].append(heat.ToDict())
-    return json.dumps(output_dict), 15 * 60
+    return json.dumps(output_dict), 5 * 60

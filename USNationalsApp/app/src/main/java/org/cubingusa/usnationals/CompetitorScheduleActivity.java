@@ -145,6 +145,7 @@ public class CompetitorScheduleActivity extends AppCompatActivity {
                 .authority(Constants.HOSTNAME)
                 .appendPath("get_schedule")
                 .appendPath(mCompetitorId)
+                .appendQueryParameter("hide_old", "1")
                 .build();
         AsyncHttpClient client = new AsyncHttpClient();
         client.get(uri.toString(), new AsyncHttpResponseHandler() {
