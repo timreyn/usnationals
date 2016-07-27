@@ -39,9 +39,7 @@ public class ScheduleNotificationMessagingService extends FirebaseMessagingServi
 
         SharedPreferences preferences =
                 getSharedPreferences(Constants.PREFRENCES, MODE_PRIVATE);
-        boolean enableNotifications =
-                preferences.getInt(Constants.ADMIN_STATUS_PREFERENCE_KEY,
-                        Constants.ADMIN_STATUS_NOT_REQUESTED) == Constants.ADMIN_STATUS_GRANTED;
+        boolean enableNotifications = true;
 
         switch (data.get("type")) {
             case "heatNotification":
