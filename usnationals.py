@@ -14,6 +14,7 @@ from src.admin import add_data
 from src.admin import assign_heats
 from src.admin import assign_stations
 from src.admin import clear_notifications
+from src.admin import current_heat
 from src.admin import edit_users
 from src.admin import set_firebase_key
 from src.admin import status_tracker
@@ -41,4 +42,5 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/admin/clear_notifications', handler=clear_notifications.ClearNotifications),
     webapp2.Route('/admin/status_tracker', handler=status_tracker.StatusTracker, name='status_tracker'),
     webapp2.Route('/admin/assign_heats', handler=assign_heats.AssignHeats, name='assign_heats'),
+    webapp2.Route(r'/admin/current_heat/<stage_id:.>', handler=current_heat.CurrentHeat),
 ], debug=True)
