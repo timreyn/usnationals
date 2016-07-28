@@ -6,16 +6,18 @@ var get_heat_status = function(stage) {
     }).done(function(data) {
       data = $.parseJSON(data);
       if (data.current_heat) {
-        $("#" + stage + " > .icon").html("<img src='/static/img/e_" + data.current_heat.round.event.id + ".png'></img>");
-        $("#" + stage + " > .eventname").html(data.current_heat.round.event.name + " Heat " + data.current_heat.number);
+        $("#" + stage + " > .current > .icon").html("<img src='/static/img/e_" + data.current_heat.round.event.id + ".png'></img>");
+        $("#" + stage + " > .current > .eventname").html(data.current_heat.round.event.name + " Heat " + data.current_heat.number);
       } else {
-        $("#" + stage + " > .icon").html("");
-        $("#" + stage + " > .eventname").html("");
+        $("#" + stage + " > .current > .icon").html("");
+        $("#" + stage + " > .current > .eventname").html("");
       }
       if (data.next_heat) {
-        $("#" + stage + " > .nextup").html(data.next_heat.heat.round.event.name + " Heat " + data.next_heat.heat.number + " (" + data.next_heat.estimate + ")");
+        $("#" + stage + " > .nextevent > .icon").html("<img src='/static/img/e_" + data.next_heat.heat.round.event.id + ".png'></img>");
+        $("#" + stage + " > .nextevent > .eventname").html(data.next_heat.heat.round.event.name + " Heat " + data.next_heat.heat.number + " (" + data.next_heat.estimate + ")");
       } else {
-        $("#" + stage + " > .nextup").html("");
+        $("#" + stage + " > .nextevent > .icon").html("");
+        $("#" + stage + " > .nextevent > .eventname").html("");
       }
     });
   };

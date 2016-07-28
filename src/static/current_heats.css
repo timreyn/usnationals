@@ -1,0 +1,14 @@
+td {
+  font-size: 24px;
+}
+
+th {
+  background-color: #bbbbbb;
+  font-weight: bold;
+  font-size: 24px;
+  border: 2px solid black;
+}
+
+tr.r {
+  background-color: #ff0000;
+}
