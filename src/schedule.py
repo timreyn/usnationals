@@ -22,12 +22,12 @@ class GetSchedule(CacheHandler):
     now = datetime.datetime.now() - datetime.timedelta(hours=7)
     for heat_assignment in heat_assignments:
       heat = heat_assignment.heat.get()
-      if hide_old and heat.call_time and datetime.datetime.now() - heat.call_time > datetime.timedelta(minutes = 30):
+      if hide_old and heat.call_time and now - heat.call_time > datetime.timedelta(minutes = 30):
         continue
       heats_by_time[heat.start_time].append(heat)
     for staff_assignment in staff_assignments:
       heat = staff_assignment.heat.get()
-      if hide_old and heat.call_time and datetime.datetime.now() - heat.call_time > datetime.timedelta(minutes = 30):
+      if hide_old and heat.call_time and now - heat.call_time > datetime.timedelta(minutes = 30):
         continue
       jobs_by_time[heat.start_time].append(staff_assignment)
     for time in sorted(heats_by_time.keys() + jobs_by_time.keys()):
