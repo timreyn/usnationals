@@ -25,9 +25,9 @@
           <td>{{ c.name }}{% if c.is_staff %} (staff) {% endif %}</td>
           <td>
             <select name="c_{{ c.key.id() }}" class="heatSelector">
-              <option name="null"></option>
+              <option value="null"></option>
               {% for h in round_heats %}
-                <option name="{{ h.key.id() }}" {% if h == assignments[c.key.id()] %}selected{% endif %}>
+                <option value="{{ h.key.id() }}" {% if h == assignments[c.key.id()] %}selected{% endif %}>
                   {{ h.stage.id().capitalize() }}{{ h.number }} ({{ h.start_time.strftime(format) }})
                 </option>
               {% endfor %}

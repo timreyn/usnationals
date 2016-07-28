@@ -1,7 +1,7 @@
 function updateCounts() {
   $(".heatCount").html("0");
   $(".heatSelector").each(function() {
-    heat = $( this ).find(":selected").name;
+    heat = $( this ).find(":selected").val();
     heatCount = $("#" + heat);
     if (heatCount) {
       heatCount.html(parseInt(heatCount.html()) + 1);
@@ -9,6 +9,6 @@ function updateCounts() {
   });
 }
 
-$(".heatselector").change(updateCounts);
+$(".heatSelector").change(updateCounts);
 
 updateCounts();
