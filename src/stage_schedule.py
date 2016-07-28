@@ -20,8 +20,9 @@ class GetStageSchedule(CacheHandler):
     }
     heats = Heat.query().iter()
     heats_by_time = collections.defaultdict(list)
+    now = datetime.datetime.now() - datetime.timedelta(hours = 7)
     for heat in heats:
-      if heat.call_time and datetime.datetime.now() - heat.call_time > datetime.timedelta(minutes = 30):
+      if heat.call_time and now - heat.call_time > datetime.timedelta(minutes = 30):
         continue
       if stages == 'all' or heat.stage.id() in stages:
         heats_by_time[heat.start_time].append(heat)

@@ -38,9 +38,9 @@ class SendNotification(webapp2.RequestHandler):
       self.response.write('Heat has already been called')
       return
     if not dry_run:
-      heat.call_time = datetime.datetime.now()
+      heat.call_time = datetime.datetime.now() - datetime.timedelta(hours=7)
       heat.call_device = admin_device.key
-      heat.put()
+    heat.put()
     event = heat.round.get().event.get()
     stage = heat.stage.get()
 

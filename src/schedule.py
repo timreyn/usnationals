@@ -19,6 +19,7 @@ class GetSchedule(CacheHandler):
     }
     heats_by_time = collections.defaultdict(list)
     jobs_by_time = collections.defaultdict(list)
+    now = datetime.datetime.now() - datetime.timedelta(hours=7)
     for heat_assignment in heat_assignments:
       heat = heat_assignment.heat.get()
       if hide_old and heat.call_time and datetime.datetime.now() - heat.call_time > datetime.timedelta(minutes = 30):

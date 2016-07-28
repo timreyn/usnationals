@@ -1,5 +1,6 @@
 import datetime
 import json
+import pytz
 import webapp2
 
 from src.models import Heat
@@ -13,6 +14,7 @@ class CurrentHeat(webapp2.RequestHandler):
     current_heat = None
     next_heat = None
     output = {}
+    now = datetime.datetime.now() - datetime.timedelta(hours=7) # hack!
     for heat in Heat.query(Heat.stage == stage.key).iter():
       if not heat.round.get().event.get().is_real:
         continue
@@ -26,11 +28,12 @@ class CurrentHeat(webapp2.RequestHandler):
       output['current_heat'] = current_heat.ToDict()
     if next_heat:
       output['next_heat'] = {'heat': next_heat.ToDict()}
+      print next_heat.start_time, datetime.datetime.now()
       if current_heat and current_heat.end_time >= next_heat.start_time:
         estimated_call_time = next_heat.start_time + (current_heat.call_time - current_heat.start_time)
       else:
         estimated_call_time = next_heat.start_time
-      expected_seconds = max(0, int((estimated_call_time - datetime.datetime.now()).total_seconds()))
+      expected_seconds = max(0, int((estimated_call_time - now).total_seconds()))
       low_end = expected_seconds / (60 * 5) * 5
       high_end = low_end + 5
       output['next_heat']['estimate'] = '%d &mdash; %d minutes' % (low_end, high_end)
