@@ -59,6 +59,7 @@ class AssignHeats(webapp2.RequestHandler):
       competitor_ids.add(c.key.id())
     competitor_to_conflicting_heats = collections.defaultdict(list)
     round_heats = [h for h in Heat.query(Heat.round == r.key).iter()]
+    round_heat_keys = [h.key for h in round_heats]
     beginning = min([h.start_time for h in round_heats])
     end = max([h.end_time for h in round_heats])
     conflicting_heats = [h for h in Heat.query()
@@ -115,7 +116,7 @@ class AssignHeats(webapp2.RequestHandler):
     # Check if there are already competitors.
     num_current_competitors = 0
     for h in HeatAssignment.query().iter():
-      if h.heat.get().round == r.key:
+      if h.heat in round_heat_keys:
         num_current_competitors += 1
     
     self.response.write(self.AssigningTemplate().render({
@@ -130,8 +131,29 @@ class AssignHeats(webapp2.RequestHandler):
     }))
 
   def SubmitHeats(self, r):
-    # write this method
-    self.response.write('hi')
+    # Delete old values.
+    round_heat_keys = [h.key for h in Heat.query(Heat.round == r.key).iter()]
+    for h in HeatAssignment.query().iter():
+      if h.heat in round_heat_keys:
+        h.key.delete()
+    # Add values.
+    event = r.event.get()
+    round_heats = {h.key.id() : h for h in Heat.query(Heat.round == r.key).iter()}
+    for key, value in self.request.POST.iteritems():
+      if key.startswith('c_'):
+        competitor_id = key[2:]
+        competitor = Competitor.get_by_id(competitor_id)
+        if not competitor:
+          self.response.write('Couldn\'t find %s' % competitor_id)
+          continue
+        assignment = HeatAssignment(id = HeatAssignment.Id(event.key.id(), r.number, competitor_id))
+        if value not in round_heats:
+          self.response.write('Couldn\'t find heat %s' % value)
+          continue
+        assignment.heat = round_heats[value].key
+        assignment.competitor = competitor.key
+        assignment.put()
+    self.response.write('Success!')
         
   def MainTemplate(self):
     return JINJA_ENVIRONMENT.get_template('assign_heats.html')
