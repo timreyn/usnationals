@@ -8,7 +8,7 @@ class Twiml(webapp2.RequestHandler):
     self.response.headers['Content-Type'] = 'text/plain'
     phone_number = self.request.get('From')
     num_subscriptions = len([s for s in SMSSubscriber.query(SMSSubscriber.phone_number == phone_number).iter()])
-    msg_split = self.request.get('Body').split(' ')
+    msg_split = self.request.get('Body').strip(' ').split(' ')
     if msg_split[0].lower() == 'subscribe' or len(msg_split) == 1:
       if num_subscriptions >= 5:
         self.response.write("Sorry, you can only subscribe to 5 competitors per phone number!")
