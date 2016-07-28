@@ -1,5 +1,6 @@
 import webapp2
 
+from src import current_heat
 from src import get_competitors
 from src import get_heat_info
 from src import get_stages
@@ -14,7 +15,6 @@ from src.admin import add_data
 from src.admin import assign_heats
 from src.admin import assign_stations
 from src.admin import clear_notifications
-from src.admin import current_heat
 from src.admin import edit_users
 from src.admin import set_firebase_key
 from src.admin import status_tracker
@@ -35,6 +35,7 @@ app = webapp2.WSGIApplication([
                   handler=send_notification.SendNotification),
     webapp2.Route('/job_schedule', handler=job_schedule.JobSchedule),
     webapp2.Route('/twiml', handler=twiml.Twiml),
+    webapp2.Route(r'/current_heat/<stage_id:.>', handler=current_heat.CurrentHeat),
     webapp2.Route('/admin/add_data', handler=add_data.AddData, name='add_data'),
     #webapp2.Route(r'/admin/assign_stations/<stage_id:.>', handler=assign_stations.AssignStations),
     webapp2.Route('/admin/edit_users', handler=edit_users.EditUsers, name='edit_users'),
@@ -42,5 +43,4 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/admin/clear_notifications', handler=clear_notifications.ClearNotifications),
     webapp2.Route('/admin/status_tracker', handler=status_tracker.StatusTracker, name='status_tracker'),
     webapp2.Route('/admin/assign_heats', handler=assign_heats.AssignHeats, name='assign_heats'),
-    webapp2.Route(r'/admin/current_heat/<stage_id:.>', handler=current_heat.CurrentHeat),
 ], debug=True)

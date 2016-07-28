@@ -36,4 +36,6 @@ class CurrentHeat(webapp2.RequestHandler):
       low_end = expected_seconds / (60 * 5) * 5
       high_end = low_end + 5
       output['next_heat']['estimate'] = '%d &mdash; %d minutes' % (low_end, high_end)
+    self.response.headers.add_header("Access-Control-Allow-Origin", "*")
+    self.response.headers['Content-Type'] = 'application/json'
     self.response.write(json.dumps(output))

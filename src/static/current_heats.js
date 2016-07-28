@@ -2,9 +2,8 @@ var get_heat_status = function(stage) {
   return function() {
     $.ajax({
       type: "get",
-      url: "/admin/current_heat/" + stage.substring(0, 1),
+      url: "/current_heat/" + stage.substring(0, 1),
     }).done(function(data) {
-      data = $.parseJSON(data);
       if (data.current_heat) {
         $("#" + stage + " > .current > .icon").html("<img src='/static/img/e_" + data.current_heat.round.event.id + ".png'></img>");
         $("#" + stage + " > .current > .eventname").html(data.current_heat.round.event.name + " Heat " + data.current_heat.number);
