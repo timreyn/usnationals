@@ -28,7 +28,6 @@ class CurrentHeat(webapp2.RequestHandler):
       output['current_heat'] = current_heat.ToDict()
     if next_heat:
       output['next_heat'] = {'heat': next_heat.ToDict()}
-      print next_heat.start_time, datetime.datetime.now()
       if current_heat and current_heat.end_time >= next_heat.start_time:
         estimated_call_time = next_heat.start_time + (current_heat.call_time - current_heat.start_time)
       else:
