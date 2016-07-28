@@ -12,6 +12,9 @@
 <body>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   <h3>{{ round.event.get().name }} Round {{ round.number }}</h3>
+  {% if num_current_competitors > 0 %}
+    <h3>This round already has {{ num_current_competitors }} competitors.  Add data at your own risk!</h3>
+  {% endif %}
   <p>
     {% for h in round_heats %}
       <span class="heatContainer">{{ h.stage.id().capitalize() }}{{ h.number }}: <span class="heatCount" id="{{ h.key.id() }}">0</span></span>

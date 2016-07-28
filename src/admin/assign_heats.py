@@ -111,9 +111,16 @@ class AssignHeats(webapp2.RequestHandler):
       # And now this heat is invalid for everyone.
       for heats in competitor_to_valid_heats.itervalues():
         heats.discard(heat.key.id())
+
+    # Check if there are already competitors.
+    num_current_competitors = 0
+    for h in HeatAssignment.query().iter():
+      if h.heat.get().round == r.key:
+        num_current_competitors += 1
     
     self.response.write(self.AssigningTemplate().render({
         'round': r,
+        'num_current_competitors': num_current_competitors,
         'competitors': competitors,
         'round_heats': round_heats,
         'format': '%I:%M %p',
