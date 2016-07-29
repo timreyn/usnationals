@@ -24,6 +24,9 @@ class GetStageSchedule(CacheHandler):
     for heat in heats:
       if heat.call_time and now - heat.call_time > datetime.timedelta(minutes = 30):
         continue
+      # HACK HACK HACK
+      if heat.key.id() == '333oh_1_o_0':
+        continue
       if stages == 'all' or heat.stage.id() in stages:
         heats_by_time[heat.start_time].append(heat)
     for time in sorted(heats_by_time):
