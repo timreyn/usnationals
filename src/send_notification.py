@@ -97,4 +97,6 @@ class SendNotification(webapp2.RequestHandler):
         self.response.write(json.dumps(data))
       else:
         deferred.defer(firebase.SendPushNotification, topic, data, 'staffNotification')
+        for subscriber in SMSSubscriber.query(SMSSubscriber.competitor == staff_member.key):
+          deferred.defer(twilio_sms.SendStaffSMS, staff_assignment, subscriber)
     self.response.set_status(200)
