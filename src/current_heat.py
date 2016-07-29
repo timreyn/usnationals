@@ -18,6 +18,8 @@ class CurrentHeat(webapp2.RequestHandler):
     for heat in Heat.query(Heat.stage == stage.key).iter():
       if not heat.round.get().event.get().is_real:
         continue
+      if heat.key.id() == '333oh_1_o_0':
+        continue
       if heat.call_time:
         if not current_heat or heat.call_time > current_heat.call_time:
           current_heat = heat
