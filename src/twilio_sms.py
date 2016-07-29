@@ -17,7 +17,7 @@ def SendSMS(heat_assignment, subscriber):
 
 def SendStaffSMS(staff_assignment, subscriber):
   job = {
-    'J': 'Judge at station %d' % staff_assignment.station or 0,
+    'J': 'Judge at station %d' % (staff_assignment.station or 0),
     'S': 'Scramble',
     'R': 'Run',
     'D': 'do Data Entry',
