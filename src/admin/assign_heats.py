@@ -4,6 +4,8 @@ import datetime
 import StringIO
 import webapp2
 
+from google.appengine.ext import ndb
+
 from src.jinja import JINJA_ENVIRONMENT
 from src.models import Competitor
 from src.models import Heat
@@ -66,14 +68,18 @@ class AssignHeats(webapp2.RequestHandler):
                                         .filter(Heat.start_time >= beginning)
                                         .iter()
                          if h.end_time < end and h.round != r.key]
-    for h in conflicting_heats:
-      for assignment in HeatAssignment.query(HeatAssignment.heat == h.key):
-        if assignment.competitor.id() in competitor_ids:
-          competitor_to_conflicting_heats[assignment.competitor.id()].append((h, "C"))
-    for h in conflicting_heats + round_heats:
-      for assignment in StaffAssignment.query(StaffAssignment.heat == h.key):
-        if assignment.staff_member.id() in competitor_ids:
-          competitor_to_conflicting_heats[assignment.staff_member.id()].append((h, assignment.job))
+    for assignment in (
+          HeatAssignment.query()
+                        .filter(HeatAssignment.competitor.IN([c.key for c in competitors]))
+                        .filter(HeatAssignment.heat.IN([h.key for h in conflicting_heats]))
+                        .iter()):
+      competitor_to_conflicting_heats[assignment.competitor.id()].append((h, "C"))
+    for assignment in (
+          StaffAssignment.query()
+                         .filter(StaffAssignment.staff_member.IN([c.key for c in competitors]))
+                         .filter(StaffAssignment.heat.IN([h.key for h in conflicting_heats + round_heats]))
+                         .iter()):
+      competitor_to_conflicting_heats[assignment.staff_member.id()].append((h, assignment.job))
 
     competitor_to_valid_heats = collections.defaultdict(set)
     for competitor in competitors:
@@ -133,25 +139,21 @@ class AssignHeats(webapp2.RequestHandler):
   def SubmitHeats(self, r):
     # Delete old values.
     round_heat_keys = [h.key for h in Heat.query(Heat.round == r.key).iter()]
-    for h in HeatAssignment.query().iter():
-      if h.heat in round_heat_keys:
-        h.key.delete()
+    ndb.delete_multi(HeatAssignment.query()
+                        .filter(HeatAssignment.heat.IN(round_heat_keys))
+                        .iter(keys_only=True))
     # Add values.
     event = r.event.get()
     round_heats = {h.key.id() : h for h in Heat.query(Heat.round == r.key).iter()}
     for key, value in self.request.POST.iteritems():
       if key.startswith('c_'):
         competitor_id = key[2:]
-        competitor = Competitor.get_by_id(competitor_id)
-        if not competitor:
-          self.response.write('Couldn\'t find %s' % competitor_id)
-          continue
         assignment = HeatAssignment(id = HeatAssignment.Id(event.key.id(), r.number, competitor_id))
         if value not in round_heats:
           self.response.write('Couldn\'t find heat %s' % value)
           continue
         assignment.heat = round_heats[value].key
-        assignment.competitor = competitor.key
+        assignment.competitor = ndb.Key(Competitor, competitor_id)
         assignment.put()
     self.response.write('Success!')
         
