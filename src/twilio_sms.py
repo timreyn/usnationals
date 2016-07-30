@@ -11,7 +11,6 @@ def SendSMS(heat_assignment, subscriber):
   twilio_config = TwilioConfig.get_by_id("1")
   if not twilio_config:
     raise Exception('No twilio config found!')
-  print twilio_config
   twilio_client = TwilioRestClient(twilio_config.account_sid, twilio_config.auth_token)
   twilio_client.messages.create(body=message, to=subscriber.phone_number, from_=twilio_config.phone_number)
 
@@ -29,6 +28,5 @@ def SendStaffSMS(staff_assignment, subscriber):
   twilio_config = TwilioConfig.get_by_id("1")
   if not twilio_config:
     raise Exception('No twilio config found!')
-  print twilio_config
   twilio_client = TwilioRestClient(twilio_config.account_sid, twilio_config.auth_token)
   twilio_client.messages.create(body=message, to=subscriber.phone_number, from_=twilio_config.phone_number)

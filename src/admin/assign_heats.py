@@ -78,6 +78,7 @@ class AssignHeats(webapp2.RequestHandler):
                           .filter(HeatAssignment.competitor.IN([c.key for c in competitors]))
                           .iter()):
         competitor_to_conflicting_heats[assignment.competitor.id()].append((h, "C"))
+    if round_heats or conflicting_heats:
       for assignment in (
             StaffAssignment.query()
                            .filter(StaffAssignment.heat.IN([h.key for h in conflicting_heats + round_heats]))
