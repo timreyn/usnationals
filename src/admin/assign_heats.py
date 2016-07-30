@@ -121,9 +121,8 @@ class AssignHeats(webapp2.RequestHandler):
 
     # Check if there are already competitors.
     num_current_competitors = 0
-    for h in HeatAssignment.query().iter():
-      if h.heat in round_heat_keys:
-        num_current_competitors += 1
+    for h in HeatAssignment.query().filter(HeatAssignment.heat.IN(round_heat_keys)).iter():
+      num_current_competitors += 1
     
     self.response.write(self.AssigningTemplate().render({
         'round': r,
