@@ -67,9 +67,9 @@ class AssignHeats(webapp2.RequestHandler):
     beginning = min([h.start_time for h in round_heats if h.number > 0])
     end = max([h.end_time for h in round_heats if h.number > 0])
     conflicting_heats = [h for h in Heat.query()
-                                        .filter(Heat.start_time >= beginning)
+                                        .filter(Heat.end_time > beginning)
                                         .iter()
-                         if h.end_time <= end and h.round != r.key]
+                         if h.start_time < end and h.round != r.key and h.key.id() != '444bf_1_y_1']
     competitor_to_valid_heats = collections.defaultdict(set)
     if conflicting_heats:
       for assignment in (
@@ -77,14 +77,14 @@ class AssignHeats(webapp2.RequestHandler):
                           .filter(HeatAssignment.heat.IN([h.key for h in conflicting_heats]))
                           .filter(HeatAssignment.competitor.IN([c.key for c in competitors]))
                           .iter()):
-        competitor_to_conflicting_heats[assignment.competitor.id()].append((h, "C"))
+        competitor_to_conflicting_heats[assignment.competitor.id()].append((assignment.heat.get(), "C"))
     if round_heats or conflicting_heats:
       for assignment in (
             StaffAssignment.query()
                            .filter(StaffAssignment.heat.IN([h.key for h in conflicting_heats + round_heats]))
                            .filter(StaffAssignment.staff_member.IN([c.key for c in competitors]))
                            .iter()):
-        competitor_to_conflicting_heats[assignment.staff_member.id()].append((h, assignment.job))
+        competitor_to_conflicting_heats[assignment.staff_member.id()].append((assignment.heat.get(), assignment.job))
 
     for competitor in competitors:
       conflicting_heats = competitor_to_conflicting_heats[competitor.key.id()]
