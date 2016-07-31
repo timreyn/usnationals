@@ -25,11 +25,11 @@ var get_heat_status = function(stage) {
 setInterval(get_heat_status('r'), 30000);
 setInterval(get_heat_status('b'), 30000);
 setInterval(get_heat_status('g'), 30000);
-setInterval(get_heat_status('o'), 30000);
+//setInterval(get_heat_status('o'), 30000);
 setInterval(get_heat_status('y'), 30000);
 
 get_heat_status('r')();
 get_heat_status('b')();
 get_heat_status('g')();
-get_heat_status('o')();
+//get_heat_status('o')();
 get_heat_status('y')();
