@@ -41,6 +41,6 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/admin/edit_users', handler=edit_users.EditUsers, name='edit_users'),
     webapp2.Route(r'/admin/set_firebase_key/<key:.*>', handler=set_firebase_key.SetFirebaseKey),
     webapp2.Route('/admin/clear_notifications', handler=clear_notifications.ClearNotifications),
-    webapp2.Route('/admin/status_tracker', handler=status_tracker.StatusTracker, name='status_tracker'),
+    webapp2.Route('/status_tracker', handler=status_tracker.StatusTracker, name='status_tracker'),
     webapp2.Route('/admin/assign_heats', handler=assign_heats.AssignHeats, name='assign_heats'),
 ], debug=True)
