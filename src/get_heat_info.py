@@ -2,6 +2,7 @@ import collections
 import json
 
 from src.handler import CacheHandler
+from src.models import Competitor
 from src.models import Heat
 from src.models import HeatAssignment
 from src.models import StaffAssignment
@@ -25,9 +26,22 @@ class GetHeatInfo(CacheHandler):
       heat_info['competitors'].append(heat_assignments_by_name[name].ToDict())
 
     staff_assignments = StaffAssignment.query(StaffAssignment.heat == heat.key).iter()
+    used_stations = []
     for staff_assignment in staff_assignments:
       assignment_dict = staff_assignment.ToDict()
       del assignment_dict['heat']
       heat_info['staff'].append(assignment_dict)
+      if staff_assignment.job == 'J':
+        used_stations.append(staff_assignment.station)
+    for i in range(max(used_stations)):
+      s = i + 1
+      if s not in used_stations:
+        fake_assignment = StaffAssignment()
+        fake_assignment.heat = heat.key
+        fake_assignment.staff_member = Competitor(id = '1').key
+        fake_assignment.staff_member.get().name = 'N/A'
+        fake_assignment.job = 'J'
+        fake_assignment.station = s
+        heat_info['staff'].append(fake_assignment.ToDict())
 
     return json.dumps(heat_info), 60
