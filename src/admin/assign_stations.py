@@ -9,6 +9,7 @@ class AssignStations(webapp2.RequestHandler):
     staff_assignments = StaffAssignment.query(StaffAssignment.job == "J").iter()
     assignment_map = collections.defaultdict(list)
     stage_substr = '_%s_' % stage_id
+    futures = []
     for assignment in staff_assignments:
       if stage_substr not in assignment.key.id():
         continue
@@ -37,5 +38,7 @@ class AssignStations(webapp2.RequestHandler):
                                 (assignment.staff_member.get().name,
                                  assignment.station,
                                  assignment.heat.id()))
-        assignment.put()
+        futures.append(assignment.put_async())
       last_time = this_time
+    for future in futures:
+      future.get_result()

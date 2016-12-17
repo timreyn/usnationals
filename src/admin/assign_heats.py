@@ -152,6 +152,7 @@ class AssignHeats(webapp2.RequestHandler):
     # Add values.
     event = r.event.get()
     round_heats = {h.key.id() : h for h in Heat.query(Heat.round == r.key).iter()}
+    futures = []
     for key, value in self.request.POST.iteritems():
       if key.startswith('c_'):
         competitor_id = key[2:]
@@ -161,7 +162,9 @@ class AssignHeats(webapp2.RequestHandler):
           continue
         assignment.heat = round_heats[value].key
         assignment.competitor = ndb.Key(Competitor, competitor_id)
-        assignment.put()
+        futures.append(assignment.put_async())
+    for future in futures:
+      future.get_result()
     self.response.write('Success!')
         
   def MainTemplate(self):
