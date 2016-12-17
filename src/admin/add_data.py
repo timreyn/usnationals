@@ -26,6 +26,7 @@ class AddData(webapp2.RequestHandler):
     }))
 
   def ReadData(self, memfile):
+    futures = []
     for row in csv.reader(memfile):
       if not row:
         continue
@@ -35,7 +36,7 @@ class AddData(webapp2.RequestHandler):
         stage_id = row[1]
         stage_name = row[2]
         color_hex = row[3]
-        AddStage(stage_id, stage_name, color_hex)
+        AddStage(futures, stage_id, stage_name, color_hex)
       elif row[0] == 'event':
         if len(row) <= 6:
           return 'Bad event ' + str(row)
@@ -45,7 +46,7 @@ class AddData(webapp2.RequestHandler):
         is_real = row[4] == '1'
         priority = int(row[5])
         heat_lengths = [int(l) for l in row[6:]]
-        AddEvent(event_id, event_name, num_rounds, is_real, priority, heat_lengths)
+        AddEvent(futures, event_id, event_name, num_rounds, is_real, priority, heat_lengths)
       elif row[0] == 'heat':
         if len(row) != 8:
           return 'Bad heat ' + str(row)
@@ -56,7 +57,7 @@ class AddData(webapp2.RequestHandler):
         start_minutes = int(row[5])
         end_minutes = int(row[6])
         day = int(row[7])
-        ret_value = AddHeat(event_id, round_id, stage, number, start_minutes, end_minutes, day)
+        ret_value = AddHeat(futures, event_id, round_id, stage, number, start_minutes, end_minutes, day)
         if ret_value != 'ok':
           return 'Bad heat ' + str(row) + ': ' + ret_value
       elif row[0] == 'competitor':
@@ -67,7 +68,7 @@ class AddData(webapp2.RequestHandler):
         name = row[3]
         is_staff = row[4] == '1'
         date_of_birth = datetime.datetime.strptime(row[5], '%Y-%m-%d').date()
-        AddCompetitor(cusa_id, wca_id, name, is_staff, date_of_birth)
+        AddCompetitor(futures, cusa_id, wca_id, name, is_staff, date_of_birth)
       elif row[0] == 'heat_assignment':
         if len(row) != 6:
           return 'Bad heat assignment ' + str(row)
@@ -76,7 +77,7 @@ class AddData(webapp2.RequestHandler):
         stage = row[3]
         heat = int(row[4])
         person_id = row[5]
-        ret_value = AssignHeat(event_id, round_id, stage, heat, person_id)
+        ret_value = AssignHeat(futures, event_id, round_id, stage, heat, person_id)
         if ret_value != 'ok':
           return 'Bad heat assignment ' + str(row) + ': ' + ret_value
       elif row[0] == 'staff_assignment':
@@ -94,7 +95,7 @@ class AddData(webapp2.RequestHandler):
         misc = ''
         if len(row) >= 9:
           misc = row[8]
-        ret_value = AddStaffAssignment(event_id, round_id, stage, heat, staff_id, job, long_event, misc)
+        ret_value = AddStaffAssignment(futures, event_id, round_id, stage, heat, staff_id, job, long_event, misc)
         if ret_value != 'ok':
           return 'Bad staff assignment ' + str(row) + ': ' + ret_value
       elif row[0] == 'twilio':
@@ -103,13 +104,13 @@ class AddData(webapp2.RequestHandler):
         phone_number = row[1]
         account_sid = row[2]
         auth_token = row[3]
-        AddTwilioData(phone_number, account_sid, auth_token)
+        AddTwilioData(futures, phone_number, account_sid, auth_token)
       elif row[0] == 'sms_subscriber':
         if len(row) != 3:
           return 'Bad subscriber ' + str(row)
         phone_number = row[1]
         competitor = int(row[2])
-        AddSMSSubscriber(phone_number, competitor)
+        AddSMSSubscriber(futures, phone_number, competitor)
       elif row[0] == 'event_registration':
         if len(row) != 5:
           return 'Bad event registration ' + str(row)
@@ -117,27 +118,28 @@ class AddData(webapp2.RequestHandler):
         event_id = int(row[2])
         single = int(row[3])
         average = int(row[4])
-        ret_value = AddEventRegistration(competitor_id, event_id, single, average)
+        ret_value = AddEventRegistration(futures, competitor_id, event_id, single, average)
         if ret_value != 'ok':
           return 'Bad event registration ' + str(row) + ': ' + ret_value
       elif row[0] == 'DELETE_DATA':
         if len(row) != 2:
           return 'Bad deletion ' + str(row)
-        DeleteData(row[1])
+        DeleteData(futures, row[1])
       elif row[0] == 'DELETE_STAFF_ASSIGNMENT':
         if len(row) != 2:
           return 'Bad staff assignment deletion ' + str(row)
-        DeleteStaffAssignment(row[1])
-      
+        DeleteStaffAssignment(futures, row[1])
+    for future in futures:
+      future.get_result()
     return 'Success!'
 
-def AddStage(stage_id, stage_name, color_hex):
+def AddStage(futures, stage_id, stage_name, color_hex):
   stage = Stage.get_by_id(stage_id) or Stage(id = stage_id)
   stage.name = stage_name
   stage.color_hex = color_hex
-  stage.put()
+  futures.append(stage.put_async())
 
-def AddEvent(event_id, event_name, num_rounds, is_real, priority, heat_lengths):
+def AddEvent(futures, event_id, event_name, num_rounds, is_real, priority, heat_lengths):
   event = Event.get_by_id(event_id) or Event(id = event_id)
   event.name = event_name
   event.priority = priority
@@ -152,9 +154,9 @@ def AddEvent(event_id, event_name, num_rounds, is_real, priority, heat_lengths):
     round.number = i + 1
     round.is_final = (i == num_rounds - 1) or event_id in ('333fm', '333mbf')
     round.heat_length = heat_lengths[i]
-    round.put()
+    futures.append(round.put_async())
 
-def AddHeat(event_id, round_id, stage, number, start_minutes, end_minutes, day):
+def AddHeat(futures, event_id, round_id, stage, number, start_minutes, end_minutes, day):
   round = Round.get_by_id(Round.Id(event_id, round_id))
   if not round:
     return 'Couldn\'t find a round with event %s and number %d' % (event_id, round_id)
@@ -174,10 +176,10 @@ def AddHeat(event_id, round_id, stage, number, start_minutes, end_minutes, day):
   heat.end_time = end_time
   heat.call_time = None
   heat.call_device = None
-  heat.put()
+  futures.append(heat.put_async())
   return 'ok'
 
-def AddCompetitor(cusa_id, wca_id, name, is_staff, date_of_birth):
+def AddCompetitor(futures, cusa_id, wca_id, name, is_staff, date_of_birth):
   cusa_id = str(cusa_id)
   competitor = Competitor.get_by_id(cusa_id) or Competitor(id = cusa_id)
   competitor.name = name
@@ -185,9 +187,9 @@ def AddCompetitor(cusa_id, wca_id, name, is_staff, date_of_birth):
   competitor.is_staff = is_staff == 1
   competitor.is_admin = False
   competitor.date_of_birth = date_of_birth
-  competitor.put()
+  futures.append(competitor.put_async())
 
-def AssignHeat(event, round, stage, heat, person_id):
+def AssignHeat(futures, event, round, stage, heat, person_id):
   person_id = str(person_id)
   assignment_id = HeatAssignment.Id(event, round, person_id)
   assignment = HeatAssignment.get_by_id(assignment_id) or HeatAssignment(id = assignment_id)
@@ -201,10 +203,10 @@ def AssignHeat(event, round, stage, heat, person_id):
     return 'Could not find competitor ' + person_id
   assignment.heat = heat.key
   assignment.competitor = competitor.key
-  assignment.put()
+  futures.append(assignment.put_async())
   return 'ok'
         
-def AddStaffAssignment(event_id, round_id, stage, heat_num, staff_id, job, long_event, misc):
+def AddStaffAssignment(futures, event_id, round_id, stage, heat_num, staff_id, job, long_event, misc):
   staff_id = str(staff_id)
   heat_id = Heat.Id(event_id, round_id, stage, heat_num)
   heat = Heat.get_by_id(heat_id)
@@ -227,17 +229,17 @@ def AddStaffAssignment(event_id, round_id, stage, heat_num, staff_id, job, long_
   if misc:
     assignment.misc = misc
   assignment.station = None
-  assignment.put()
+  futures.append(assignment.put_async())
   return 'ok'
 
-def AddTwilioData(phone_number, account_sid, auth_token):
+def AddTwilioData(futures, phone_number, account_sid, auth_token):
   twilio_config = TwilioConfig.get_by_id("1") or TwilioConfig(id = "1")
   twilio_config.phone_number = phone_number
   twilio_config.account_sid = account_sid
   twilio_config.auth_token = auth_token
-  twilio_config.put()
+  futures.append(twilio_config.put_async())
 
-def AddSMSSubscriber(phone_number, competitor_id):
+def AddSMSSubscriber(futures, phone_number, competitor_id):
   competitor = Competitor.get_by_id(str(competitor_id))
   if not competitor:
     return
@@ -245,9 +247,9 @@ def AddSMSSubscriber(phone_number, competitor_id):
   subscriber = SMSSubscriber.get_by_id(subscriber_id) or SMSSubscriber(id = subscriber_id)
   subscriber.competitor = competitor.key
   subscriber.phone_number = phone_number
-  subscriber.put()
+  futures.append(subscriber.put_async())
 
-def AddEventRegistration(competitor_id, event_id, single, average):
+def AddEventRegistration(futures, competitor_id, event_id, single, average):
   competitor = Competitor.get_by_id(str(competitor_id))
   if not competitor:
     return 'Could not find competitor ' + competitor_id
@@ -261,23 +263,23 @@ def AddEventRegistration(competitor_id, event_id, single, average):
   event_registration.single = single
   event_registration.average = average
   event_registration.projected_rounds = 1
-  event_registration.put()
+  futures.append(event_registration.put_async())
 
-def DeleteData(data_type):
+def DeleteData(futures, data_type):
   if data_type == 'stage':
-    ndb.delete_multi(Stage.query().iter(keys_only=True))
+    futures.append(ndb.delete_multi_async(Stage.query().iter(keys_only=True)))
   elif data_type == 'event':
-    ndb.delete_multi(Event.query().iter(keys_only=True))
-    ndb.delete_multi(Round.query().iter(keys_only=True))
+    futures.append(ndb.delete_multi_async(Event.query().iter(keys_only=True)))
+    futures.append(ndb.delete_multi_async(Round.query().iter(keys_only=True)))
   elif data_type == 'heat':
-    ndb.delete_multi(Heat.query().iter(keys_only=True))
+    futures.append(ndb.delete_multi_async(Heat.query().iter(keys_only=True)))
   elif data_type == 'competitor':
-    ndb.delete_multi(Competitor.query().iter(keys_only=True))
+    futures.append(ndb.delete_multi_async(Competitor.query().iter(keys_only=True)))
   elif data_type == 'heat_assignment':
-    ndb.delete_multi(HeatAssignment.query().iter(keys_only=True))
+    futures.append(ndb.delete_multi_async(HeatAssignment.query().iter(keys_only=True)))
   elif data_type == 'staff_assignment':
-    ndb.delete_multi(StaffAssignment.query().iter(keys_only=True))
+    futures.append(ndb.delete_multi_async(StaffAssignment.query().iter(keys_only=True)))
 
-def DeleteStaffAssignment(heat_id):
+def DeleteStaffAssignment(futures, heat_id):
   heat = Heat.get_by_id(heat_id)
-  ndb.delete_multi(StaffAssignment.query(StaffAssignment.heat == heat.key).iter(keys_only=True))
+  futures.append(ndb.delete_multi_async(StaffAssignment.query(StaffAssignment.heat == heat.key).iter(keys_only=True)))
