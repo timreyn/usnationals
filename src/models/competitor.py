@@ -5,6 +5,9 @@ class Competitor(ndb.Model):
   wca_id = ndb.StringProperty()
   is_staff = ndb.BooleanProperty()
   is_admin = ndb.BooleanProperty()
+  # date_of_birth should not be included in ToDict, since this would make it
+  # public.
+  date_of_birth = ndb.DateTimeProperty()
 
   def ToDict(self):
     return {

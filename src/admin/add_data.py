@@ -37,14 +37,15 @@ class AddData(webapp2.RequestHandler):
         color_hex = row[3]
         AddStage(stage_id, stage_name, color_hex)
       elif row[0] == 'event':
-        if len(row) != 6:
+        if len(row) <= 6:
           return 'Bad event ' + str(row)
         event_id = row[1]
         event_name = row[2]
         num_rounds = int(row[3])
         is_real = row[4] == '1'
         priority = int(row[5])
-        AddEvent(event_id, event_name, num_rounds, is_real, priority)
+        heat_lengths = [int(l) for l in row[6:]]
+        AddEvent(event_id, event_name, num_rounds, is_real, priority, heat_lengths)
       elif row[0] == 'heat':
         if len(row) != 8:
           return 'Bad heat ' + str(row)
@@ -59,13 +60,14 @@ class AddData(webapp2.RequestHandler):
         if ret_value != 'ok':
           return 'Bad heat ' + str(row) + ': ' + ret_value
       elif row[0] == 'competitor':
-        if len(row) != 5:
+        if len(row) != 6:
           return 'Bad competitor ' + str(row)
         cusa_id = row[1]
         wca_id = row[2]
         name = row[3]
         is_staff = row[4] == '1'
-        AddCompetitor(cusa_id, wca_id, name, is_staff)
+        date_of_birth = datetime.datetime.strptime(row[5], '%Y-%m-%d').date()
+        AddCompetitor(cusa_id, wca_id, name, is_staff, date_of_birth)
       elif row[0] == 'heat_assignment':
         if len(row) != 6:
           return 'Bad heat assignment ' + str(row)
@@ -108,6 +110,16 @@ class AddData(webapp2.RequestHandler):
         phone_number = row[1]
         competitor = int(row[2])
         AddSMSSubscriber(phone_number, competitor)
+      elif row[0] == 'event_registration':
+        if len(row) != 5:
+          return 'Bad event registration ' + str(row)
+        competitor_id = int(row[1])
+        event_id = int(row[2])
+        single = int(row[3])
+        average = int(row[4])
+        ret_value = AddEventRegistration(competitor_id, event_id, single, average)
+        if ret_value != 'ok':
+          return 'Bad event registration ' + str(row) + ': ' + ret_value
       elif row[0] == 'DELETE_DATA':
         if len(row) != 2:
           return 'Bad deletion ' + str(row)
@@ -125,7 +137,7 @@ def AddStage(stage_id, stage_name, color_hex):
   stage.color_hex = color_hex
   stage.put()
 
-def AddEvent(event_id, event_name, num_rounds, is_real, priority):
+def AddEvent(event_id, event_name, num_rounds, is_real, priority, heat_lengths):
   event = Event.get_by_id(event_id) or Event(id = event_id)
   event.name = event_name
   event.priority = priority
@@ -139,6 +151,7 @@ def AddEvent(event_id, event_name, num_rounds, is_real, priority):
     round.event = event_key
     round.number = i + 1
     round.is_final = (i == num_rounds - 1) or event_id in ('333fm', '333mbf')
+    round.heat_length = heat_lengths[i]
     round.put()
 
 def AddHeat(event_id, round_id, stage, number, start_minutes, end_minutes, day):
@@ -164,13 +177,14 @@ def AddHeat(event_id, round_id, stage, number, start_minutes, end_minutes, day):
   heat.put()
   return 'ok'
 
-def AddCompetitor(cusa_id, wca_id, name, is_staff):
+def AddCompetitor(cusa_id, wca_id, name, is_staff, date_of_birth):
   cusa_id = str(cusa_id)
   competitor = Competitor.get_by_id(cusa_id) or Competitor(id = cusa_id)
   competitor.name = name
   competitor.wca_id = wca_id
   competitor.is_staff = is_staff == 1
   competitor.is_admin = False
+  competitor.date_of_birth = date_of_birth
   competitor.put()
 
 def AssignHeat(event, round, stage, heat, person_id):
@@ -232,6 +246,21 @@ def AddSMSSubscriber(phone_number, competitor_id):
   subscriber.competitor = competitor.key
   subscriber.phone_number = phone_number
   subscriber.put()
+
+def AddEventRegistration(competitor_id, event_id, single, average):
+  competitor = Competitor.get_by_id(str(competitor_id))
+  if not competitor:
+    return 'Could not find competitor ' + competitor_id
+  event = Event.get_by_id(event_id)
+  if not event:
+    return 'Could not find event ' + event_id
+  registration_id = EventRegistration.Id(competitor_id, event_id)
+  event_registration = EventRegistration.get_by_id(registration_id) or EventRegistration(id = registration_id)
+  event_registration.competitor = competitor.key
+  event_registration.event = event.key
+  event_registration.single = single
+  event_registration.average = average
+  event_registration.put()
 
 def DeleteData(data_type):
   if data_type == 'stage':
