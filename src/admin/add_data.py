@@ -260,6 +260,7 @@ def AddEventRegistration(competitor_id, event_id, single, average):
   event_registration.event = event.key
   event_registration.single = single
   event_registration.average = average
+  event_registration.projected_rounds = 1
   event_registration.put()
 
 def DeleteData(data_type):

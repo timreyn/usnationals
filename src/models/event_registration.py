@@ -11,6 +11,7 @@ class EventRegistration(ndb.Model):
   heat_assignment = ndb.KeyProperty(kind=HeatAssignment)
   single = ndb.IntegerProperty()
   average = ndb.IntegerProperty()
+  projected_rounds = ndb.IntegerProperty()
 
   @staticmethod
   def Id(competitor_id, event_id):
