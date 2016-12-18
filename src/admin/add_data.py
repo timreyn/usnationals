@@ -42,11 +42,20 @@ class AddData(webapp2.RequestHandler):
           return 'Bad event ' + str(row)
         event_id = row[1]
         event_name = row[2]
-        num_rounds = int(row[3])
-        is_real = row[4] == '1'
-        priority = int(row[5])
-        heat_lengths = [int(l) for l in row[6:]]
-        AddEvent(futures, event_id, event_name, num_rounds, is_real, priority, heat_lengths)
+        is_real = row[3] == '1'
+        priority = int(row[4])
+        AddEvent(futures, event_id, event_name, is_real, priority)
+      elif row[0] == 'round':
+        if len(row) != 5 and len(row) != 6:
+          return 'Bad round ' + str(row)
+        event_id = row[1]
+        number = int(row[2])
+        is_final = row[3] == '1'
+        heat_length = int(row[4])
+        num_competitors = int(row[5]) if len(row) > 5 else 0
+        ret_value = AddRound(futures, event_id, number, is_final, heat_length, num_competitors)
+        if ret_value != 'ok':
+          return 'Bad round ' + str(row) + ': ' + ret_value
       elif row[0] == 'heat':
         if len(row) != 8:
           return 'Bad heat ' + str(row)
@@ -139,22 +148,24 @@ def AddStage(futures, stage_id, stage_name, color_hex):
   stage.color_hex = color_hex
   futures.append(stage.put_async())
 
-def AddEvent(futures, event_id, event_name, num_rounds, is_real, priority, heat_lengths):
+def AddEvent(futures, event_id, event_name, is_real, priority):
   event = Event.get_by_id(event_id) or Event(id = event_id)
   event.name = event_name
   event.priority = priority
   event.is_real = is_real
   event_key = event.put()
-  priority += 1
 
-  for i in range(num_rounds):
-    round_id = Round.Id(event_id, i + 1)
-    round = Round.get_by_id(round_id) or Round(id = round_id)
-    round.event = event_key
-    round.number = i + 1
-    round.is_final = (i == num_rounds - 1) or event_id in ('333fm', '333mbf')
-    round.heat_length = heat_lengths[i]
-    futures.append(round.put_async())
+def AddRound(futures, event_id, number, is_final, heat_length, num_competitors):
+  event = Event.get_by_id(event_id)
+  if not event:
+    return 'Couldn\'t find event ' + event_id
+  round_id = Round.Id(event_id, number)
+  round = Round.get_by_id(round_id) or Round(id = round_id)
+  round.event = event.key
+  round.number = number
+  round.is_final = is_final
+  round.heat_length = heat_length
+  futures.append(round.put_async())
 
 def AddHeat(futures, event_id, round_id, stage, number, start_minutes, end_minutes, day):
   round = Round.get_by_id(Round.Id(event_id, round_id))
