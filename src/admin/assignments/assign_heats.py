@@ -60,8 +60,8 @@ def AssignHeats(rounds):
     rounds = sorted(state.GetCompetitorRounds(competitor), key = lambda r: r.heat_length)
     heat_assignments, score = GetHeatAssignments(competitor, state, rounds)
     if score == 0.0:
-      # fail
-      pass
+      # add failure debug info
+      break
     for heat in heat_assignments:
       state.AssignHeat(competitor, heat)
     state.FinishCompetitor(competitor)
