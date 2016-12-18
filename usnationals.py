@@ -18,6 +18,7 @@ from src.admin import clear_notifications
 from src.admin import edit_users
 from src.admin import set_firebase_key
 from src.admin import status_tracker
+from src.admin.assignments import assignments_handler
 
 app = webapp2.WSGIApplication([
     webapp2.Route(r'/get_schedule/<person_id:\d*>', handler=schedule.GetSchedule),
@@ -42,5 +43,6 @@ app = webapp2.WSGIApplication([
     webapp2.Route(r'/admin/set_firebase_key/<key:.*>', handler=set_firebase_key.SetFirebaseKey),
     webapp2.Route('/admin/clear_notifications', handler=clear_notifications.ClearNotifications),
     webapp2.Route('/status_tracker', handler=status_tracker.StatusTracker, name='status_tracker'),
-    webapp2.Route('/admin/assign_heats', handler=assign_heats.AssignHeats, name='assign_heats'),
+    webapp2.Route('/admin/assign_later_heats', handler=assign_heats.AssignHeats, name='assign_heats'),
+    webapp2.Route('/admin/assign_heats', handler=assignments_handler.AssignmentsHandler)
 ], debug=True)

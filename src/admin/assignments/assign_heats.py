@@ -42,7 +42,7 @@ def GetHeatAssignments(competitor, state, rounds, assignments = [], best_score =
   
 
 # Main method for heat assignment.
-def AssignHeats(rounds):
+def AssignHeats(rounds, request_id):
   state = AssignmentState()
 
   # Clear existing heats
