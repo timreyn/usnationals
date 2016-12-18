@@ -38,5 +38,9 @@ class HeatAssignment(ndb.Model):
   competitor = ndb.KeyProperty(kind=Competitor)
 
   @staticmethod
-  def Id(event_id, round_id, person_id):
-    return '%s_%s' % (Round.Id(event_id, round_id), person_id)
+  def Id(event_id, round_number, person_id):
+    return '%s_%s' % (Round.Id(event_id, round_number), person_id)
+
+  @staticmethod
+  def Id(round_id, person_id):
+    return '%s_%s' % (round_id, person_id)
