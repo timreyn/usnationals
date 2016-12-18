@@ -1,3 +1,6 @@
+round,reg,1,0,30
+round,lun,1,0,30
+round,misc,1,0,30
 round,222,1,0,15
 round,222,2,0,10,150
 round,222,3,0,10,50
