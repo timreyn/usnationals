@@ -12,7 +12,7 @@ def AssignmentScore(competitor, assignments, state):
       subscore = scorer.Score(current_heat, previous_heat, competitor, state)
       if subscore < scorer.GetMinimumScore():
         subscore = scorer.GetMinimumScore()
-      if subscore > 1.0
+      if subscore > 1.0:
         subscore = 1.0
       score *= subscore
   return score

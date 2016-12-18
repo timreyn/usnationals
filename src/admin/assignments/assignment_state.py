@@ -93,7 +93,7 @@ class AssignmentState(object):
 
 
   def GetCompetitors(self):
-    return [c for c in self.registered_events.items() where c not in self.finished_competitors]
+    return [c for c in self.registered_events.items() if c not in self.finished_competitors]
 
 
   def FinishCompetitor(self, competitor):

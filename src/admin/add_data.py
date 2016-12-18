@@ -38,7 +38,7 @@ class AddData(webapp2.RequestHandler):
         color_hex = row[3]
         AddStage(futures, stage_id, stage_name, color_hex)
       elif row[0] == 'event':
-        if len(row) <= 6:
+        if len(row) != 5:
           return 'Bad event ' + str(row)
         event_id = row[1]
         event_name = row[2]
@@ -166,6 +166,7 @@ def AddRound(futures, event_id, number, is_final, heat_length, num_competitors):
   round.is_final = is_final
   round.heat_length = heat_length
   futures.append(round.put_async())
+  return 'ok'
 
 def AddHeat(futures, event_id, round_id, stage, number, start_minutes, end_minutes, day):
   round = Round.get_by_id(Round.Id(event_id, round_id))
