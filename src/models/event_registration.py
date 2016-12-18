@@ -15,4 +15,4 @@ class EventRegistration(ndb.Model):
 
   @staticmethod
   def Id(competitor_id, event_id):
-    return '%s_%s' % (Competitor.Id(competitor_id), Event.Id(event_id))
+    return '%s_%s' % (competitor_id, event_id)

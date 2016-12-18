@@ -17,10 +17,12 @@ class TimeBetweenHeatsScorer(Scorer):
   def Score(self, heat, previous_heat, competitor, state):
     if not previous_heat:
       return 1.0
+    if heat.number == 0:
+      return 1.0
 
     time_between_heats = heat.start_time - previous_heat.start_time
-    expected_time = heat.round.get().expected_time
-    spare_time = time_between_heats - expected_time
+    expected_time = heat.round.get().heat_length
+    spare_time = time_between_heats.total_seconds() / 60 - expected_time
     if spare_time < 0:
       return 0.0
     if spare_time < 5:
@@ -35,7 +37,7 @@ class TimeBetweenHeatsScorer(Scorer):
       return 0.95
     return 1.0
 
-  def GetMinimumScore():
+  def GetMinimumScore(self):
     return 0.0
 
 
@@ -62,7 +64,7 @@ class NumCompetitorsScorer(Scorer):
       return 0.1
     return 0.0
 
-  def GetMinimumScore():
+  def GetMinimumScore(self):
     return 0.0
 
 

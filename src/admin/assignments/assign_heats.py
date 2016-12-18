@@ -1,13 +1,16 @@
+from google.appengine.ext import ndb
+
 from src.admin.assignments.assignment_score import AssignmentScore
 from src.admin.assignments.assignment_state import AssignmentState
 from src.admin.assignments.busy_score import BusyScore
 from src.models import EventRegistration
 from src.models import Heat
+from src.models import HeatAssignment
 
 def PopulateState(state, rounds):
   for r in rounds:
     for h in Heat.query(Heat.round == r.key).iter():
-      state.RegisterRound(h)
+      state.RegisterHeat(h)
     for reg in EventRegistration.query(EventRegistration.event == r.event).iter():
       state.RegisterCompetitorForEvent(reg)
   state.FinalizeEntryList()
@@ -30,7 +33,7 @@ def GetHeatAssignments(competitor, state, rounds, assignments = [], best_score =
   best_assignments = []
   for heat in state.AllHeats(competitor, rounds[0]):
     intermediate_score = AssignmentScore(competitor, assignments + [heat], state)
-    if intermediate_score < best_score:
+    if intermediate_score < best_score or intermediate_score == 0.0:
       continue
     new_assignments, new_score = GetHeatAssignments(competitor, state, rounds[1:], assignments + [heat], best_score)
     if new_score > best_score:
@@ -48,7 +51,8 @@ def AssignHeats(rounds, request_id):
   # Clear existing heats
   futures = []
   for r in rounds:
-    futures.append(ndb.delete_multi_async(HeatAssignment.query(HeatAssignment.round == r.key).iter(keys_only=True)))
+    for h in Heat.query(Heat.round == r.key).iter():
+      futures.extend(ndb.delete_multi_async(HeatAssignment.query(HeatAssignment.heat == h.key).iter(keys_only=True)))
   for future in futures:
     future.get_result()
 

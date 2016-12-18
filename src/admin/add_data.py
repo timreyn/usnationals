@@ -76,7 +76,7 @@ class AddData(webapp2.RequestHandler):
         wca_id = row[2]
         name = row[3]
         is_staff = row[4] == '1'
-        date_of_birth = datetime.datetime.strptime(row[5], '%Y-%m-%d').date()
+        date_of_birth = datetime.datetime.strptime(row[5], '%Y-%m-%d')
         AddCompetitor(futures, cusa_id, wca_id, name, is_staff, date_of_birth)
       elif row[0] == 'heat_assignment':
         if len(row) != 6:
@@ -124,7 +124,7 @@ class AddData(webapp2.RequestHandler):
         if len(row) != 5:
           return 'Bad event registration ' + str(row)
         competitor_id = int(row[1])
-        event_id = int(row[2])
+        event_id = row[2]
         single = int(row[3])
         average = int(row[4])
         ret_value = AddEventRegistration(futures, competitor_id, event_id, single, average)
@@ -276,6 +276,7 @@ def AddEventRegistration(futures, competitor_id, event_id, single, average):
   event_registration.average = average
   event_registration.projected_rounds = 1
   futures.append(event_registration.put_async())
+  return 'ok'
 
 def DeleteData(futures, data_type):
   if data_type == 'stage':

@@ -17,6 +17,8 @@ class AssignmentState(object):
     self.heats = collections.defaultdict(list)
     # round id to Round
     self.rounds = {}
+    # competitor id to Competitor
+    self.competitors = {}
     self.start_time = None
     self.end_time = None
 
@@ -56,6 +58,7 @@ class AssignmentState(object):
   def RegisterCompetitorForEvent(self, event_registration):
     self.registered_events[event_registration.competitor.id()].append(event_registration)
     self.competitors_by_event[event_registration.event.id()].append(event_registration)
+    self.competitors[event_registration.competitor.id()] = event_registration.competitor.get()
 
 
   def FinalizeEntryList(self):
@@ -63,11 +66,11 @@ class AssignmentState(object):
       # figure out how many people should be in each heat
       r = self.rounds[round_id]
       has_staff_heats = len([h for h in heats if h.number == 0]) > 0
-      if r.round > 1:
+      if GetRoundNumber(r) > 1:
         total = r.num_competitors * 1.5
       else:
         if has_staff_heats:
-          total = len([reg for reg in self.competitors_by_event[r.event.id()] if not reg.c.get().is_staff])
+          total = len([reg for reg in self.competitors_by_event[r.event.id()] if not reg.competitor.get().is_staff])
         else:
           total = len(self.competitors_by_event[r.event.id()])
       num_heats = len([h for h in heats if h.number > 0])
@@ -75,16 +78,16 @@ class AssignmentState(object):
       self.desired_competitors[round_id] = desired
 
       # figure out which competitors might advance
-      if r.round > 1:
+      if GetRoundNumber(r) > 1:
         by_single = lambda reg: reg.single
         by_average = lambda reg: reg.average
         competitors_sorted = sorted(self.competitors_by_event[r.event.id()],
                                     key=(by_single if 'bf' in r.event.id() or 'fm' in r.event.id() else by_average))
         for i, competitor in enumerate(competitors_sorted):
           if i < total:
-            competitor.projected_rounds = max(competitor.projected_rounds, r.round)
+            competitor.projected_rounds = max(competitor.projected_rounds, GetRoundNumber(r))
           else:
-            competitor.projected_rounds = min(competitor.projected_rounds, r.round - 1)
+            competitor.projected_rounds = min(competitor.projected_rounds, GetRoundNumber(r) - 1)
           futures.append(competitor.put_async())
 
 
@@ -93,7 +96,7 @@ class AssignmentState(object):
 
 
   def GetCompetitors(self):
-    return [c for c in self.registered_events.items() if c not in self.finished_competitors]
+    return [self.competitors[c] for c in self.registered_events if c not in self.finished_competitors]
 
 
   def FinishCompetitor(self, competitor):
@@ -116,34 +119,40 @@ class AssignmentState(object):
     return self.competitors_by_heat[heat.key.id()]
 
 
-  def GetCompetitorRounds(self, competitor):
-    output = []
+  def GetCompetitorRegistrations(self, competitor):
     event_id_to_registration = {}
     for event_registration in self.registered_events[competitor.key.id()]:
       event_id_to_registration[event_registration.event.id()] = event_registration
+    return event_id_to_registration
+
+
+  def GetCompetitorRounds(self, competitor):
+    output = []
+    event_registrations = self.GetCompetitorRegistrations(competitor)
     for r in self.rounds.itervalues():
-      if r.event.id() not in event_id_to_registration:
+      if r.event.id() not in event_registrations:
         continue
-      registration = event_id_to_registration[r.event.id()]
-      if registration.projected_rounds >= GetRoundNumber(r):
+      reg = event_registrations[r.event.id()]
+      if reg.projected_rounds >= r.number:
         output.append(r)
-    return r
+    return output
 
 
   def AssignHeat(self, competitor, heat):
     self.competitors_by_heat[heat.key.id()].append(competitor)
     if GetRoundNumber(heat.round.get()) == 1:
-      heat_assignment_id = HeatAssignment.Id(heat.round.id(), competitor.key.id())
-      heat_assignment = HeatAssignment.get_by_id(heat_assignment_id) or HeatAssignment(id = assignment_id)
+      assignment_id = HeatAssignment.Id(heat.round.id(), competitor.key.id())
+      heat_assignment = HeatAssignment.get_by_id(assignment_id) or HeatAssignment(id = assignment_id)
       heat_assignment.heat = heat.key
       heat_assignment.competitor = competitor.key
-      self.futures.append(assignment.put_async())
+      self.futures.append(heat_assignment.put_async())
 
 
-  def AvailableHeats(self, competitor, r):
+  def GetAvailableHeats(self, competitor, r):
     all_heats = self.AllHeats(competitor, r)
     desired = self.desired_competitors[r.key.id()]
     return [h for h in all_heats if h.number == 0 or len(self.competitors_by_heat[h.key.id()]) < desired]
+
 
   def AllHeats(self, competitor, r):
     staff_heats = []

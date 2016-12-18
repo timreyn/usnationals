@@ -5,9 +5,9 @@ def AssignmentScore(competitor, assignments, state):
   current_heat = None
   score = 1.0
 
-  for assignment in sorted(assignments, key=lambda assignment: assignment.heat.get().start_time):
+  for assignment in sorted(assignments, key=lambda assignment: assignment.start_time):
     previous_heat = current_heat
-    current_heat = assignment.heat.get()
+    current_heat = assignment
     for scorer in scorers.GetScorers():
       subscore = scorer.Score(current_heat, previous_heat, competitor, state)
       if subscore < scorer.GetMinimumScore():

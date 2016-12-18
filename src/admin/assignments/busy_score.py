@@ -1,12 +1,14 @@
 # Defines a score representing how busy a competitor's schedule is for a
 # particular time period, and how high priority it is to schedule them.
 def BusyScore(competitor, state):
-  competitor_rounds = state.GetCompetitorRounds(competitor)
   rounds = state.GetAllRounds()
   total_time = state.GetTotalTime()
+  event_registrations = state.GetCompetitorRegistrations(competitor)
+
+  score = 0.0
 
   for r in rounds:
-    if r not in competitor_rounds:
+    if r.event.id() not in event_registrations:
       continue
     if r.event.id() == '333fm':
       continue
