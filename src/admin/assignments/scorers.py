@@ -21,7 +21,7 @@ class TimeBetweenHeatsScorer(Scorer):
       return 1.0
 
     time_between_heats = heat.start_time - previous_heat.start_time
-    expected_time = heat.round.get().heat_length
+    expected_time = previous_heat.round.get().heat_length
     spare_time = time_between_heats.total_seconds() / 60 - expected_time
     if spare_time < 0:
       return 0.0
@@ -46,6 +46,8 @@ class NumCompetitorsScorer(Scorer):
     return "num_competitors"
 
   def Score(self, heat, previous_heat, competitor, state):
+    if heat.number == 0:
+      return 1.0
     expected_count = state.GetDesiredHeatSize(heat.round.get())
     actual_count = len(state.GetCompetitorsInHeat(heat))
     spots_left = expected_count - actual_count
