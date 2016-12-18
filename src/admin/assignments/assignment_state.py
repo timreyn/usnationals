@@ -108,6 +108,14 @@ class AssignmentState(object):
     return (self.end_time - self.start_time).total_seconds() / 60
 
 
+  def GetDesiredHeatSize(self, r):
+    return self.desired_competitors[r.key.id()]
+
+
+  def GetCompetitorsInHeat(self, heat):
+    return self.competitors_by_heat[heat.key.id()]
+
+
   def GetCompetitorRounds(self, competitor):
     output = []
     event_id_to_registration = {}

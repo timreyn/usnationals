@@ -26,10 +26,10 @@ def GetNextCompetitor(state):
 
 def GetHeatAssignments(competitor, state, rounds, assignments = [], best_score = 0.0):
   if not rounds:
-    return assignments, AssignmentScore(assignments)
+    return assignments, AssignmentScore(competitor, assignments, state)
   best_assignments = []
   for heat in state.AllHeats(competitor, rounds[0]):
-    intermediate_score = AssignmentScore(assignments + [heat])
+    intermediate_score = AssignmentScore(competitor, assignments + [heat], state)
     if intermediate_score < best_score:
       continue
     new_assignments, new_score = GetHeatAssignments(competitor, state, rounds[1:], assignments + [heat], best_score)
