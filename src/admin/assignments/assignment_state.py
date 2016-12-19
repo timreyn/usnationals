@@ -166,3 +166,7 @@ class AssignmentState(object):
       return staff_heats
     else:
       return non_staff_heats
+
+
+  def DebugInfo(self):
+    return ''

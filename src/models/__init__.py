@@ -1,5 +1,6 @@
 from src.models.admin_device import AdminDevice
 from src.models.competitor import Competitor
+from src.models.debug_info import DebugInfo
 from src.models.event import Event
 from src.models.event_registration import EventRegistration
 from src.models.firebase_key import FirebaseKey
