@@ -1,8 +1,10 @@
 from google.appengine.ext import ndb
 
 from src.admin.assignments.assignment_score import AssignmentScore
+from src.admin.assignments.assignment_score import AssignmentScoreDebug
 from src.admin.assignments.assignment_state import AssignmentState
 from src.admin.assignments.busy_score import BusyScore
+from src.models import DebugInfo
 from src.models import EventRegistration
 from src.models import Heat
 from src.models import HeatAssignment
@@ -47,6 +49,7 @@ def GetHeatAssignments(competitor, state, rounds, assignments = [], best_score =
 # Main method for heat assignment.
 def AssignHeats(rounds, request_id):
   state = AssignmentState()
+  debug_info = DebugInfo.get_by_id(request_id) or DebugInfo(id=request_id)
 
   # Clear existing heats
   futures = []
@@ -64,9 +67,11 @@ def AssignHeats(rounds, request_id):
     rounds = sorted(state.GetCompetitorRounds(competitor), key = lambda r: r.heat_length)
     heat_assignments, score = GetHeatAssignments(competitor, state, rounds)
     if score == 0.0:
-      # add failure debug info
+      print 'Failed!'
       break
     for heat in heat_assignments:
       state.AssignHeat(competitor, heat)
     state.FinishCompetitor(competitor)
+    debug_info.info = state.DebugInfo()
+    debug_info.put()
   state.Finish()

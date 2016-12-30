@@ -169,4 +169,4 @@ class AssignmentState(object):
 
 
   def DebugInfo(self):
-    return ''
+    return str(len(self.finished_competitors))
