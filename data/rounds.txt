@@ -43,6 +43,6 @@ round,minx,2,1,20,16
 round,clock,1,0,15
 round,clock,2,1,15,16
 round,444bf,1,1,45
-round,555bf,1,1,80
+round,555bf,1,1,60
 round,333mbf,1,1,70
 round,333mbf,2,1,70
