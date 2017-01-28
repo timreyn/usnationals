@@ -4,6 +4,9 @@
 <head>
   <title>Heat Assignment Status</title>
   <style type="text/css">
+div {
+  font-family: sans-serif;
+}
 div.container {
   float: left;
   clear: both;
@@ -15,24 +18,55 @@ img.eventicon {
 div.roundinfo {
   float: right;
   border: 1px solid black;
-}  
+}
+div.roundinfo img.eventicon {
+  padding: 5px;
+}
+div.eventname {
+  padding: 5px;
+  float: right;
+}
+div.eventinfo {
+  background-color: #dddddd;
+}
 div.heatinfo {
   padding: 2px;
+}
+div.eventinfo {
+  font-size: 20px;
+}
+div.stage_b {
+  background-color: #aec6cf;
+}
+div.stage_r {
+  background-color: #ff6961;
+}
+div.stage_g {
+  background-color: #77dd77;
+}
+div.stage_o {
+  background-color: #ffb347;
+}
+div.stage_y {
+  background-color: #fdfd96;
 }
   </style>
 </head>
 <body>
+  <h1>Heat Assignment Status</h1>
   <div class="container">
     <h3>Heats</h3>
     {% for r in rounds %}
       <div class="roundinfo">
         <div class="eventinfo">
           <img class="eventicon" src="/static/img/e_{{ r.event.id() }}.png"></img>
-          {{ r.event.get().name }}
+          <div class="eventname">
+            {{ r.event.get().name }}
+          </div>
         </div>
         {% for h in heats_by_round[r.key.id()] %}
-          <div class="heatinfo">
-            {{ h.key.id() }}: {{ len(competitors_by_heat[h.key.id()]) }}
+          <div class="heatinfo stage_{{ h.stage.id() }}">
+            {{ h.stage.get().name }} {{ h.number }}: {{ len(competitors_by_heat[h.key.id()]) }}
           </div>
         {% endfor %}
       </div>
