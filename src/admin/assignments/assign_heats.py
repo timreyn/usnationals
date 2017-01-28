@@ -67,10 +67,12 @@ def AssignHeats(rounds, request_id):
     rounds = sorted(state.GetCompetitorRounds(competitor), key = lambda r: r.heat_length)
     heat_assignments, score = GetHeatAssignments(competitor, state, rounds)
     if score == 0.0:
+      print competitor.name
       print 'Failed!'
       break
     for heat in heat_assignments:
       state.AssignHeat(competitor, heat)
+    state.SaveCompetitorDebug(competitor, AssignmentScoreDebug(competitor, heat_assignments, state))
     state.FinishCompetitor(competitor)
     debug_info.info = state.DebugInfo()
     debug_info.put()

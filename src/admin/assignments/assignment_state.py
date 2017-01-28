@@ -1,6 +1,7 @@
 from src.models import HeatAssignment
 
 import collections
+import json
 import math
 
 
@@ -34,6 +35,8 @@ class AssignmentState(object):
     self.desired_competitors = collections.defaultdict(lambda: 0)
     # done competitor ids
     self.finished_competitors = set()
+    # competitor id to dict
+    self.competitor_debug = {}
 
     # futures to be waited on before finishing
     self.futures = []
@@ -168,5 +171,17 @@ class AssignmentState(object):
       return non_staff_heats
 
 
+  def SaveCompetitorDebug(self, competitor, debug):
+    self.competitor_debug[competitor.key.id()] = debug
+
+
   def DebugInfo(self):
-    return str(len(self.finished_competitors))
+    heats_by_competitor = collections.defaultdict(list)
+    for h, cs in self.competitors_by_heat.iteritems():
+      for c in cs:
+        heats_by_competitor[c.key.id()].append(h)
+    return json.dumps({
+        'r': self.rounds.keys(),
+        'r2h': {r: [h.key.id() for h in hs] for r, hs in self.heats.iteritems()},
+        'h2c': {h: [c.key.id() for c in cs] for h, cs in self.competitors_by_heat.iteritems()},
+        'd': self.competitor_debug})

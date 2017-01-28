@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+<head>
+  <title>Heat Assignment Status</title>
+  <style type="text/css">
+div.container {
+  float: left;
+  clear: both;
+}
+img.eventicon {
+  width: 20px;
+  height: 20px;
+}
+div.roundinfo {
+  float: right;
+  border: 1px solid black;
+}  
+div.heatinfo {
+  padding: 2px;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h3>Heats</h3>
+    {% for r in rounds %}
+      <div class="roundinfo">
+        <div class="eventinfo">
+          <img class="eventicon" src="/static/img/e_{{ r.event.id() }}.png"></img>
+          {{ r.event.get().name }}
+        </div>
+        {% for h in heats_by_round[r.key.id()] %}
+          <div class="heatinfo">
+            {{ h.key.id() }}: {{ len(competitors_by_heat[h.key.id()]) }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+  <div class="container">
+    <h3>Competitors</h3>
+    {% for c in competitors %}
+      <div class="competitorname">
+        {{ c.key.id() }} {{ c.name }}
+      </div>
+      <div class="competitorinfo">
+        {% for h in heats_by_competitor[c.key.id()] %}
+          <div class="heatassignment">
+            <img class="eventicon" src="/static/img/e_{{ h.round.get().event.id() }}.png"></img>
+            {{ h.key.id() }} - {{ debug_info[c.key.id()][1][h.key.id()] }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+</body>
+</html>
+{% endautoescape %}
