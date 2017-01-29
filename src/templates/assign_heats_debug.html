@@ -18,19 +18,37 @@ img.eventicon {
 div.roundinfo {
   float: right;
   border: 1px solid black;
+  overflow: auto;
 }
 div.roundinfo img.eventicon {
   padding: 5px;
+  float: left;
 }
 div.eventname {
   padding: 5px;
-  float: right;
-}
-div.eventinfo {
-  background-color: #dddddd;
+  float: left;
+  clear: right;
 }
 div.heatinfo {
-  padding: 2px;
+  float: left;
+  clear: both;
+  width: 100%;
+  overflow: auto;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+div.heattime {
+  padding-right: 5px;
+  padding-left: 5px;
+  float: left;
+  width: 100px;
+}
+div.heatname {
+  float: left;
+  padding-right: 5px;
+}
+div.eventinfo {
+  clear: right;
 }
 div.eventinfo {
   font-size: 20px;
@@ -66,7 +84,12 @@ div.stage_y {
         </div>
         {% for h in heats_by_round[r.key.id()] %}
           <div class="heatinfo stage_{{ h.stage.id() }}">
-            {{ h.stage.get().name }} {{ h.number }}: {{ len(competitors_by_heat[h.key.id()]) }}
+            <div class="heattime">
+              {{ formats.FormatHeatStartTime(h.start_time) }}
+            </div>
+            <div class="heatname">
+              {{ h.stage.get().name }} {{ h.number }}: {{ len(competitors_by_heat[h.key.id()]) }}
+            </div>
           </div>
         {% endfor %}
       </div>

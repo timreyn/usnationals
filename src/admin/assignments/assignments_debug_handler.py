@@ -1,4 +1,5 @@
 from src.jinja import JINJA_ENVIRONMENT
+from src.admin.assignments import formats
 from src.models import Competitor
 from src.models import DebugInfo
 from src.models import Heat
@@ -25,6 +26,8 @@ class AssignmentsDebugHandler(webapp2.RequestHandler):
     heats_by_round = {
       r: [heat_dict[h] for h in hs] for r, hs in deb['r2h'].iteritems()
     }
+    for heats in heats_by_round.itervalues():
+      heats.sort(key=lambda heat: heat.start_time)
     competitors_by_heat = {
       h: [competitor_dict[c] for c in cs] for h, cs in deb['h2c'].iteritems()
     }
@@ -41,4 +44,5 @@ class AssignmentsDebugHandler(webapp2.RequestHandler):
         'heats_by_competitor': heats_by_competitor,
         'debug_info': deb['d'],
         'len': len,
+        'formats': formats,
     }))
