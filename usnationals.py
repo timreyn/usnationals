@@ -18,8 +18,8 @@ from src.admin import clear_notifications
 from src.admin import edit_users
 from src.admin import set_firebase_key
 from src.admin import status_tracker
-from src.admin.assignments import assignments_handler
-from src.admin.assignments import assignments_debug_handler
+from src.admin.assignments import handler as assignments_handler
+from src.admin.assignments import debug_handler as assignments_debug_handler
 
 app = webapp2.WSGIApplication([
     webapp2.Route(r'/get_schedule/<person_id:\d*>', handler=schedule.GetSchedule),
