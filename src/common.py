@@ -53,4 +53,4 @@ def FormatTime(value, eventId, average=False):
   return '%01d%s' % (seconds, hundredthsString)
 
 def ShouldUseAverage(eventId):
-  return eventId not in ['333bf', '444bf', '555bf', '333mbf']
+  return eventId not in ['333bf', '444bf', '555bf', '333mbf', '333fm']
