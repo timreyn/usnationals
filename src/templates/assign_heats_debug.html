@@ -52,6 +52,10 @@ div.comp_in_heat div.name {
   float: left;
   padding-right: 10px;
 }
+div.comp_in_heat div.besttime {
+  float: right;
+  padding-right: 10px;
+}
 div.comp_in_heat div.birthday {
   float: right;
 }
@@ -107,6 +111,9 @@ div.stage_y {
                 </div>
                 <div class="birthday">
                   {{ formats.FormatCompetitorBirthday(c.date_of_birth) }}
+                </div>
+                <div class="besttime">
+                  {{ formats.FormatTime(registrations_by_round[r.key.id()][c.key.id()]) }}
                 </div>
               </div>
             {% endfor %}
