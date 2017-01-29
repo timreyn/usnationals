@@ -9,6 +9,8 @@ from src.models import EventRegistration
 from src.models import Heat
 from src.models import HeatAssignment
 
+import random
+
 def PopulateState(state, rounds):
   for r in rounds:
     for h in Heat.query(Heat.round == r.key).iter():
@@ -33,7 +35,9 @@ def GetHeatAssignments(competitor, state, rounds, assignments = [], best_score =
   if not rounds:
     return assignments, AssignmentScore(competitor, assignments, state)
   best_assignments = []
-  for heat in state.AllHeats(competitor, rounds[0]):
+  heats = state.AllHeats(competitor, rounds[0])
+  random.shuffle(heats)
+  for heat in heats:
     intermediate_score = AssignmentScore(competitor, assignments + [heat], state)
     if intermediate_score < best_score or intermediate_score == 0.0:
       continue
