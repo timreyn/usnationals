@@ -56,9 +56,9 @@ class AssignmentsDebugHandler(webapp2.RequestHandler):
       for reg in EventRegistration.query(EventRegistration.event == r.event).iter():
         registrations_by_round[r.key.id()][reg.competitor.id()] = reg
 
-    for h, competitors in competitors_by_heat.iteritems():
+    for h, cs in competitors_by_heat.iteritems():
       should_use_average = common.ShouldUseAverage(heat_dict[h].round.get().event.id())
-      competitors.sort(key=SortByCompetitorTime(registrations_by_round[heat_dict[h].round.id()], should_use_average))
+      cs.sort(key=SortByCompetitorTime(registrations_by_round[heat_dict[h].round.id()], should_use_average))
 
     self.response.write(template.render({
         'rounds': rounds,
