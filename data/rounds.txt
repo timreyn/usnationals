@@ -6,7 +6,7 @@ round,222,2,0,10,150
 round,222,3,0,10,50
 round,222,4,1,15,16
 round,333,1,0,15
-round,333,2,0,15,150
+round,333,2,0,15,200
 round,333,3,0,15,64
 round,333,4,1,10,16
 round,444,1,0,20
@@ -21,7 +21,7 @@ round,666,2,1,30,16
 round,777,1,0,25
 round,777,2,1,30,16
 round,333oh,1,0,20
-round,333oh,2,0,15,100
+round,333oh,2,0,15,150
 round,333oh,3,0,15,50
 round,333oh,4,1,15,16
 round,333bf,1,0,15
@@ -32,11 +32,11 @@ round,333fm,3,1,60
 round,sq1,1,0,20
 round,sq1,2,1,15,16
 round,pyram,1,0,15
-round,pyram,2,0,15,100
+round,pyram,2,0,15,150
 round,pyram,3,0,15,50
 round,pyram,4,1,15,16
 round,skewb,1,0,20
-round,skewb,2,0,15,64
+round,skewb,2,0,15,32
 round,skewb,3,1,15,16
 round,minx,1,0,25
 round,minx,2,1,20,16
