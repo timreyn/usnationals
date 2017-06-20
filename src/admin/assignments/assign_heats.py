@@ -42,6 +42,8 @@ def GetHeatAssignments(competitor, state, rounds, assignments = [], best_score =
     if intermediate_score < best_score or intermediate_score == 0.0:
       continue
     new_assignments, new_score = GetHeatAssignments(competitor, state, rounds[1:], assignments + [heat], best_score)
+    if new_score == 1.0:
+      return new_assignments, new_score
     if new_score > best_score:
       best_assignments = new_assignments
       best_score = new_score
