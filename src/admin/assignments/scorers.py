@@ -115,5 +115,5 @@ def GetScorers():
   return [
       TimeBetweenHeatsScorer(),
       NumCompetitorsScorer(),
-      SpeedScorer(),
+#      SpeedScorer(),
   ]
