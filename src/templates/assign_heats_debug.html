@@ -91,7 +91,7 @@ div.stage_y {
         <div class="eventinfo">
           <img class="eventicon" src="/static/img/e_{{ r.event.id() }}.png"></img>
           <div class="eventname">
-            {{ r.event.get().name }}
+            {{ r.event.get().name }} ({{ desired_competitors_by_round[r.key.id()] }})
           </div>
         </div>
         {% for h in heats_by_round[r.key.id()] %}

@@ -1,3 +1,4 @@
+from src import common
 from src.models import HeatAssignment
 
 import collections
@@ -23,8 +24,8 @@ class AssignmentState(object):
     self.start_time = None
     self.end_time = None
 
-    # competitor id to list of EventRegistrations (registered)
-    self.registered_events = collections.defaultdict(list)
+    # competitor id to dict of eventid to EventRegistrations (registered)
+    self.registered_events = collections.defaultdict(dict)
     # event id to list of EventRegistrations (registered)
     self.competitors_by_event = collections.defaultdict(list)
 
@@ -59,7 +60,7 @@ class AssignmentState(object):
 
 
   def RegisterCompetitorForEvent(self, event_registration):
-    self.registered_events[event_registration.competitor.id()].append(event_registration)
+    self.registered_events[event_registration.competitor.id()][event_registration.event.id()] = event_registration
     self.competitors_by_event[event_registration.event.id()].append(event_registration)
     self.competitors[event_registration.competitor.id()] = event_registration.competitor.get()
 
@@ -81,17 +82,22 @@ class AssignmentState(object):
       self.desired_competitors[round_id] = desired
 
       # figure out which competitors might advance
-      if GetRoundNumber(r) > 1:
-        by_single = lambda reg: reg.single
-        by_average = lambda reg: reg.average
-        competitors_sorted = sorted(self.competitors_by_event[r.event.id()],
-                                    key=(by_single if 'bf' in r.event.id() or 'fm' in r.event.id() else by_average))
-        for i, competitor in enumerate(competitors_sorted):
+      by_single = lambda reg: reg.single
+      by_average = lambda reg: reg.average
+      competitors_sorted = sorted(self.competitors_by_event[r.event.id()],
+                                    key=(by_average if common.ShouldUseAverage(r.event.id()) else by_single))
+      non_staff_rank = 0
+      for i, competitor in enumerate(competitors_sorted):
+        if GetRoundNumber(r) > 1:
           if i < total:
             competitor.projected_rounds = max(competitor.projected_rounds, GetRoundNumber(r))
           else:
             competitor.projected_rounds = min(competitor.projected_rounds, GetRoundNumber(r) - 1)
-          futures.append(competitor.put_async())
+        else:
+          if not competitor.competitor.get().is_staff:
+            non_staff_rank = non_staff_rank + 1
+            competitor.non_staff_rank = non_staff_rank
+        self.futures.append(competitor.put_async())
 
 
   def HasMoreCompetitors(self):
@@ -123,10 +129,7 @@ class AssignmentState(object):
 
 
   def GetCompetitorRegistrations(self, competitor):
-    event_id_to_registration = {}
-    for event_registration in self.registered_events[competitor.key.id()]:
-      event_id_to_registration[event_registration.event.id()] = event_registration
-    return event_id_to_registration
+    return self.registered_events[competitor.key.id()]
 
 
   def GetCompetitorRounds(self, competitor):
@@ -184,4 +187,5 @@ class AssignmentState(object):
         'r': self.rounds.keys(),
         'r2h': {r: [h.key.id() for h in hs] for r, hs in self.heats.iteritems()},
         'h2c': {h: [c.key.id() for c in cs] for h, cs in self.competitors_by_heat.iteritems()},
+        'r2n': self.desired_competitors,
         'd': self.competitor_debug})

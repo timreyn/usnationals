@@ -68,6 +68,7 @@ class AssignmentsDebugHandler(webapp2.RequestHandler):
         'heats_by_competitor': heats_by_competitor,
         'registrations_by_round': registrations_by_round,
         'debug_info': deb['d'],
+        'desired_competitors_by_round': deb['r2n']
         'len': len,
         'formats': formats,
     }))

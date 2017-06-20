@@ -1,3 +1,5 @@
+import collections
+
 class Scorer(object):
   def GetName(self):
     return "UNNAMED"
@@ -70,8 +72,48 @@ class NumCompetitorsScorer(Scorer):
     return 0.0
 
 
+class SpeedScorer(Scorer):
+  def GetName(self):
+    return "speed"
+
+  def Score(self, heat, previous_heat, competitor, state):
+    if heat.number != 1 or competitor.is_staff:
+      return 1.0
+    expected_count = len(state.AllHeats(competitor, heat.round.get()))
+    competitor_registration = state.GetCompetitorRegistrations(competitor)[heat.round.get().event.id()]
+    my_bucket = (competitor_registration.non_staff_rank + 1) / expected_count
+    percentile_buckets = collections.defaultdict(lambda: 0)
+    for c in state.GetCompetitorsInHeat(heat):
+      if c.is_staff:
+        continue
+      other_registration = state.GetCompetitorRegistrations(c)[heat.round.get().event.id()]
+      percentile_buckets[(other_registration.non_staff_rank + 1) / expected_count]
+    competitors_too_close = (self.CompetitorsTooClose(percentile_buckets, my_bucket, True) +
+                             self.CompetitorsTooClose(percentile_buckets, my_bucket, False))
+    return 0.95 ** competitors_too_close
+
+  def CompetitorsTooClose(self, percentile_buckets, my_bucket, increasing):
+    current_bucket = my_bucket
+    allowed_competitors = 0
+    found_competitors = 0
+    while current_bucket >= 0 and current_bucket < len(percentile_buckets):
+      found_competitors += percentile_buckets[current_bucket]
+      if found_competitors <= allowed_competitors:
+        break
+      allowed_competitors += 1.5
+      if increasing:
+        current_bucket += 1
+      else:
+        current_bucket -= 1
+    return found_competitors
+
+  def GetMinimumScore(self):
+    return 0.5
+
+
 def GetScorers():
   return [
       TimeBetweenHeatsScorer(),
       NumCompetitorsScorer(),
+      SpeedScorer(),
   ]
