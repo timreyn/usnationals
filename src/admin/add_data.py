@@ -165,6 +165,8 @@ def AddRound(futures, event_id, number, is_final, heat_length, num_competitors):
   round.number = number
   round.is_final = is_final
   round.heat_length = heat_length
+  if num_competitors:
+    round.num_competitors = num_competitors
   futures.append(round.put_async())
   return 'ok'
 
@@ -176,8 +178,8 @@ def AddHeat(futures, event_id, round_id, stage, number, start_minutes, end_minut
   start_minutes = start_minutes % 60
   end_hours = end_minutes / 60
   end_minutes = end_minutes % 60
-  start_time = datetime.datetime(2016, 7, day, start_hours, start_minutes, 0)
-  end_time = datetime.datetime(2016, 7, day, end_hours, end_minutes, 0)
+  start_time = datetime.datetime(2017, 7, day, start_hours, start_minutes, 0)
+  end_time = datetime.datetime(2017, 7, day, end_hours, end_minutes, 0)
   heat_id = Heat.Id(event_id, round_id, stage, number)
 
   heat = Heat.get_by_id(heat_id) or Heat(id = heat_id)
