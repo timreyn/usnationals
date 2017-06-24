@@ -16,7 +16,8 @@ class AssignmentState(object):
 
   def __init__(self):
     # round id to list of Heats
-    self.heats = collections.defaultdict(list)
+    self.staff_heats = collections.defaultdict(list)
+    self.non_staff_heats = collections.defaultdict(list)
     # round id to Round
     self.rounds = {}
     # competitor id to Competitor
@@ -49,14 +50,16 @@ class AssignmentState(object):
 
 
   def RegisterHeat(self, h):
-    self.heats[h.round.id()].append(h)
-    if h.round.id() not in self.rounds:
-      self.rounds[h.round.id()] = h.round.get()
-    if h.number > 0:
+    if h.number == 0:
+      self.staff_heats[h.round.id()].append(h)
+    else:
+      self.non_staff_heats[h.round.id()].append(h)
       if not self.start_time or h.start_time < self.start_time:
         self.start_time = h.start_time
       if not self.end_time or h.end_time > self.end_time:
         self.end_time = h.end_time
+    if h.round.id() not in self.rounds:
+      self.rounds[h.round.id()] = h.round.get()
 
 
   def RegisterCompetitorForEvent(self, event_registration):
@@ -66,10 +69,10 @@ class AssignmentState(object):
 
 
   def FinalizeEntryList(self):
-    for round_id, heats in self.heats.iteritems():
+    for round_id, heats in self.non_staff_heats.iteritems():
       # figure out how many people should be in each heat
       r = self.rounds[round_id]
-      has_staff_heats = len([h for h in heats if h.number == 0]) > 0
+      has_staff_heats = round_id in self.staff_heats
       if GetRoundNumber(r) > 1:
         total = r.num_competitors * 1.5
       else:
@@ -77,7 +80,7 @@ class AssignmentState(object):
           total = len([reg for reg in self.competitors_by_event[r.event.id()] if not reg.competitor.get().is_staff])
         else:
           total = len(self.competitors_by_event[r.event.id()])
-      num_heats = len([h for h in heats if h.number > 0])
+      num_heats = len(heats)
       desired = int(math.ceil(1.0 * total / num_heats))
       self.desired_competitors[round_id] = desired
 
@@ -139,7 +142,7 @@ class AssignmentState(object):
       if r.event.id() not in event_registrations:
         continue
       reg = event_registrations[r.event.id()]
-      if reg.projected_rounds >= r.number:
+      if reg.projected_rounds >= GetRoundNumber(r):
         output.append(r)
     return output
 
@@ -161,17 +164,10 @@ class AssignmentState(object):
 
 
   def AllHeats(self, competitor, r):
-    staff_heats = []
-    non_staff_heats = []
-    for h in self.heats[r.key.id()]:
-      if h.number == 0:
-        staff_heats.append(h)
-      else:
-        non_staff_heats.append(h)
-    if competitor.is_staff and staff_heats:
-      return staff_heats
+    if competitor.is_staff and r.key.id() in self.staff_heats:
+      return self.staff_heats[r.key.id()]
     else:
-      return non_staff_heats
+      return self.non_staff_heats[r.key.id()]
 
 
   def SaveCompetitorDebug(self, competitor, debug):
@@ -185,7 +181,7 @@ class AssignmentState(object):
         heats_by_competitor[c.key.id()].append(h)
     return json.dumps({
         'r': self.rounds.keys(),
-        'r2h': {r: [h.key.id() for h in hs] for r, hs in self.heats.iteritems()},
+        'r2h': {r: [h.key.id() for h in hs] for r, hs in self.non_staff_heats.iteritems()},
         'h2c': {h: [c.key.id() for c in cs] for h, cs in self.competitors_by_heat.iteritems()},
         'r2n': self.desired_competitors,
         'd': self.competitor_debug})
