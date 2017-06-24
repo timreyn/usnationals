@@ -138,6 +138,10 @@ class AddData(webapp2.RequestHandler):
         if len(row) != 2:
           return 'Bad staff assignment deletion ' + str(row)
         DeleteStaffAssignment(futures, row[1])
+      elif row[0] == 'DELETE_HEAT':
+        if len(row) != 2:
+          return 'Bad heat deletion ' + str(row)
+        DeleteHeat(row[1])
     for future in futures:
       future.get_result()
     return 'Success!'
@@ -298,3 +302,8 @@ def DeleteData(futures, data_type):
 def DeleteStaffAssignment(futures, heat_id):
   heat = Heat.get_by_id(heat_id)
   futures.append(ndb.delete_multi_async(StaffAssignment.query(StaffAssignment.heat == heat.key).iter(keys_only=True)))
+
+def DeleteHeat(heat_id):
+  heat = Heat.get_by_id(heat_id)
+  if heat:
+    heat.key.delete()
