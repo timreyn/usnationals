@@ -39,7 +39,7 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/twiml', handler=twiml.Twiml),
     webapp2.Route(r'/current_heat/<stage_id:.>', handler=current_heat.CurrentHeat),
     webapp2.Route('/admin/add_data', handler=add_data.AddData, name='add_data'),
-    #webapp2.Route(r'/admin/assign_stations/<stage_id:.>', handler=assign_stations.AssignStations),
+    webapp2.Route(r'/admin/assign_stations/<stage_id:.>', handler=assign_stations.AssignStations),
     webapp2.Route('/admin/edit_users', handler=edit_users.EditUsers, name='edit_users'),
     webapp2.Route(r'/admin/set_firebase_key/<key:.*>', handler=set_firebase_key.SetFirebaseKey),
     webapp2.Route('/admin/clear_notifications', handler=clear_notifications.ClearNotifications),
