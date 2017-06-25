@@ -30,6 +30,8 @@ class AddData(webapp2.RequestHandler):
     for row in csv.reader(memfile):
       if not row:
         continue
+      if row[0][0] == '#':
+        continue
       if row[0] == 'stage':
         if len(row) != 4:
           return 'Bad row ' + str(row)
