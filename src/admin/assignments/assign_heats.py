@@ -25,24 +25,51 @@ def GetNextCompetitor(state):
   best_competitor = None
   for competitor in state.GetCompetitors():
     score = BusyScore(competitor, state)
-    if score > best_score:
+    if score >= best_score:
       best_score = score
       best_competitor = competitor
   return best_competitor
 
 
-def GetHeatAssignments(competitor, state, rounds, assignments = [], best_score = 0.0):
+def GetHeatAssignments(competitor, state, rounds, assignments = [], best_score = 0.0, incoming_score = 1.0):
   if not rounds:
-    return assignments, AssignmentScore(competitor, assignments, state)
+    return assignments, incoming_score
   best_assignments = []
   heats = state.AllHeats(competitor, rounds[0])
   random.shuffle(heats)
+  heat_and_score = []
+  considered_times = set()
   for heat in heats:
-    intermediate_score = AssignmentScore(competitor, assignments + [heat], state)
-    if intermediate_score < best_score or intermediate_score == 0.0:
+    if heat.start_time in considered_times:
       continue
-    new_assignments, new_score = GetHeatAssignments(competitor, state, rounds[1:], assignments + [heat], best_score)
-    if new_score == 1.0:
+    score = AssignmentScore(competitor, assignments + [heat], state)
+    if len(rounds) == 1 and score == incoming_score:
+      return assignments + [heat], score
+    # If the new heat has a perfect score, recurse right now.
+    if score == incoming_score:
+      considered_times.add(heat.start_time)
+      new_assignments, new_score = GetHeatAssignments(competitor, state, rounds[1:], assignments + [heat], best_score, incoming_score)
+      # If this heat was optimal, or the total assignment was good enough, return.
+      if new_score == incoming_score or new_score >= 0.8:
+        return new_assignments, new_score
+      if new_score > best_score:
+        best_assignments = new_assignments
+        best_score = new_score
+    else:
+      # Otherwise, add it to the queue.
+      heat_and_score.append([heat, AssignmentScore(competitor, assignments + [heat], state)])
+  for heat, intermediate_score in sorted(heat_and_score, key=lambda x: x[1], reverse=True):
+    if intermediate_score <= best_score or intermediate_score == 0.0:
+      continue
+    if heat.start_time in considered_times:
+      continue
+    considered_times.add(heat.start_time)
+    if len(rounds) == 1:
+      new_assignments, new_score = assignments + [heat], intermediate_score
+    else:
+      new_assignments, new_score = GetHeatAssignments(competitor, state, rounds[1:], assignments + [heat], best_score, intermediate_score)
+    # If this heat was optimal, or the total assignment was good enough, return.
+    if new_score == incoming_score or new_score >= 0.8:
       return new_assignments, new_score
     if new_score > best_score:
       best_assignments = new_assignments
@@ -70,7 +97,8 @@ def AssignHeats(rounds, request_id):
 
   while state.HasMoreCompetitors():
     competitor = GetNextCompetitor(state)
-    rounds = sorted(state.GetCompetitorRounds(competitor), key = lambda r: r.heat_length)
+    print 'Assigning ' + competitor.name
+    rounds = sorted(state.GetCompetitorRounds(competitor), key = lambda r: r.heat_length, reverse=True)
     heat_assignments, score = GetHeatAssignments(competitor, state, rounds)
     if score == 0.0:
       print competitor.name
