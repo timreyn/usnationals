@@ -211,7 +211,7 @@ def AddCompetitor(futures, cusa_id, wca_id, name, is_staff, date_of_birth):
 
 def AssignHeat(futures, event, round, stage, heat, person_id):
   person_id = str(person_id)
-  assignment_id = HeatAssignment.Id(event, round, person_id)
+  assignment_id = HeatAssignment.Id(Round.Id(event, round), person_id)
   assignment = HeatAssignment.get_by_id(assignment_id) or HeatAssignment(id = assignment_id)
   heat_id = Heat.Id(event, round, stage, heat)
 
@@ -288,18 +288,18 @@ def AddEventRegistration(futures, competitor_id, event_id, single, average):
 
 def DeleteData(futures, data_type):
   if data_type == 'stage':
-    futures.append(ndb.delete_multi_async(Stage.query().iter(keys_only=True)))
+    futures.extend(ndb.delete_multi_async(Stage.query().iter(keys_only=True)))
   elif data_type == 'event':
-    futures.append(ndb.delete_multi_async(Event.query().iter(keys_only=True)))
-    futures.append(ndb.delete_multi_async(Round.query().iter(keys_only=True)))
+    futures.extend(ndb.delete_multi_async(Event.query().iter(keys_only=True)))
+    futures.extend(ndb.delete_multi_async(Round.query().iter(keys_only=True)))
   elif data_type == 'heat':
-    futures.append(ndb.delete_multi_async(Heat.query().iter(keys_only=True)))
+    futures.extend(ndb.delete_multi_async(Heat.query().iter(keys_only=True)))
   elif data_type == 'competitor':
-    futures.append(ndb.delete_multi_async(Competitor.query().iter(keys_only=True)))
+    futures.extend(ndb.delete_multi_async(Competitor.query().iter(keys_only=True)))
   elif data_type == 'heat_assignment':
-    futures.append(ndb.delete_multi_async(HeatAssignment.query().iter(keys_only=True)))
+    futures.extend(ndb.delete_multi_async(HeatAssignment.query().iter(keys_only=True)))
   elif data_type == 'staff_assignment':
-    futures.append(ndb.delete_multi_async(StaffAssignment.query().iter(keys_only=True)))
+    futures.extend(ndb.delete_multi_async(StaffAssignment.query().iter(keys_only=True)))
 
 def DeleteStaffAssignment(futures, heat_id):
   heat = Heat.get_by_id(heat_id)
