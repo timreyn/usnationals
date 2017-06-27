@@ -30,6 +30,7 @@ round,333fm,1,1,60
 round,333fm,2,1,60
 round,333fm,3,1,60
 round,sq1,1,0,20
+round,sq1,2,0,15,64
 round,sq1,2,1,15,16
 round,pyram,1,0,15
 round,pyram,2,0,15,150
