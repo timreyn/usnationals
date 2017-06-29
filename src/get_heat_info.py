@@ -33,7 +33,10 @@ class GetHeatInfo(CacheHandler):
       heat_info['staff'].append(assignment_dict)
       if staff_assignment.job == 'J':
         used_stations.append(staff_assignment.station)
-    for i in range(max(used_stations)):
+    num_stations = 0
+    if used_stations:
+      num_stations = max(used_stations)
+    for i in range(num_stations):
       s = i + 1
       if s not in used_stations:
         fake_assignment = StaffAssignment()
