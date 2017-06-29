@@ -70,8 +70,8 @@ class StatusTracker(webapp2.RequestHandler):
     day = int(self.request.get('day'))
     if not day:
       day = 29
-    start_time = datetime.datetime(2016, 7, day, 0, 0, 0)
-    end_time = datetime.datetime(2016, 7, day, 23, 59, 0)
+    start_time = datetime.datetime(2017, 7, day, 0, 0, 0)
+    end_time = datetime.datetime(2017, 7, day, 23, 59, 0)
     heats_by_hour_and_stage = collections.defaultdict(lambda: collections.defaultdict(list))
     all_hours = set()
     for heat in Heat.query().filter(Heat.start_time > start_time).filter(Heat.start_time < end_time).iter():
@@ -83,10 +83,10 @@ class StatusTracker(webapp2.RequestHandler):
     all_stages = [Stage.get_by_id(s) for s in ('r', 'b', 'g', 'o', 'y')]
     template = JINJA_ENVIRONMENT.get_template('status_tracker.html')
     all_days = [
-        (28, 'Thursday', day == 28),
-        (29, 'Friday', day == 29),
-        (30, 'Saturday', day == 30),
-        (31, 'Sunday', day == 31),
+        (6, 'Thursday', day == 6),
+        (7, 'Friday', day == 7),
+        (8, 'Saturday', day == 8),
+        (9, 'Sunday', day == 9),
     ]
     self.response.write(template.render({
         'heat_dict': heats_by_hour_and_stage,
