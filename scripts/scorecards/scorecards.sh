@@ -1,5 +1,9 @@
 URL="https://usnationals2017.appspot.com/scorecards?$2&$3"
 
+if [[ -n "$4" ]]; then
+  URL="$URL&$4"
+fi
+
 set -e
 
 OUTPUT_DIR=$(dirname $0)

@@ -8,10 +8,20 @@ from src.models import Heat
 from src.models import HeatAssignment
 from src.models import Round
 
+DEFAULT = 0
+STAFF_ONLY = 1
+NON_STAFF_ONLY = 2
+
+
 class GetScorecards(webapp2.RequestHandler):
   def get(self):
     template = JINJA_ENVIRONMENT.get_template('scorecards.tex')
     pages = []
+    staff_status = DEFAULT
+    if self.request.get('staff') == 'yes':
+      staff_status = STAFF_ONLY
+    elif self.request.get('staff') == 'no':
+      staff_status = NON_STAFF_ONLY
     for round_id in self.request.get('r').split(','):
       r = Round.get_by_id(round_id)
       if not r:
@@ -25,6 +35,10 @@ class GetScorecards(webapp2.RequestHandler):
       competitors = []
       for heat in Heat.query(Heat.round == r.key).iter():
         if self.request.get('s') and heat.stage.id() not in self.request.get('s'):
+          continue
+        if staff_status == STAFF_ONLY and heat.number != 0:
+          continue
+        if staff_status == NON_STAFF_ONLY and heat.number == 0:
           continue
         heat_string = '%s%d' % (heat.stage.id().upper(), heat.number)
         for heat_assignment in HeatAssignment.query(HeatAssignment.heat == heat.key).iter():
