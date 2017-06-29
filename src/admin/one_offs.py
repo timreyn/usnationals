@@ -8,7 +8,7 @@ class OneOffHandler(webapp2.RequestHandler):
     futures = []
     if name == 'garrett':
       # Give all of Nathan Dwyer's judging jobs to Garrett Webster.
-      garrett = Competitor.get_by_id('276')
+      garrett = Competitor.get_by_id('277')
       nathan = Competitor.get_by_id('533')
       for assignment in StaffAssignment.query(StaffAssignment.staff_member == nathan.key).iter():
         assignment.staff_member = garrett.key
