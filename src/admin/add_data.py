@@ -144,6 +144,10 @@ class AddData(webapp2.RequestHandler):
         if len(row) != 2:
           return 'Bad heat deletion ' + str(row)
         DeleteHeat(row[1])
+      elif row[0] == 'DELETE_HEAT_ASSIGNMENT':
+        if len(row) != 2:
+          return 'Bad heat assignment deletion ' + str(row)
+        DeleteHeatAssignment(row[1])
     for future in futures:
       future.get_result()
     return 'Success!'
@@ -309,3 +313,8 @@ def DeleteHeat(heat_id):
   heat = Heat.get_by_id(heat_id)
   if heat:
     heat.key.delete()
+
+def DeleteHeatAssignment(heat_id):
+  assignment = HeatAssignment.get_by_id(heat_id)
+  if assignment:
+    assignment.key.delete()
