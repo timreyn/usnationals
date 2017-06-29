@@ -44,7 +44,7 @@ class JobSchedule(webapp2.RequestHandler):
       if stage and heat.stage.id() != stage_id:
         continue
       jobs_by_time[heat.start_time].append(staff_assignment)
-    for day in (29, 30, 31):
+    for day in (7, 8, 9):
       active_staff = collections.defaultdict(list)
       for time in sorted(jobs_by_time.keys()):
         if time.day != day:

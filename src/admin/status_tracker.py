@@ -69,7 +69,7 @@ class StatusTracker(webapp2.RequestHandler):
   def get(self):
     day = int(self.request.get('day'))
     if not day:
-      day = 29
+      day = 7
     start_time = datetime.datetime(2017, 7, day, 0, 0, 0)
     end_time = datetime.datetime(2017, 7, day, 23, 59, 0)
     heats_by_hour_and_stage = collections.defaultdict(lambda: collections.defaultdict(list))
