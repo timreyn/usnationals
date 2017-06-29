@@ -16,6 +16,7 @@ from src.admin import assign_heats
 from src.admin import assign_stations
 from src.admin import clear_notifications
 from src.admin import edit_users
+from src.admin import one_offs
 from src.admin import set_firebase_key
 from src.admin import status_tracker
 from src.admin.assignments import handler as assignments_handler
@@ -47,4 +48,5 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/admin/assign_later_heats', handler=assign_heats.AssignHeats, name='assign_heats'),
     webapp2.Route('/admin/assign_heats', handler=assignments_handler.AssignmentsHandler),
     webapp2.Route('/admin/assign_heats_debug/<request_id:.*>', handler=assignments_debug_handler.AssignmentsDebugHandler, name='assign_heats_debug'),
+    webapp2.Route('/admin/one_off/<name:.*>', handler=one_offs.OneOffHandler),
 ], debug=True)
