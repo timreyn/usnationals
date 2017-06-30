@@ -1,30 +1,37 @@
+import datetime
 import webapp2
 
 from src.models import Competitor
 from src.models import Heat
 from src.models import StaffAssignment
 
+def CloneAssignment(assignment, new_id):
+  new_assignment = StaffAssignment(id = assignment.key.id().replace('533', '277'))
+  new_assignment.heat = assignment.heat
+  if assignment.long_event:
+    new_assignment.long_event = assignment.long_event
+  new_assignment.staff_member = assignment.staff_member
+  new_assignment.job = assignment.job
+  if assignment.station:
+    new_assignment.station = assignment.station
+  if assignment.misc:
+    new_assignment.misc = assignment.misc
+  return new_assignment
+  
+
 class OneOffHandler(webapp2.RequestHandler):
   def get(self, name):
     futures = []
     if name == 'garrett':
-      # Give all of Nathan Dwyer's judging jobs to Garrett Webster.
+      # Give all of Nathan Dwyer's judging jobs on Friday and Saturday to Garrett Webster.
       garrett = Competitor.get_by_id('277')
       nathan = Competitor.get_by_id('533')
+      sunday_start = datetime.datetime(2017, 7, 9, 0, 0, 0)
       for assignment in StaffAssignment.query(StaffAssignment.staff_member == nathan.key).iter():
-        assignment.staff_member = garrett.key
-        futures.append(assignment.put_async())
-      for assignment in StaffAssignment.query(StaffAssignment.staff_member == garrett.key).iter():
-        new_assignment = StaffAssignment(id = assignment.key.id().replace('533', '277'))
-        new_assignment.heat = assignment.heat
-        if assignment.long_event:
-          new_assignment.long_event = assignment.long_event
-        new_assignment.staff_member = assignment.staff_member
-        new_assignment.job = assignment.job
-        if assignment.station:
-          new_assignment.station = assignment.station
-        if assignment.misc:
-          new_assignment.misc = assignment.misc
+        if assignment.heat.get().start_time > sunday_start:
+          continue
+        new_assignment = CloneAssignment(assignment, assignment.key.id().replace('533', '277'))
+        new_assignment.staff_member = garrett.key
         futures.append(assignment.key.delete_async())
         futures.append(new_assignment.put_async())
     elif name == '333oh_3':
@@ -36,16 +43,7 @@ class OneOffHandler(webapp2.RequestHandler):
           assignment.heat = oh_heat.key
           futures.append(assignment.put_async())
         for assignment in StaffAssignment.query(StaffAssignment.heat == oh_heat.key):
-          new_assignment = StaffAssignment(id = assignment.key.id().replace('pyram', '333oh'))
-          new_assignment.heat = assignment.heat
-          if assignment.long_event:
-            new_assignment.long_event = assignment.long_event
-          new_assignment.staff_member = assignment.staff_member
-          new_assignment.job = assignment.job
-          if assignment.station:
-            new_assignment.station = assignment.station
-          if assignment.misc:
-            new_assignment.misc = assignment.misc
+          new_assignment = CloneAssignment(assignment, assignment.key.id().replace('pyram', '333oh'))
           futures.append(assignment.key.delete_async())
           futures.append(new_assignment.put_async())
     elif name == 'staff_heat_numbers':
@@ -54,16 +52,8 @@ class OneOffHandler(webapp2.RequestHandler):
       right_heats = [Heat.get_by_id(Heat.Id(event, 2, stage, 0)) for event in ['333oh', 'skewb', '222'] for stage in ['r', 'b', 'g', 'o']]
       for wrong_heat, right_heat in zip(wrong_heats, right_heats):
         for assignment in StaffAssignment.query(StaffAssignment.heat == wrong_heat.key).iter():
-          new_assignment = StaffAssignment(id = assignment.key.id().replace('-1', '0'))
+          new_assignment = CloneAssignment(assignment, assignment.key.id().replace('-1', '0'))
           new_assignment.heat = right_heat.key
-          if assignment.long_event:
-            new_assignment.long_event = assignment.long_event
-          new_assignment.staff_member = assignment.staff_member
-          new_assignment.job = assignment.job
-          if assignment.station:
-            new_assignment.station = assignment.station
-          if assignment.misc:
-            new_assignment.misc = assignment.misc
           futures.append(assignment.key.delete_async())
           futures.append(new_assignment.put_async())
     for future in futures:
