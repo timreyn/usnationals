@@ -48,5 +48,23 @@ class OneOffHandler(webapp2.RequestHandler):
             new_assignment.misc = assignment.misc
           futures.append(assignment.key.delete_async())
           futures.append(new_assignment.put_async())
+    elif name == 'staff_heat_numbers':
+      # Heats numbered -1 should be numbered 0 instead.
+      wrong_heats = [Heat.get_by_id(Heat.Id(event, 2, stage, -1)) for event in ['333oh', 'skewb', '222'] for stage in ['r', 'b', 'g', 'o']]
+      right_heats = [Heat.get_by_id(Heat.Id(event, 2, stage, 0)) for event in ['333oh', 'skewb', '222'] for stage in ['r', 'b', 'g', 'o']]
+      for wrong_heat, right_heat in zip(wrong_heats, right_heats):
+        for assignment in StaffAssignment.query(StaffAssignment.heat == wrong_heat.key).iter():
+          new_assignment = StaffAssignment(id = assignment.key.id().replace('-1', '0'))
+          new_assignment.heat = right_heat.key
+          if assignment.long_event:
+            new_assignment.long_event = assignment.long_event
+          new_assignment.staff_member = assignment.staff_member
+          new_assignment.job = assignment.job
+          if assignment.station:
+            new_assignment.station = assignment.station
+          if assignment.misc:
+            new_assignment.misc = assignment.misc
+          futures.append(assignment.key.delete_async())
+          futures.append(new_assignment.put_async())
     for future in futures:
       future.get_result()
