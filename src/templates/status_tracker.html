@@ -51,6 +51,9 @@
                   <td class="deltacell" style="color: {{ Formatters.DeltaColor(heat) }}">
                     {{ Formatters.FormatDelta(heat) }}
                   </td>
+                  {% if is_admin and heat.number >= 0 %}
+                    <td><a href="{{ uri_for('admin_notification', event_id=heat.round.get().event.id(), round_id=heat.round.get().number, stage_id=heat.stage.id(), heat_number=heat.number) }}">[call]</a></td>
+                  {% endif %}
                 </tr>
               {% endfor %}
             </table>

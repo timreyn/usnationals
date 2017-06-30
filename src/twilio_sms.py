@@ -23,6 +23,7 @@ def SendStaffSMS(staff_assignment, subscriber):
     'H': 'work at the Help Desk',
     'L': 'Judge in the long room',
     'U': 'Scramble in the long room',
+    'Y': staff_assignment.misc,
   }[staff_assignment.job]
   message = 'It\'s time for %s to %s' % (staff_assignment.staff_member.get().name, job)
   twilio_config = TwilioConfig.get_by_id("1")

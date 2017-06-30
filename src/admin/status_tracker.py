@@ -1,3 +1,5 @@
+from google.appengine.api import users
+
 import collections
 import datetime
 import webapp2
@@ -92,7 +94,9 @@ class StatusTracker(webapp2.RequestHandler):
         'heat_dict': heats_by_hour_and_stage,
         'all_stages': all_stages,
         'path': webapp2.uri_for('status_tracker'),
+        'uri_for': webapp2.uri_for,
         'all_hours': all_hours,
         'all_days': all_days,
         'Formatters': Formatters,
+        'is_admin': users.is_current_user_admin(),
     }))    

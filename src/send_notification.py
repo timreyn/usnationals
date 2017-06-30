@@ -1,3 +1,4 @@
+from google.appengine.api import users
 from google.appengine.ext import deferred
 from google.appengine.ext import ndb
 
@@ -15,16 +16,28 @@ from src.models import StaffAssignment
 
 class SendNotification(webapp2.RequestHandler):
   def get(self, event_id, round_id, stage_id, heat_number):
-    self.post(event_id, round_id, stage_id, heat_number, dry_run=True)
+    user = users.GetCurrentUser()
+    is_admin = self.request.path.startswith('/admin/') and user
+    self.post(event_id, round_id, stage_id, heat_number, dry_run=not is_admin)
 
   def post(self, event_id, round_id, stage_id, heat_number, dry_run=False):
-    if not dry_run:
+    user = users.GetCurrentUser()
+    is_admin = self.request.path.startswith('/admin/') and user
+    if not dry_run and not is_admin:
       device_id = self.request.get('device_id')
       admin_device = AdminDevice.get_by_id(device_id)
       if not admin_device or not admin_device.is_authorized:
         self.response.set_status(401)
         self.response.write('Unauthorized')
         return
+    if is_admin:
+      admin_device = AdminDevice.get_by_id(user.email())
+      if not admin_device:
+        admin_device = AdminDevice(id = user.email())
+        admin_device.authorized_time = datetime.datetime.now()
+        # Synthetic admin accounts can't be used to call via the app.
+        admin_device.is_authorized = False
+        admin_device.put()
     round_id = int(round_id)
     heat_number = int(heat_number)
     heat_id = Heat.Id(event_id, round_id, stage_id, heat_number)

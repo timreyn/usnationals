@@ -36,6 +36,10 @@ app = webapp2.WSGIApplication([
     webapp2.Route(r'/send_notification' +
                   r'/<event_id:.*>/<round_id:\d*>/<stage_id:.*>/<heat_number:\d*>',
                   handler=send_notification.SendNotification),
+    webapp2.Route(r'/admin/send_notification' +
+                  r'/<event_id:.*>/<round_id:\d*>/<stage_id:.*>/<heat_number:\d*>',
+                  handler=send_notification.SendNotification,
+                  name='admin_notification'),
     webapp2.Route('/job_schedule', handler=job_schedule.JobSchedule),
     webapp2.Route('/twiml', handler=twiml.Twiml),
     webapp2.Route(r'/current_heat/<stage_id:.>', handler=current_heat.CurrentHeat),
