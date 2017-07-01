@@ -92,7 +92,7 @@ class AddData(webapp2.RequestHandler):
         if ret_value != 'ok':
           return 'Bad heat assignment ' + str(row) + ': ' + ret_value
       elif row[0] == 'staff_assignment':
-        if len(row) not in (7, 8, 9):
+        if len(row) not in (7, 8, 9, 10):
           return 'Bad staff assignment ' + str(row)
         event_id = row[1]
         round_id = int(row[2])
@@ -106,7 +106,10 @@ class AddData(webapp2.RequestHandler):
         misc = ''
         if len(row) >= 9:
           misc = row[8]
-        ret_value = AddStaffAssignment(futures, event_id, round_id, stage, heat, staff_id, job, long_event, misc)
+        station = 0
+        if len(row) >= 10:
+          station = int(row[9])
+        ret_value = AddStaffAssignment(futures, event_id, round_id, stage, heat, staff_id, job, long_event, misc, station)
         if ret_value != 'ok':
           return 'Bad staff assignment ' + str(row) + ': ' + ret_value
       elif row[0] == 'twilio':
@@ -230,7 +233,7 @@ def AssignHeat(futures, event, round, stage, heat, person_id):
   futures.append(assignment.put_async())
   return 'ok'
         
-def AddStaffAssignment(futures, event_id, round_id, stage, heat_num, staff_id, job, long_event, misc):
+def AddStaffAssignment(futures, event_id, round_id, stage, heat_num, staff_id, job, long_event, misc, station):
   staff_id = str(staff_id)
   heat_id = Heat.Id(event_id, round_id, stage, heat_num)
   heat = Heat.get_by_id(heat_id)
@@ -252,7 +255,10 @@ def AddStaffAssignment(futures, event_id, round_id, stage, heat_num, staff_id, j
     assignment.long_event = long_event_round.key
   if misc:
     assignment.misc = misc
-  assignment.station = None
+  if station:
+    assignment.station = station
+  else:
+    assignment.station = None
   futures.append(assignment.put_async())
   return 'ok'
 
