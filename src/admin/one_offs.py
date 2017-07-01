@@ -34,6 +34,21 @@ class OneOffHandler(webapp2.RequestHandler):
         new_assignment.staff_member = garrett.key
         futures.append(assignment.key.delete_async())
         futures.append(new_assignment.put_async())
+    elif name == 'dimitri':
+      # Dimitri Dennis cancelled.  Give his Friday+Saturday jobs to Nathan, and give his Sunday jobs to Shelley.
+      dimitri = Competitor.get_by_id('215')
+      nathan = Competitor.get_by_id('533')
+      shelley = Competitor.get_by_id('678')
+      sunday_start = datetime.datetime(2017, 7, 9, 0, 0, 0)
+      for assignment in StaffAssignment.query(StaffAssignment.staff_member == dimitri.key).iter():
+        if assignment.heat.get().start_time > sunday_start:
+          new_assignment = CloneAssignment(assignment, assignment.key.id().replace('215', '678'))
+          new_assignment.staff_member = shelley.key
+        else:
+          new_assignment = CloneAssignment(assignment, assignment.key.id().replace('215', '533'))
+          new_assignment.staff_member = nathan.key
+        futures.append(assignment.key.delete_async())
+        futures.append(new_assignment.put_async())
     elif name == '333oh_3':
       # Blue stage pyra round 3 should really be OH round 3.
       oh_heats = [Heat.get_by_id(Heat.Id('333oh', 3, 'b', num)) for num in [1, 2, 3]]
