@@ -23,7 +23,7 @@
     <string name="action_stage_schedule">View the Schedule</string>
     <string name="action_cubingusa_link">Competition Website</string>
     <string name="action_cubecomps_link">Results on Cubecomps</string>
-    <string name="title_activity_heat_info">Heat Info</string>
+    <string name="title_activity_heat_info">Group Info</string>
     <string name="competitors_divider">Competitors</string>
     <string name="scramblers_divider">Scramblers</string>
     <string name="runners_divider">Runners</string>
@@ -32,7 +32,7 @@
         %1$s Round %2$d - %3$s %4$d
     </string>
     <string name="heat_info_header_final">
-        %1$s Final %2$s Stage Heat %3$d
+        %1$s Final %2$s Stage Group %3$d
     </string>
     <string name="heat_info_start_time">
         Start Time: %1$s %2$s
