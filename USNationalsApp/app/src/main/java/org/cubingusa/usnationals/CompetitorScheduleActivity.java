@@ -115,7 +115,7 @@ public class CompetitorScheduleActivity extends AppCompatActivity {
                             .scheme("http")
                             .authority("m.cubecomps.com")
                             .appendPath("competitions")
-                            .appendPath("1639")
+                            .appendPath("2323")
                             .appendPath("competitors")
                             .appendPath(mCompetitorId)
                             .build();
