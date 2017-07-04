@@ -8,6 +8,7 @@ USNationalsApp/.idea/workspace.xml
 USNationalsApp/.idea/libraries
 USNationalsApp/.DS_Store
 USNationalsApp/build
+USNationalsApp/app/app-release.apk
 USNationalsApp/app/build
 USNationalsApp/app/google-services.json
 scripts/scorecards/*.aux
