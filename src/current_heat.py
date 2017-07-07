@@ -31,10 +31,10 @@ class CurrentHeat(webapp2.RequestHandler):
     if next_heat:
       output['next_heat'] = {'heat': next_heat.ToDict()}
       if current_heat and current_heat.end_time >= next_heat.start_time:
-        estimated_call_time = next_heat.start_time + (current_heat.call_time - current_heat.start_time)
+        estimated_call_time = next_heat.start_time + (current_heat.call_time - current_heat.start_time) + datetime.timedelta(hours=3)
       else:
         estimated_call_time = next_heat.start_time
-      expected_seconds = max(0, int((estimated_call_time - now).total_seconds()) + 3 * 60 * 60)
+      expected_seconds = max(0, int((estimated_call_time - now).total_seconds()))
       low_end = expected_seconds / (60 * 5) * 5
       high_end = low_end + 5
       output['next_heat']['estimate'] = '%d &mdash; %d minutes' % (low_end, high_end)
