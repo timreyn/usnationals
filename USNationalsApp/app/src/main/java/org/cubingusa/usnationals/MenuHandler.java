@@ -30,7 +30,7 @@ public class MenuHandler {
                 Uri cubingusa_uri = new Uri.Builder()
                         .scheme("https")
                         .authority("www.cubingusa.com")
-                        .appendPath("usnationals2016")
+                        .appendPath("nationals2017")
                         .appendPath("index.php")
                         .build();
                 intent.setAction(Intent.ACTION_VIEW);
