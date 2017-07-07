@@ -14,11 +14,11 @@ class CurrentHeat(webapp2.RequestHandler):
     current_heat = None
     next_heat = None
     output = {}
-    now = datetime.datetime.now() - datetime.timedelta(hours=7) # hack!
+    now = datetime.datetime.now() - datetime.timedelta(hours=4) # hack! time zones are hard
     for heat in Heat.query(Heat.stage == stage.key).iter():
       if not heat.round.get().event.get().is_real:
         continue
-      if heat.key.id() == '333oh_1_o_0':
+      if heat.start_time < datetime.datetime(2017, 7, 7):
         continue
       if heat.call_time:
         if not current_heat or heat.call_time > current_heat.call_time:
