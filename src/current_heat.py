@@ -34,7 +34,7 @@ class CurrentHeat(webapp2.RequestHandler):
         estimated_call_time = next_heat.start_time + (current_heat.call_time - current_heat.start_time)
       else:
         estimated_call_time = next_heat.start_time
-      expected_seconds = max(0, int((estimated_call_time - now).total_seconds()))
+      expected_seconds = max(0, int((estimated_call_time - now).total_seconds()) + 3 * 60 * 60)
       low_end = expected_seconds / (60 * 5) * 5
       high_end = low_end + 5
       output['next_heat']['estimate'] = '%d &mdash; %d minutes' % (low_end, high_end)
