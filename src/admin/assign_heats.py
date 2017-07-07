@@ -59,6 +59,9 @@ class AssignHeats(webapp2.RequestHandler):
         return
       competitors.append(c)
       competitor_ids.add(c.key.id())
+
+    if r.is_final:
+      competitors = competitors[::2] + competitors[1::2]
     competitor_to_conflicting_heats = collections.defaultdict(list)
     round_heats = [h for h in Heat.query(Heat.round == r.key).iter()]
     if r.key.id() == 'skewb_2':
@@ -105,6 +108,7 @@ class AssignHeats(webapp2.RequestHandler):
     # Now assign heats.
     assignments = {}
     i = 0
+
     for heat in sorted(round_heats, key=lambda heat: heat.number):
       num_competitors = len(competitors) / len(round_heats)
       if i < len(competitors) % len(round_heats):
@@ -156,7 +160,7 @@ class AssignHeats(webapp2.RequestHandler):
     for key, value in self.request.POST.iteritems():
       if key.startswith('c_'):
         competitor_id = key[2:]
-        assignment = HeatAssignment(id = HeatAssignment.Id(event.key.id(), r.number, competitor_id))
+        assignment = HeatAssignment(id = HeatAssignment.Id(Round.Id(event.key.id(), r.number), competitor_id))
         if value not in round_heats:
           self.response.write('Couldn\'t find heat %s' % value)
           continue

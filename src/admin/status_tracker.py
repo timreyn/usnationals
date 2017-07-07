@@ -43,7 +43,7 @@ class Formatters(object):
       return '#000000'
     total_seconds_delta = (heat.call_time - heat.start_time).total_seconds()
     # HACK HACK HACK HACK i messed up time zones
-    total_seconds_delta = total_seconds_delta - 3 * 60 * 60
+    total_seconds_delta = total_seconds_delta + 3 * 60 * 60
     if total_seconds_delta < MIDDLE:
       fraction = float(MIDDLE - total_seconds_delta)/(MIDDLE - FULL_GREEN)
       R = scale(fraction, GRAY_R, GREEN_R)
@@ -60,11 +60,11 @@ class Formatters(object):
   def FormatDelta(heat):
     if not heat.call_time:
       return ''
-    total_seconds_delta = abs((heat.call_time - heat.start_time).total_seconds())
-    # HACK HACK HACK HACK i messed up time zones
-    total_seconds_delta = total_seconds_delta - 3 * 60 * 60
-    minutes = total_seconds_delta / 60
-    seconds = total_seconds_delta % 60
+    total_seconds_delta = (heat.call_time - heat.start_time).total_seconds()
+    total_seconds_delta = total_seconds_delta + 3 * 60 * 60
+    total_seconds_delta_abs = abs(total_seconds_delta)
+    minutes = total_seconds_delta_abs / 60
+    seconds = total_seconds_delta_abs % 60
     if total_seconds_delta > 0:
       return '-%d:%02d' % (minutes, seconds)
     if total_seconds_delta < 0:
