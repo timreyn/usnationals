@@ -25,7 +25,7 @@ class GetSchedule(CacheHandler):
       if hide_old and heat.call_time and now - heat.call_time > datetime.timedelta(minutes = 30):
         continue
       # HACK HACK HACK
-      if hide_old and heat.start_time < datetime.datetime(2017, 7, 7):
+      if hide_old and heat.start_time < datetime.datetime(2018, 7, 27):
         continue
       heats_by_time[heat.start_time].append(heat)
     for staff_assignment in staff_assignments:

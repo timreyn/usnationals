@@ -18,7 +18,7 @@ class CurrentHeat(webapp2.RequestHandler):
     for heat in Heat.query(Heat.stage == stage.key).iter():
       if not heat.round.get().event.get().is_real:
         continue
-      if heat.start_time < datetime.datetime(2017, 7, 7):
+      if heat.start_time < datetime.datetime(2018, 7, 27):
         continue
       if heat.call_time:
         if not current_heat or heat.call_time > current_heat.call_time:
