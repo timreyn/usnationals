@@ -143,11 +143,11 @@ class AddData(webapp2.RequestHandler):
         if len(row) != 2:
           return 'Bad staff assignment deletion ' + str(row)
         DeleteStaffAssignment(futures, row[1])
-      elif row[0] == 'DELETE_HEAT':
+      elif row[0] == 'DELETE_GROUP':
         if len(row) != 2:
           return 'Bad group deletion ' + str(row)
         DeleteGroup(row[1])
-      elif row[0] == 'DELETE_HEAT_ASSIGNMENT':
+      elif row[0] == 'DELETE_GROUP_ASSIGNMENT':
         if len(row) != 2:
           return 'Bad group assignment deletion ' + str(row)
         DeleteGroupAssignment(row[1])
