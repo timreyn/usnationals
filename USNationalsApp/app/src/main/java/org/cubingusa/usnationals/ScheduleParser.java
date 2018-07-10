@@ -27,7 +27,7 @@ public class ScheduleParser {
     private final LayoutInflater mInflater;
     private EventIcons mEventIcons;
     private int mItemsAdded = 0;
-    private GregorianCalendar mLastHeatDate = null;
+    private GregorianCalendar mLastGroupDate = null;
 
     public ScheduleParser(Context context, LayoutInflater inflater, LinearLayout container) {
         this.mContext = context;
@@ -36,30 +36,30 @@ public class ScheduleParser {
         this.mEventIcons = new EventIcons(mContext);
     }
 
-    public Pair<Heat, LinearLayout> parseHeat(JsonReader reader) throws IOException {
-        final Heat heat = new Heat();
-        heat.parseFromJson(reader);
+    public Pair<Group, LinearLayout> parseGroup(JsonReader reader) throws IOException {
+        final Group group = new Group();
+        group.parseFromJson(reader);
 
         StringBuilder builder = new StringBuilder();
-        builder.append(heat.event.name);
+        builder.append(group.event.name);
         builder.append(" ");
-        if (!heat.stage.name.equals("")) {
-            builder.append(heat.stage.name);
+        if (!group.stage.name.equals("")) {
+            builder.append(group.stage.name);
             builder.append(" ");
         }
-        builder.append(heat.number);
+        builder.append(group.number);
 
         LinearLayout scheduleItem =
-                addScheduleItem(heat, builder.toString(), heat.event, heat.stage.color);
-        return new Pair<Heat, LinearLayout>(heat, scheduleItem);
+                addScheduleItem(group, builder.toString(), group.event, group.stage.color);
+        return new Pair<Group, LinearLayout>(group, scheduleItem);
     }
 
     public void parseStaffAssignment(JsonReader reader) throws IOException {
         StaffAssignment staffAssignment = new StaffAssignment(new HashSet<String>());
         staffAssignment.parseFromJson(reader);
 
-        Event event = staffAssignment.heat.event;
-        int color = staffAssignment.heat.stage.color;
+        Event event = staffAssignment.group.event;
+        int color = staffAssignment.group.stage.color;
 
         StringBuilder builder = new StringBuilder();
         switch (staffAssignment.job) {
@@ -103,30 +103,30 @@ public class ScheduleParser {
         }
         if (!staffAssignment.job.equals("Y")) {
             builder.append(" - ");
-            builder.append(staffAssignment.heat.event.id);
-            if (staffAssignment.heat.event.isReal) {
-                builder.append(" heat ");
-                builder.append(staffAssignment.heat.number);
+            builder.append(staffAssignment.group.event.id);
+            if (staffAssignment.group.event.isReal) {
+                builder.append(" group ");
+                builder.append(staffAssignment.group.number);
             }
         }
 
-        addScheduleItem(staffAssignment.heat, builder.toString(), event, color);
+        addScheduleItem(staffAssignment.group, builder.toString(), event, color);
     }
 
     public LinearLayout addScheduleItem(
-            final Heat heat, String text, final Event event, final int color) {
+            final Group group, String text, final Event event, final int color) {
         DateFormat format = DateFormat.getTimeInstance(DateFormat.SHORT);
 
-        if (heat.startTime != null) {
-            if (mLastHeatDate == null ||
-                    heat.startTime.get(Calendar.DAY_OF_YEAR) !=
-                            mLastHeatDate.get(Calendar.DAY_OF_YEAR)) {
-                Util.addDivider(heat.startTime.getDisplayName(
+        if (group.startTime != null) {
+            if (mLastGroupDate == null ||
+                    group.startTime.get(Calendar.DAY_OF_YEAR) !=
+                            mLastGroupDate.get(Calendar.DAY_OF_YEAR)) {
+                Util.addDivider(group.startTime.getDisplayName(
                         Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault()),
                         mInflater, mContainer);
                 mItemsAdded++;
             }
-            mLastHeatDate = heat.startTime;
+            mLastGroupDate = group.startTime;
         }
 
         mInflater.inflate(R.layout.content_schedule_item, mContainer);
@@ -135,7 +135,7 @@ public class ScheduleParser {
         ImageView scheduleItemIcon = (ImageView) scheduleItem.getChildAt(1);
         TextView scheduleItemName = (TextView) scheduleItem.getChildAt(2);
 
-        scheduleItemTime.setText(format.format(heat.startTime.getTime()));
+        scheduleItemTime.setText(format.format(group.startTime.getTime()));
         scheduleItem.setBackgroundColor(color);
         if (event == null) {
             scheduleItemIcon.setVisibility(View.INVISIBLE);
@@ -148,11 +148,11 @@ public class ScheduleParser {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
-                intent.setClass(mContext, HeatInfoActivity.class);
-                intent.putExtra(HeatInfoActivity.HEAT_ID_EXTRA, heat.number);
-                intent.putExtra(HeatInfoActivity.STAGE_ID_EXTRA, heat.stage.id);
-                intent.putExtra(HeatInfoActivity.ROUND_ID_EXTRA, heat.round.number);
-                intent.putExtra(HeatInfoActivity.EVENT_ID_EXTRA, heat.event.id);
+                intent.setClass(mContext, GroupInfoActivity.class);
+                intent.putExtra(GroupInfoActivity.HEAT_ID_EXTRA, group.number);
+                intent.putExtra(GroupInfoActivity.STAGE_ID_EXTRA, group.stage.id);
+                intent.putExtra(GroupInfoActivity.ROUND_ID_EXTRA, group.round.number);
+                intent.putExtra(GroupInfoActivity.EVENT_ID_EXTRA, group.event.id);
                 mContext.startActivity(intent);
             }
         });

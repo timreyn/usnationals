@@ -107,8 +107,8 @@ public class StageScheduleActivity extends AppCompatActivity {
                     case "isAdmin":
                         mIsAdmin = reader.nextBoolean();
                         break;
-                    case "heats":
-                        parseHeats(reader);
+                    case "groups":
+                        parseGroups(reader);
                         break;
                     default:
                         reader.skipValue();
@@ -169,7 +169,7 @@ public class StageScheduleActivity extends AppCompatActivity {
 
     }
 
-    private void parseHeats(JsonReader reader) throws IOException {
+    private void parseGroups(JsonReader reader) throws IOException {
         reader.beginArray();
         LinearLayout scheduleContainer = (LinearLayout) findViewById(R.id.schedule_container);
         if (scheduleContainer == null) {
@@ -180,18 +180,18 @@ public class StageScheduleActivity extends AppCompatActivity {
                 new ScheduleParser(this, getLayoutInflater(), scheduleContainer);
         final Map<String, List<LayoutContainer>> roundToLayouts = new HashMap<>();
         while (reader.hasNext()) {
-            Pair<Heat, LinearLayout> heatAndLayout = scheduleParser.parseHeat(reader);
-            final Heat heat = heatAndLayout.first;
+            Pair<Group, LinearLayout> groupAndLayout = scheduleParser.parseGroup(reader);
+            final Group group = groupAndLayout.first;
             LayoutContainer layoutContainer = new LayoutContainer();
-            layoutContainer.layout = heatAndLayout.second;
-            if (heat.number > 0) {
+            layoutContainer.layout = groupAndLayout.second;
+            if (group.number > 0) {
                 layoutContainer.canShowRound = false;
                 layoutContainer.layout.setVisibility(View.GONE);
-                final String roundStageKey = heat.round.id + "_" + heat.stage.id;
+                final String roundStageKey = group.round.id + "_" + group.stage.id;
                 if (!roundToLayouts.containsKey(roundStageKey)) {
                     roundToLayouts.put(roundStageKey, new ArrayList<LayoutContainer>());
                     final LinearLayout container = scheduleParser.addScheduleItem(
-                            heat, heat.event.name, heat.event, heat.stage.color);
+                            group, group.event.name, group.event, group.stage.color);
                     final LayoutContainer containerContainer = new LayoutContainer();
                     containerContainer.layout = container;
                     containerContainer.canShowRound = true;
@@ -210,17 +210,17 @@ public class StageScheduleActivity extends AppCompatActivity {
                             containerContainer.canShowRound = false;
                         }
                     });
-                    if (!mStageColorToLayouts.containsKey(heat.stage.name)) {
-                        mStageColorToLayouts.put(heat.stage.name, new ArrayList<LayoutContainer>());
+                    if (!mStageColorToLayouts.containsKey(group.stage.name)) {
+                        mStageColorToLayouts.put(group.stage.name, new ArrayList<LayoutContainer>());
                     }
-                    mStageColorToLayouts.get(heat.stage.name).add(containerContainer);
+                    mStageColorToLayouts.get(group.stage.name).add(containerContainer);
                 }
                 roundToLayouts.get(roundStageKey).add(layoutContainer);
             }
-            if (!mStageColorToLayouts.containsKey(heat.stage.name)) {
-                mStageColorToLayouts.put(heat.stage.name, new ArrayList<LayoutContainer>());
+            if (!mStageColorToLayouts.containsKey(group.stage.name)) {
+                mStageColorToLayouts.put(group.stage.name, new ArrayList<LayoutContainer>());
             }
-            mStageColorToLayouts.get(heat.stage.name).add(layoutContainer);
+            mStageColorToLayouts.get(group.stage.name).add(layoutContainer);
         }
         reader.endArray();
     }

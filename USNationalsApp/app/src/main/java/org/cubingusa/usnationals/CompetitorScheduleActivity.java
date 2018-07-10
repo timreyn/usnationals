@@ -227,8 +227,8 @@ public class CompetitorScheduleActivity extends AppCompatActivity {
                     case "competitor":
                         parseCompetitor(reader);
                         break;
-                    case "heats":
-                        parseHeats(reader);
+                    case "groups":
+                        parseGroups(reader);
                         break;
                     default:
                         reader.skipValue();
@@ -246,7 +246,7 @@ public class CompetitorScheduleActivity extends AppCompatActivity {
         setTitle(mCompetitor.name);
     }
 
-    private void parseHeats(JsonReader reader) throws IOException {
+    private void parseGroups(JsonReader reader) throws IOException {
         reader.beginArray();
         LinearLayout scheduleContainer = (LinearLayout) findViewById(R.id.schedule_container);
         if (scheduleContainer == null) {
@@ -260,7 +260,7 @@ public class CompetitorScheduleActivity extends AppCompatActivity {
             while (reader.hasNext()) {
                 switch (reader.nextName()) {
                     case "competing":
-                        scheduleParser.parseHeat(reader);
+                        scheduleParser.parseGroup(reader);
                         break;
                     case "staff":
                         scheduleParser.parseStaffAssignment(reader);

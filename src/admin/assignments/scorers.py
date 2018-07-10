@@ -4,8 +4,8 @@ class Scorer(object):
   def GetName(self):
     return "UNNAMED"
 
-  # previous_heat may be None if this is the first heat of the time period.
-  def Score(self, heat, previous_heat, competitor, state):
+  # previous_group may be None if this is the first group of the time period.
+  def Score(self, group, previous_group, competitor, state):
     return 0.0
 
   def GetMinimumScore(self):
@@ -16,15 +16,15 @@ class TimeBetweenHeatsScorer(Scorer):
   def GetName(self):
     return "time_between"
 
-  def Score(self, heat, previous_heat, competitor, state):
-    if not previous_heat:
+  def Score(self, group, previous_group, competitor, state):
+    if not previous_group:
       return 1.0
-    if heat.number == 0:
+    if group.number == 0:
       return 1.0
 
-    time_between_heats = heat.start_time - previous_heat.start_time
-    expected_time = previous_heat.round.get().heat_length
-    spare_time = time_between_heats.total_seconds() / 60 - expected_time
+    time_between_groups = group.start_time - previous_group.start_time
+    expected_time = previous_group.round.get().group_length
+    spare_time = time_between_groups.total_seconds() / 60 - expected_time
     if spare_time < 0:
       return 0.0
     if spare_time < 5:
@@ -47,11 +47,11 @@ class NumCompetitorsScorer(Scorer):
   def GetName(self):
     return "num_competitors"
 
-  def Score(self, heat, previous_heat, competitor, state):
-    if heat.number == 0:
+  def Score(self, group, previous_group, competitor, state):
+    if group.number == 0:
       return 1.0
-    expected_count = state.GetDesiredHeatSize(heat.round.get())
-    actual_count = len(state.GetCompetitorsInHeat(heat))
+    expected_count = state.GetDesiredHeatSize(group.round.get())
+    actual_count = len(state.GetCompetitorsInHeat(group))
     spots_left = expected_count - actual_count
 
     if spots_left >= 3:
@@ -76,17 +76,17 @@ class SpeedScorer(Scorer):
   def GetName(self):
     return "speed"
 
-  def Score(self, heat, previous_heat, competitor, state):
-    if heat.number != 1 or competitor.is_staff:
+  def Score(self, group, previous_group, competitor, state):
+    if group.number != 1 or competitor.is_staff:
       return 1.0
-    expected_count = len(state.AllHeats(competitor, heat.round.get()))
-    competitor_registration = state.GetCompetitorRegistrations(competitor)[heat.round.get().event.id()]
+    expected_count = len(state.AllHeats(competitor, group.round.get()))
+    competitor_registration = state.GetCompetitorRegistrations(competitor)[group.round.get().event.id()]
     my_bucket = (competitor_registration.non_staff_rank + 1) / expected_count
     percentile_buckets = collections.defaultdict(lambda: 0)
-    for c in state.GetCompetitorsInHeat(heat):
+    for c in state.GetCompetitorsInHeat(group):
       if c.is_staff:
         continue
-      other_registration = state.GetCompetitorRegistrations(c)[heat.round.get().event.id()]
+      other_registration = state.GetCompetitorRegistrations(c)[group.round.get().event.id()]
       percentile_buckets[(other_registration.non_staff_rank + 1) / expected_count]
     competitors_too_close = (self.CompetitorsTooClose(percentile_buckets, my_bucket, True) +
                              self.CompetitorsTooClose(percentile_buckets, my_bucket, False))

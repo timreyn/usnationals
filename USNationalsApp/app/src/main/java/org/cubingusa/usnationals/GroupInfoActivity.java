@@ -45,8 +45,8 @@ import java.util.Set;
 
 import cz.msebera.android.httpclient.Header;
 
-public class HeatInfoActivity extends AppCompatActivity {
-    private static final String TAG = "HeatInfoActivity";
+public class GroupInfoActivity extends AppCompatActivity {
+    private static final String TAG = "GroupInfoActivity";
 
     public static final String EVENT_ID_EXTRA =
             "org.cubingusa.usnationals.EVENT_ID";
@@ -63,7 +63,7 @@ public class HeatInfoActivity extends AppCompatActivity {
     private List<Competitor> mJudges = new ArrayList<>();
     private List<Competitor> mScramblers = new ArrayList<>();
     private List<Competitor> mRunners = new ArrayList<>();
-    private Heat mHeat;
+    private Group mGroup;
     private LinearLayout mContainer;
     private TextView mStartTime;
     private AsyncHttpClient mClient;
@@ -71,9 +71,9 @@ public class HeatInfoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_heat_info);
-        mContainer = (LinearLayout) findViewById(R.id.heat_info_content);
-        mStartTime = (TextView) findViewById(R.id.heat_info_start_time);
+        setContentView(R.layout.activity_group_info);
+        mContainer = (LinearLayout) findViewById(R.id.group_info_content);
+        mStartTime = (TextView) findViewById(R.id.group_info_start_time);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -84,7 +84,7 @@ public class HeatInfoActivity extends AppCompatActivity {
         Uri uri = new Uri.Builder()
                 .scheme("https")
                 .authority(Constants.HOSTNAME)
-                .appendPath("get_heat_info")
+                .appendPath("get_group_info")
                 .appendPath(intent.getStringExtra(EVENT_ID_EXTRA))
                 .appendPath(Integer.toString(intent.getIntExtra(ROUND_ID_EXTRA, 1)))
                 .appendPath(intent.getStringExtra(STAGE_ID_EXTRA))
@@ -119,13 +119,13 @@ public class HeatInfoActivity extends AppCompatActivity {
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                new AlertDialog.Builder(HeatInfoActivity.this)
+                                new AlertDialog.Builder(GroupInfoActivity.this)
                                         .setTitle("Confirm")
-                                        .setMessage("Are you sure that you want to call this heat?")
+                                        .setMessage("Are you sure that you want to call this group?")
                                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
-                                                callHeat();
+                                                callGroup();
                                             }
                                         })
                                         .setNegativeButton("No", null)
@@ -136,7 +136,7 @@ public class HeatInfoActivity extends AppCompatActivity {
         }
     }
 
-    private void callHeat() {
+    private void callGroup() {
         Intent intent = getIntent();
         Uri uri = new Uri.Builder()
                 .scheme("https")
@@ -153,7 +153,7 @@ public class HeatInfoActivity extends AppCompatActivity {
             @Override
             public void onSuccess(
                     int statusCode, Header[] headers, byte[] responseBody) {
-                Toast.makeText(HeatInfoActivity.this,
+                Toast.makeText(GroupInfoActivity.this,
                         R.string.successfully_notified,
                         Toast.LENGTH_SHORT).show();
             }
@@ -166,7 +166,7 @@ public class HeatInfoActivity extends AppCompatActivity {
                 if (responseBody != null) {
                     response = new String(responseBody);
                 }
-                Toast.makeText(HeatInfoActivity.this,
+                Toast.makeText(GroupInfoActivity.this,
                         getString(R.string.unsuccessful_notification, response),
                         Toast.LENGTH_SHORT).show();
             }
@@ -219,9 +219,9 @@ public class HeatInfoActivity extends AppCompatActivity {
             reader.beginObject();
             while (reader.hasNext()) {
                 switch (reader.nextName()) {
-                    case "heat":
-                        mHeat = new Heat();
-                        mHeat.parseFromJson(reader);
+                    case "group":
+                        mGroup = new Group();
+                        mGroup.parseFromJson(reader);
                         break;
                     case "competitors":
                         parseCompetitors(reader);
@@ -239,22 +239,22 @@ public class HeatInfoActivity extends AppCompatActivity {
         }
         Collections.sort(mCompetitors);
 
-        View spinner = findViewById(R.id.heat_info_spinner);
+        View spinner = findViewById(R.id.group_info_spinner);
         if (spinner != null) {
             spinner.setVisibility(View.GONE);
         }
-        if (mHeat.round.isFinal) {
-            setTitle(getString(R.string.heat_info_header_final,
-                    mHeat.event.name, mHeat.stage.name, mHeat.number));
+        if (mGroup.round.isFinal) {
+            setTitle(getString(R.string.group_info_header_final,
+                    mGroup.event.name, mGroup.stage.name, mGroup.number));
         } else {
-            setTitle(getString(R.string.heat_info_header_nonfinal,
-                    mHeat.event.name, mHeat.round.number, mHeat.stage.name, mHeat.number));
+            setTitle(getString(R.string.group_info_header_nonfinal,
+                    mGroup.event.name, mGroup.round.number, mGroup.stage.name, mGroup.number));
         }
         DateFormat format = DateFormat.getTimeInstance(DateFormat.SHORT);
-        mStartTime.setText(getString(R.string.heat_info_start_time,
-                mHeat.startTime.getDisplayName(
+        mStartTime.setText(getString(R.string.group_info_start_time,
+                mGroup.startTime.getDisplayName(
                         Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault()),
-                format.format(mHeat.startTime.getTime())));
+                format.format(mGroup.startTime.getTime())));
 
         mContainer.removeAllViewsInLayout();
 

@@ -35,21 +35,21 @@ def GetHeatAssignments(competitor, state, rounds, assignments = [], best_score =
   if not rounds:
     return assignments, incoming_score
   best_assignments = []
-  heats = state.AllHeats(competitor, rounds[0])
-  random.shuffle(heats)
-  heat_and_score = []
+  groups = state.AllHeats(competitor, rounds[0])
+  random.shuffle(groups)
+  group_and_score = []
   considered_times = set()
-  for heat in heats:
-    if heat.start_time in considered_times:
+  for group in groups:
+    if group.start_time in considered_times:
       continue
-    score = AssignmentScore(competitor, assignments + [heat], state)
+    score = AssignmentScore(competitor, assignments + [group], state)
     if len(rounds) == 1 and score == incoming_score:
-      return assignments + [heat], score
-    # If the new heat has a perfect score, recurse right now.
+      return assignments + [group], score
+    # If the new group has a perfect score, recurse right now.
     if score == incoming_score:
-      considered_times.add(heat.start_time)
-      new_assignments, new_score = GetHeatAssignments(competitor, state, rounds[1:], assignments + [heat], best_score, incoming_score)
-      # If this heat was optimal, or the total assignment was good enough, return.
+      considered_times.add(group.start_time)
+      new_assignments, new_score = GetHeatAssignments(competitor, state, rounds[1:], assignments + [group], best_score, incoming_score)
+      # If this group was optimal, or the total assignment was good enough, return.
       if new_score == incoming_score or new_score >= 0.8:
         return new_assignments, new_score
       if new_score > best_score:
@@ -57,18 +57,18 @@ def GetHeatAssignments(competitor, state, rounds, assignments = [], best_score =
         best_score = new_score
     else:
       # Otherwise, add it to the queue.
-      heat_and_score.append([heat, AssignmentScore(competitor, assignments + [heat], state)])
-  for heat, intermediate_score in sorted(heat_and_score, key=lambda x: x[1], reverse=True):
+      group_and_score.append([group, AssignmentScore(competitor, assignments + [group], state)])
+  for group, intermediate_score in sorted(group_and_score, key=lambda x: x[1], reverse=True):
     if intermediate_score <= best_score or intermediate_score == 0.0:
       continue
-    if heat.start_time in considered_times:
+    if group.start_time in considered_times:
       continue
-    considered_times.add(heat.start_time)
+    considered_times.add(group.start_time)
     if len(rounds) == 1:
-      new_assignments, new_score = assignments + [heat], intermediate_score
+      new_assignments, new_score = assignments + [group], intermediate_score
     else:
-      new_assignments, new_score = GetHeatAssignments(competitor, state, rounds[1:], assignments + [heat], best_score, intermediate_score)
-    # If this heat was optimal, or the total assignment was good enough, return.
+      new_assignments, new_score = GetHeatAssignments(competitor, state, rounds[1:], assignments + [group], best_score, intermediate_score)
+    # If this group was optimal, or the total assignment was good enough, return.
     if new_score == incoming_score or new_score >= 0.8:
       return new_assignments, new_score
     if new_score > best_score:
@@ -79,16 +79,16 @@ def GetHeatAssignments(competitor, state, rounds, assignments = [], best_score =
   return best_assignments, best_score
   
 
-# Main method for heat assignment.
+# Main method for group assignment.
 def AssignHeats(rounds, request_id):
   state = AssignmentState()
   debug_info = DebugInfo.get_by_id(request_id) or DebugInfo(id=request_id)
 
-  # Clear existing heats
+  # Clear existing groups
   futures = []
   for r in rounds:
     for h in Heat.query(Heat.round == r.key).iter():
-      futures.extend(ndb.delete_multi_async(HeatAssignment.query(HeatAssignment.heat == h.key).iter(keys_only=True)))
+      futures.extend(ndb.delete_multi_async(HeatAssignment.query(HeatAssignment.group == h.key).iter(keys_only=True)))
   for future in futures:
     future.get_result()
 
@@ -98,15 +98,15 @@ def AssignHeats(rounds, request_id):
   while state.HasMoreCompetitors():
     competitor = GetNextCompetitor(state)
     print 'Assigning ' + competitor.name
-    rounds = sorted(state.GetCompetitorRounds(competitor), key = lambda r: r.heat_length, reverse=True)
-    heat_assignments, score = GetHeatAssignments(competitor, state, rounds)
+    rounds = sorted(state.GetCompetitorRounds(competitor), key = lambda r: r.group_length, reverse=True)
+    group_assignments, score = GetHeatAssignments(competitor, state, rounds)
     if score == 0.0:
       print competitor.name
       print 'Failed!'
       break
-    for heat in heat_assignments:
-      state.AssignHeat(competitor, heat)
-    state.SaveCompetitorDebug(competitor, AssignmentScoreDebug(competitor, heat_assignments, state))
+    for group in group_assignments:
+      state.AssignHeat(competitor, group)
+    state.SaveCompetitorDebug(competitor, AssignmentScoreDebug(competitor, group_assignments, state))
     state.FinishCompetitor(competitor)
     debug_info.info = state.DebugInfo()
     debug_info.put()

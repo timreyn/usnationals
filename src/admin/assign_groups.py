@@ -16,7 +16,7 @@ from src.models import StaffAssignment
 class AssignHeats(webapp2.RequestHandler):
   def get(self):
     self.response.write(self.MainTemplate().render({
-        'path': webapp2.uri_for('assign_heats'),
+        'path': webapp2.uri_for('assign_groups'),
         'rounds': self.GetAllRounds(),
     }))
 
@@ -25,7 +25,7 @@ class AssignHeats(webapp2.RequestHandler):
     if not round_id:
       self.response.write(self.MainTemplate().render({
           'unknown_round': '(missing)',
-          'path': webapp2.uri_for('assign_heats'),
+          'path': webapp2.uri_for('assign_groups'),
           'rounds': self.GetAllRounds(),
       }))
       return
@@ -33,11 +33,11 @@ class AssignHeats(webapp2.RequestHandler):
     if not r:
       self.response.write(self.MainTemplate().render({
           'unknown_round': round_id,
-          'path': webapp2.uri_for('assign_heats'),
+          'path': webapp2.uri_for('assign_groups'),
           'rounds': self.GetAllRounds(),
       }))
       return
-    if self.request.get('submit_heats'):
+    if self.request.get('submit_groups'):
       self.SubmitHeats(r)
     else:
       self.ComputeHeats(r)
@@ -53,7 +53,7 @@ class AssignHeats(webapp2.RequestHandler):
       if not c:
         self.response.write(self.MainTemplate().render({
             'unknown_competitor': row,
-            'path': webapp2.uri_for('assign_heats'),
+            'path': webapp2.uri_for('assign_groups'),
             'rounds': self.GetAllRounds(),
         }))
         return
@@ -62,121 +62,121 @@ class AssignHeats(webapp2.RequestHandler):
 
 #    if r.is_final:
 #      competitors = competitors[::2] + competitors[1::2]
-    competitor_to_conflicting_heats = collections.defaultdict(list)
-    round_heats = [h for h in Heat.query(Heat.round == r.key).iter()]
-    round_heat_keys = [h.key for h in round_heats]
-    beginning = min([h.start_time for h in round_heats if h.number > 0])
-    end = max([h.end_time for h in round_heats if h.number > 0])
-    conflicting_heats = [h for h in Heat.query()
+    competitor_to_conflicting_groups = collections.defaultdict(list)
+    round_groups = [h for h in Heat.query(Heat.round == r.key).iter()]
+    round_group_keys = [h.key for h in round_groups]
+    beginning = min([h.start_time for h in round_groups if h.number > 0])
+    end = max([h.end_time for h in round_groups if h.number > 0])
+    conflicting_groups = [h for h in Heat.query()
                                         .filter(Heat.end_time > beginning)
                                         .iter()
                          if h.start_time < end and h.round != r.key and h.key.id() != '444bf_1_y_1']
-    competitor_to_valid_heats = collections.defaultdict(set)
-    if conflicting_heats:
+    competitor_to_valid_groups = collections.defaultdict(set)
+    if conflicting_groups:
       for assignment in (
-           HeatAssignment.query().filter(HeatAssignment.heat.IN([h.key for h in conflicting_heats])).iter()):
+           HeatAssignment.query().filter(HeatAssignment.group.IN([h.key for h in conflicting_groups])).iter()):
         if assignment.competitor.id() in competitor_ids:
-          competitor_to_conflicting_heats[assignment.competitor.id()].append((assignment.heat.get(), "C"))
-    if round_heats or conflicting_heats:
+          competitor_to_conflicting_groups[assignment.competitor.id()].append((assignment.group.get(), "C"))
+    if round_groups or conflicting_groups:
       for assignment in (
             StaffAssignment.query()
-                           .filter(StaffAssignment.heat.IN([h.key for h in conflicting_heats + round_heats])).iter()):
+                           .filter(StaffAssignment.group.IN([h.key for h in conflicting_groups + round_groups])).iter()):
         if assignment.staff_member.id() in competitor_ids:
-          competitor_to_conflicting_heats[assignment.staff_member.id()].append((assignment.heat.get(), assignment.job))
+          competitor_to_conflicting_groups[assignment.staff_member.id()].append((assignment.group.get(), assignment.job))
 
-    has_staff_heats = r.key.id() in ('333oh_2', 'skewb_2', '222_2', '444_2', 'pyram_2')
+    has_staff_groups = r.key.id() in ('333oh_2', 'skewb_2', '222_2', '444_2', 'pyram_2')
     num_staff_competitors = 0
     num_non_staff_competitors = 0
 
     for competitor in competitors:
-      conflicting_heats = competitor_to_conflicting_heats[competitor.key.id()]
-      if competitor.is_staff and has_staff_heats:
+      conflicting_groups = competitor_to_conflicting_groups[competitor.key.id()]
+      if competitor.is_staff and has_staff_groups:
         num_staff_competitors += 1
       else:
         num_non_staff_competitors += 1
-      for heat in round_heats:
+      for group in round_groups:
         valid = True
-        for conflicting_heat, _ in conflicting_heats:
-          if (conflicting_heat.start_time < heat.end_time and
-              conflicting_heat.end_time > heat.start_time):
+        for conflicting_group, _ in conflicting_groups:
+          if (conflicting_group.start_time < group.end_time and
+              conflicting_group.end_time > group.start_time):
             valid = False
             break
         if valid:
-          if has_staff_heats:
-            if competitor.is_staff == (heat.number == 0):
-              competitor_to_valid_heats[competitor.key.id()].add(heat.key.id())
+          if has_staff_groups:
+            if competitor.is_staff == (group.number == 0):
+              competitor_to_valid_groups[competitor.key.id()].add(group.key.id())
           else:
-            competitor_to_valid_heats[competitor.key.id()].add(heat.key.id())
+            competitor_to_valid_groups[competitor.key.id()].add(group.key.id())
 
-    # Now assign heats.
+    # Now assign groups.
     assignments = {}
     i = 0
 
-    for heat in sorted(round_heats, key=lambda heat: heat.number):
+    for group in sorted(round_groups, key=lambda group: group.number):
       num_competitors_eligible = len(competitors)
-      num_heats_eligible = len(round_heats)
-      if has_staff_heats:
-        if heat.number > 0:
+      num_groups_eligible = len(round_groups)
+      if has_staff_groups:
+        if group.number > 0:
           num_competitors_eligible = num_non_staff_competitors
-          num_heats_eligible = len(round_heats) - 4
+          num_groups_eligible = len(round_groups) - 4
         else:
           num_competitors_eligible = num_staff_competitors
-          num_heats_eligible = 4
-      num_competitors = num_competitors_eligible / num_heats_eligible
-      if i < num_competitors_eligible % num_heats_eligible:
+          num_groups_eligible = 4
+      num_competitors = num_competitors_eligible / num_groups_eligible
+      if i < num_competitors_eligible % num_groups_eligible:
         num_competitors += 1
       i += 1
-      # Check for people who can only be in this heat.
+      # Check for people who can only be in this group.
       for competitor in competitors:
-        valid_heats = competitor_to_valid_heats[competitor.key.id()]
-        if competitor.key.id() not in assignments and len(valid_heats) == 1 and heat.key.id() in valid_heats:
-          assignments[competitor.key.id()] = heat
+        valid_groups = competitor_to_valid_groups[competitor.key.id()]
+        if competitor.key.id() not in assignments and len(valid_groups) == 1 and group.key.id() in valid_groups:
+          assignments[competitor.key.id()] = group
           num_competitors -= 1
       # Now everyone else.
       for competitor in reversed(competitors):
         if num_competitors <= 0:
           break
-        if competitor.key.id() not in assignments and heat.key.id() in competitor_to_valid_heats[competitor.key.id()]:
-          assignments[competitor.key.id()] = heat
+        if competitor.key.id() not in assignments and group.key.id() in competitor_to_valid_groups[competitor.key.id()]:
+          assignments[competitor.key.id()] = group
           num_competitors -= 1
-      # And now this heat is invalid for everyone.
-      for heats in competitor_to_valid_heats.itervalues():
-        heats.discard(heat.key.id())
+      # And now this group is invalid for everyone.
+      for groups in competitor_to_valid_groups.itervalues():
+        groups.discard(group.key.id())
 
     # Check if there are already competitors.
     num_current_competitors = 0
-    for h in HeatAssignment.query().filter(HeatAssignment.heat.IN(round_heat_keys)).iter():
+    for h in HeatAssignment.query().filter(HeatAssignment.group.IN(round_group_keys)).iter():
       num_current_competitors += 1
     
     self.response.write(self.AssigningTemplate().render({
         'round': r,
         'num_current_competitors': num_current_competitors,
         'competitors': competitors,
-        'round_heats': round_heats,
+        'round_groups': round_groups,
         'format': '%I:%M %p',
         'assignments': assignments,
-        'competitor_to_conflicting_heats': competitor_to_conflicting_heats,
-        'path': webapp2.uri_for('assign_heats'),
+        'competitor_to_conflicting_groups': competitor_to_conflicting_groups,
+        'path': webapp2.uri_for('assign_groups'),
     }))
 
   def SubmitHeats(self, r):
     # Delete old values.
-    round_heat_keys = [h.key for h in Heat.query(Heat.round == r.key).iter()]
+    round_group_keys = [h.key for h in Heat.query(Heat.round == r.key).iter()]
     ndb.delete_multi(HeatAssignment.query()
-                        .filter(HeatAssignment.heat.IN(round_heat_keys))
+                        .filter(HeatAssignment.group.IN(round_group_keys))
                         .iter(keys_only=True))
     # Add values.
     event = r.event.get()
-    round_heats = {h.key.id() : h for h in Heat.query(Heat.round == r.key).iter()}
+    round_groups = {h.key.id() : h for h in Heat.query(Heat.round == r.key).iter()}
     futures = []
     for key, value in self.request.POST.iteritems():
       if key.startswith('c_'):
         competitor_id = key[2:]
         assignment = HeatAssignment(id = HeatAssignment.Id(Round.Id(event.key.id(), r.number), competitor_id))
-        if value not in round_heats:
-          self.response.write('Couldn\'t find heat %s' % value)
+        if value not in round_groups:
+          self.response.write('Couldn\'t find group %s' % value)
           continue
-        assignment.heat = round_heats[value].key
+        assignment.group = round_groups[value].key
         assignment.competitor = ndb.Key(Competitor, competitor_id)
         futures.append(assignment.put_async())
     for future in futures:
@@ -184,10 +184,10 @@ class AssignHeats(webapp2.RequestHandler):
     self.response.write('Success!')
         
   def MainTemplate(self):
-    return JINJA_ENVIRONMENT.get_template('assign_heats.html')
+    return JINJA_ENVIRONMENT.get_template('assign_groups.html')
 
   def AssigningTemplate(self):
-    return JINJA_ENVIRONMENT.get_template('assign_heats_2.html')
+    return JINJA_ENVIRONMENT.get_template('assign_groups_2.html')
 
   def GetAllRounds(self):
     return [r for r in Round.query(Round.number > 1).iter()]

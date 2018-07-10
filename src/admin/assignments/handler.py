@@ -1,6 +1,6 @@
 from google.appengine.ext import deferred
 
-from src.admin.assignments.assign_heats import AssignHeats
+from src.admin.assignments.assign_groups import AssignHeats
 from src.models import Round
 
 import datetime
@@ -13,4 +13,4 @@ class AssignmentsHandler(webapp2.RequestHandler):
     request_id = hashlib.sha1(datetime.datetime.now().isoformat()).hexdigest()[0:10]
 #    AssignHeats(rounds, request_id)
     deferred.defer(AssignHeats, rounds, request_id)
-    self.redirect(webapp2.uri_for('assign_heats_debug', request_id=request_id))
+    self.redirect(webapp2.uri_for('assign_groups_debug', request_id=request_id))

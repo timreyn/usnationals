@@ -15,11 +15,11 @@ def BusyScore(competitor, state):
     registration = event_registrations[r.event.id()]
     if r.number > registration.projected_rounds:
       continue
-    score += r.heat_length * 1.0 / total_time
+    score += r.group_length * 1.0 / total_time
 
-    available_heats = state.GetAvailableHeats(competitor, r)
-    if len(available_heats):
-      score += 1.0 / len(available_heats)
+    available_groups = state.GetAvailableHeats(competitor, r)
+    if len(available_groups):
+      score += 1.0 / len(available_groups)
     else:
       score += 2.0
   return score

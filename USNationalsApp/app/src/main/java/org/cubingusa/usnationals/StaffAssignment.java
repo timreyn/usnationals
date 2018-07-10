@@ -7,7 +7,7 @@ import java.util.Set;
 
 public class StaffAssignment {
     private final Set<String> mSavedCompetitors;
-    public Heat heat = null;
+    public Group group = null;
     public Round longEvent = null;
     public Competitor staffMember = null;
     public String job = "";
@@ -22,9 +22,9 @@ public class StaffAssignment {
         reader.beginObject();
         while (reader.hasNext()) {
             switch (reader.nextName()) {
-                case "heat":
-                    heat = new Heat();
-                    heat.parseFromJson(reader);
+                case "group":
+                    group = new Group();
+                    group.parseFromJson(reader);
                     break;
                 case "staff_member":
                     staffMember = new Competitor(mSavedCompetitors);

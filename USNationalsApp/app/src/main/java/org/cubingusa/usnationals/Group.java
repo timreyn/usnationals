@@ -5,7 +5,7 @@ import android.util.JsonReader;
 import java.io.IOException;
 import java.util.GregorianCalendar;
 
-public class Heat {
+public class Group {
     public Round round;
     // For convenience.  This is always round.event.
     public Event event;

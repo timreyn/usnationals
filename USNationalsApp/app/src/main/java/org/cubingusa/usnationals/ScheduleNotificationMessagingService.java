@@ -22,7 +22,7 @@ public class ScheduleNotificationMessagingService extends FirebaseMessagingServi
     private static final String TAG = "NotificationService";
     private final EventIcons mIcons;
     private int mNextNotificationId = 0;
-    private Map<String, Integer> mHeatAssignmentToNotificationId = new HashMap<>();
+    private Map<String, Integer> mGroupAssignmentToNotificationId = new HashMap<>();
 
     private NotificationManager mNotificationManager;
 
@@ -42,13 +42,13 @@ public class ScheduleNotificationMessagingService extends FirebaseMessagingServi
         boolean enableNotifications = true;
 
         switch (data.get("type")) {
-            case "heatNotification":
-                String heatAssignmentId = data.get("heatAssignmentId");
+            case "groupNotification":
+                String groupAssignmentId = data.get("groupAssignmentId");
                 String eventId = data.get("eventId");
                 String eventName = data.get("eventName");
                 String competitorName = data.get("competitorName");
                 String competitorId = data.get("competitorId");
-                int heatNumber = Integer.parseInt(data.get("heatNumber"));
+                int groupNumber = Integer.parseInt(data.get("groupNumber"));
                 String stageName = data.get("stageName");
 
                 StringBuffer titleBuffer = new StringBuffer()
@@ -62,8 +62,8 @@ public class ScheduleNotificationMessagingService extends FirebaseMessagingServi
                         .append(competitorName)
                         .append(" to compete in ")
                         .append(eventName)
-                        .append(" heat ")
-                        .append(heatNumber)
+                        .append(" group ")
+                        .append(groupNumber)
                         .append(" on the ")
                         .append(stageName)
                         .append(" stage!");
@@ -90,21 +90,21 @@ public class ScheduleNotificationMessagingService extends FirebaseMessagingServi
                         .setContentIntent(notificationClickPendingIntent)
                         .setSound(ringtoneUri);
 
-                mHeatAssignmentToNotificationId.put(heatAssignmentId, mNextNotificationId);
+                mGroupAssignmentToNotificationId.put(groupAssignmentId, mNextNotificationId);
                 if (enableNotifications) {
                     mNotificationManager.notify(mNextNotificationId, builder.build());
                 }
                 mNextNotificationId++;
                 break;
 
-            case "cancelHeatNotification":
-                String heatAssignment = data.get("heatAssignmentId");
-                if (!mHeatAssignmentToNotificationId.containsKey(heatAssignment)) {
+            case "cancelGroupNotification":
+                String groupAssignment = data.get("groupAssignmentId");
+                if (!mGroupAssignmentToNotificationId.containsKey(groupAssignment)) {
                     return;
                 }
                 if (enableNotifications) {
                     mNotificationManager.cancel(
-                            mHeatAssignmentToNotificationId.get(heatAssignment));
+                            mGroupAssignmentToNotificationId.get(groupAssignment));
                 }
                 break;
 
@@ -197,7 +197,7 @@ public class ScheduleNotificationMessagingService extends FirebaseMessagingServi
                         .setContentIntent(notificationClickPendingIntent)
                         .setSound(ringtoneUri);
 
-                mHeatAssignmentToNotificationId.put(staffAssignmentId, mNextNotificationId);
+                mGroupAssignmentToNotificationId.put(staffAssignmentId, mNextNotificationId);
                 if (enableNotifications) {
                     mNotificationManager.notify(mNextNotificationId, builder.build());
                 }
