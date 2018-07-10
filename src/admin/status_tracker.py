@@ -65,9 +65,9 @@ class Formatters(object):
     total_seconds_delta_abs = abs(total_seconds_delta)
     minutes = total_seconds_delta_abs / 60
     seconds = total_seconds_delta_abs % 60
-    if total_seconds_delta > 0:
-      return '-%d:%02d' % (minutes, seconds)
     if total_seconds_delta < 0:
+      return '-%d:%02d' % (minutes, seconds)
+    if total_seconds_delta > 0:
       return '+%d:%02d' % (minutes, seconds)
     return '+0:00'
 

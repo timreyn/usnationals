@@ -71,5 +71,11 @@ class OneOffHandler(webapp2.RequestHandler):
           new_assignment.heat = right_heat.key
           futures.append(assignment.key.delete_async())
           futures.append(new_assignment.put_async())
+    elif name == 'extra_C':
+      # accidentally assigned jobs called "C 5", these don't exist.
+      for assignment in (StaffAssignment.query()
+                                        .filter(StaffAssignment.job.IN(["C 5", "C 4", "C sq1",  "C 3", "C 2", "C pyra"]))
+                                        .iter()):
+        futures.append(assignment.key.delete_async())
     for future in futures:
       future.get_result()
