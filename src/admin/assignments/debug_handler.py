@@ -4,7 +4,7 @@ from src.admin.assignments import formats
 from src.models import Competitor
 from src.models import DebugInfo
 from src.models import EventRegistration
-from src.models import Heat
+from src.models import Group
 from src.models import Round
 
 import collections
@@ -37,7 +37,7 @@ class AssignmentsDebugHandler(webapp2.RequestHandler):
     competitors = [competitor for competitor in Competitor.query().iter()]
     competitor_dict = {c.key.id() : c for c in competitors}
     rounds = [r for r in Round.query().iter() if r.key.id() in deb['r']]
-    group_dict = {h.key.id() : h for h in Heat.query().iter() if h.round.id() in deb['r']}
+    group_dict = {h.key.id() : h for h in Group.query().iter() if h.round.id() in deb['r']}
     groups_by_round = {
       r: [group_dict[h] for h in hs] for r, hs in deb['r2h'].iteritems()
     }

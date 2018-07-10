@@ -1,5 +1,5 @@
 from src import common
-from src.models import HeatAssignment
+from src.models import GroupAssignment
 
 import collections
 import json
@@ -15,7 +15,7 @@ def GetRoundNumber(r):
 class AssignmentState(object):
 
   def __init__(self):
-    # round id to list of Heats
+    # round id to list of Groups
     self.staff_groups = collections.defaultdict(list)
     self.non_staff_groups = collections.defaultdict(list)
     # round id to Round
@@ -49,7 +49,7 @@ class AssignmentState(object):
       future.get_result()
 
 
-  def RegisterHeat(self, h):
+  def RegisterGroup(self, h):
     if h.number == 0:
       self.staff_groups[h.round.id()].append(h)
     else:
@@ -123,11 +123,11 @@ class AssignmentState(object):
     return (self.end_time - self.start_time).total_seconds() / 60
 
 
-  def GetDesiredHeatSize(self, r):
+  def GetDesiredGroupSize(self, r):
     return self.desired_competitors[r.key.id()]
 
 
-  def GetCompetitorsInHeat(self, group):
+  def GetCompetitorsInGroup(self, group):
     return self.competitors_by_group[group.key.id()]
 
 
@@ -147,23 +147,23 @@ class AssignmentState(object):
     return output
 
 
-  def AssignHeat(self, competitor, group):
+  def AssignGroup(self, competitor, group):
     self.competitors_by_group[group.key.id()].append(competitor)
     if GetRoundNumber(group.round.get()) == 1:
-      assignment_id = HeatAssignment.Id(group.round.id(), competitor.key.id())
-      group_assignment = HeatAssignment.get_by_id(assignment_id) or HeatAssignment(id = assignment_id)
+      assignment_id = GroupAssignment.Id(group.round.id(), competitor.key.id())
+      group_assignment = GroupAssignment.get_by_id(assignment_id) or GroupAssignment(id = assignment_id)
       group_assignment.group = group.key
       group_assignment.competitor = competitor.key
       self.futures.append(group_assignment.put_async())
 
 
-  def GetAvailableHeats(self, competitor, r):
-    all_groups = self.AllHeats(competitor, r)
+  def GetAvailableGroups(self, competitor, r):
+    all_groups = self.AllGroups(competitor, r)
     desired = self.desired_competitors[r.key.id()]
     return [h for h in all_groups if h.number == 0 or len(self.competitors_by_group[h.key.id()]) < desired]
 
 
-  def AllHeats(self, competitor, r):
+  def AllGroups(self, competitor, r):
     if competitor.is_staff and r.key.id() in self.staff_groups:
       return self.staff_groups[r.key.id()]
     else:

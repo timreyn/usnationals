@@ -6,15 +6,15 @@ from src.admin.assignments.assignment_state import AssignmentState
 from src.admin.assignments.busy_score import BusyScore
 from src.models import DebugInfo
 from src.models import EventRegistration
-from src.models import Heat
-from src.models import HeatAssignment
+from src.models import Group
+from src.models import GroupAssignment
 
 import random
 
 def PopulateState(state, rounds):
   for r in rounds:
-    for h in Heat.query(Heat.round == r.key).iter():
-      state.RegisterHeat(h)
+    for h in Group.query(Group.round == r.key).iter():
+      state.RegisterGroup(h)
     for reg in EventRegistration.query(EventRegistration.event == r.event).iter():
       state.RegisterCompetitorForEvent(reg)
   state.FinalizeEntryList()
@@ -31,11 +31,11 @@ def GetNextCompetitor(state):
   return best_competitor
 
 
-def GetHeatAssignments(competitor, state, rounds, assignments = [], best_score = 0.0, incoming_score = 1.0):
+def GetGroupAssignments(competitor, state, rounds, assignments = [], best_score = 0.0, incoming_score = 1.0):
   if not rounds:
     return assignments, incoming_score
   best_assignments = []
-  groups = state.AllHeats(competitor, rounds[0])
+  groups = state.AllGroups(competitor, rounds[0])
   random.shuffle(groups)
   group_and_score = []
   considered_times = set()
@@ -48,7 +48,7 @@ def GetHeatAssignments(competitor, state, rounds, assignments = [], best_score =
     # If the new group has a perfect score, recurse right now.
     if score == incoming_score:
       considered_times.add(group.start_time)
-      new_assignments, new_score = GetHeatAssignments(competitor, state, rounds[1:], assignments + [group], best_score, incoming_score)
+      new_assignments, new_score = GetGroupAssignments(competitor, state, rounds[1:], assignments + [group], best_score, incoming_score)
       # If this group was optimal, or the total assignment was good enough, return.
       if new_score == incoming_score or new_score >= 0.8:
         return new_assignments, new_score
@@ -67,7 +67,7 @@ def GetHeatAssignments(competitor, state, rounds, assignments = [], best_score =
     if len(rounds) == 1:
       new_assignments, new_score = assignments + [group], intermediate_score
     else:
-      new_assignments, new_score = GetHeatAssignments(competitor, state, rounds[1:], assignments + [group], best_score, intermediate_score)
+      new_assignments, new_score = GetGroupAssignments(competitor, state, rounds[1:], assignments + [group], best_score, intermediate_score)
     # If this group was optimal, or the total assignment was good enough, return.
     if new_score == incoming_score or new_score >= 0.8:
       return new_assignments, new_score
@@ -80,15 +80,15 @@ def GetHeatAssignments(competitor, state, rounds, assignments = [], best_score =
   
 
 # Main method for group assignment.
-def AssignHeats(rounds, request_id):
+def AssignGroups(rounds, request_id):
   state = AssignmentState()
   debug_info = DebugInfo.get_by_id(request_id) or DebugInfo(id=request_id)
 
   # Clear existing groups
   futures = []
   for r in rounds:
-    for h in Heat.query(Heat.round == r.key).iter():
-      futures.extend(ndb.delete_multi_async(HeatAssignment.query(HeatAssignment.group == h.key).iter(keys_only=True)))
+    for h in Group.query(Group.round == r.key).iter():
+      futures.extend(ndb.delete_multi_async(GroupAssignment.query(GroupAssignment.group == h.key).iter(keys_only=True)))
   for future in futures:
     future.get_result()
 
@@ -99,13 +99,13 @@ def AssignHeats(rounds, request_id):
     competitor = GetNextCompetitor(state)
     print 'Assigning ' + competitor.name
     rounds = sorted(state.GetCompetitorRounds(competitor), key = lambda r: r.group_length, reverse=True)
-    group_assignments, score = GetHeatAssignments(competitor, state, rounds)
+    group_assignments, score = GetGroupAssignments(competitor, state, rounds)
     if score == 0.0:
       print competitor.name
       print 'Failed!'
       break
     for group in group_assignments:
-      state.AssignHeat(competitor, group)
+      state.AssignGroup(competitor, group)
     state.SaveCompetitorDebug(competitor, AssignmentScoreDebug(competitor, group_assignments, state))
     state.FinishCompetitor(competitor)
     debug_info.info = state.DebugInfo()

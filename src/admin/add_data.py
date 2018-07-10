@@ -68,7 +68,7 @@ class AddData(webapp2.RequestHandler):
         start_minutes = int(row[5])
         end_minutes = int(row[6])
         day = int(row[7])
-        ret_value = AddHeat(futures, event_id, round_id, stage, number, start_minutes, end_minutes, day)
+        ret_value = AddGroup(futures, event_id, round_id, stage, number, start_minutes, end_minutes, day)
         if ret_value != 'ok':
           return 'Bad group ' + str(row) + ': ' + ret_value
       elif row[0] == 'competitor':
@@ -88,7 +88,7 @@ class AddData(webapp2.RequestHandler):
         stage = row[3]
         group = int(row[4])
         person_id = row[5]
-        ret_value = AssignHeat(futures, event_id, round_id, stage, group, person_id)
+        ret_value = AssignGroup(futures, event_id, round_id, stage, group, person_id)
         if ret_value != 'ok':
           return 'Bad group assignment ' + str(row) + ': ' + ret_value
       elif row[0] == 'staff_assignment':
@@ -146,11 +146,11 @@ class AddData(webapp2.RequestHandler):
       elif row[0] == 'DELETE_HEAT':
         if len(row) != 2:
           return 'Bad group deletion ' + str(row)
-        DeleteHeat(row[1])
+        DeleteGroup(row[1])
       elif row[0] == 'DELETE_HEAT_ASSIGNMENT':
         if len(row) != 2:
           return 'Bad group assignment deletion ' + str(row)
-        DeleteHeatAssignment(row[1])
+        DeleteGroupAssignment(row[1])
     for future in futures:
       future.get_result()
     return 'Success!'
@@ -183,7 +183,7 @@ def AddRound(futures, event_id, number, is_final, group_length, num_competitors)
   futures.append(round.put_async())
   return 'ok'
 
-def AddHeat(futures, event_id, round_id, stage, number, start_minutes, end_minutes, day):
+def AddGroup(futures, event_id, round_id, stage, number, start_minutes, end_minutes, day):
   round = Round.get_by_id(Round.Id(event_id, round_id))
   if not round:
     return 'Couldn\'t find a round with event %s and number %d' % (event_id, round_id)
@@ -193,9 +193,9 @@ def AddHeat(futures, event_id, round_id, stage, number, start_minutes, end_minut
   end_minutes = end_minutes % 60
   start_time = datetime.datetime(2018, 7, day, start_hours, start_minutes, 0)
   end_time = datetime.datetime(2018, 7, day, end_hours, end_minutes, 0)
-  group_id = Heat.Id(event_id, round_id, stage, number)
+  group_id = Group.Id(event_id, round_id, stage, number)
 
-  group = Heat.get_by_id(group_id) or Heat(id = group_id)
+  group = Group.get_by_id(group_id) or Group(id = group_id)
   group.round = round.key
   group.stage = Stage.get_by_id(stage).key
   group.number = number
@@ -216,13 +216,13 @@ def AddCompetitor(futures, cusa_id, wca_id, name, is_staff, date_of_birth):
   competitor.date_of_birth = date_of_birth
   futures.append(competitor.put_async())
 
-def AssignHeat(futures, event, round, stage, group, person_id):
+def AssignGroup(futures, event, round, stage, group, person_id):
   person_id = str(person_id)
-  assignment_id = HeatAssignment.Id(Round.Id(event, round), person_id)
-  assignment = HeatAssignment.get_by_id(assignment_id) or HeatAssignment(id = assignment_id)
-  group_id = Heat.Id(event, round, stage, group)
+  assignment_id = GroupAssignment.Id(Round.Id(event, round), person_id)
+  assignment = GroupAssignment.get_by_id(assignment_id) or GroupAssignment(id = assignment_id)
+  group_id = Group.Id(event, round, stage, group)
 
-  group = Heat.get_by_id(group_id)
+  group = Group.get_by_id(group_id)
   if not group:
     return 'Could not find group ' + group_id
   competitor = Competitor.get_by_id(person_id)
@@ -235,8 +235,8 @@ def AssignHeat(futures, event, round, stage, group, person_id):
         
 def AddStaffAssignment(futures, event_id, round_id, stage, group_num, staff_id, job, long_event, misc, station):
   staff_id = str(staff_id)
-  group_id = Heat.Id(event_id, round_id, stage, group_num)
-  group = Heat.get_by_id(group_id)
+  group_id = Group.Id(event_id, round_id, stage, group_num)
+  group = Group.get_by_id(group_id)
   if not group:
     return 'Could not find group ' + group_id
   staff_member = Competitor.get_by_id(staff_id)
@@ -303,11 +303,11 @@ def DeleteData(futures, data_type):
     futures.extend(ndb.delete_multi_async(Event.query().iter(keys_only=True)))
     futures.extend(ndb.delete_multi_async(Round.query().iter(keys_only=True)))
   elif data_type == 'group':
-    futures.extend(ndb.delete_multi_async(Heat.query().iter(keys_only=True)))
+    futures.extend(ndb.delete_multi_async(Group.query().iter(keys_only=True)))
   elif data_type == 'competitor':
     futures.extend(ndb.delete_multi_async(Competitor.query().iter(keys_only=True)))
   elif data_type == 'group_assignment':
-    futures.extend(ndb.delete_multi_async(HeatAssignment.query().iter(keys_only=True)))
+    futures.extend(ndb.delete_multi_async(GroupAssignment.query().iter(keys_only=True)))
   elif data_type == 'staff_assignment':
     futures.extend(ndb.delete_multi_async(StaffAssignment.query().iter(keys_only=True)))
 
@@ -316,12 +316,12 @@ def DeleteStaffAssignment(futures, staff_assignment_id):
   if assignment:
     assignment.key.delete()
 
-def DeleteHeat(group_id):
-  group = Heat.get_by_id(group_id)
+def DeleteGroup(group_id):
+  group = Group.get_by_id(group_id)
   if group:
     group.key.delete()
 
-def DeleteHeatAssignment(group_id):
-  assignment = HeatAssignment.get_by_id(group_id)
+def DeleteGroupAssignment(group_id):
+  assignment = GroupAssignment.get_by_id(group_id)
   if assignment:
     assignment.key.delete()

@@ -1,6 +1,6 @@
 from src import common
 
-def FormatHeatStartTime(start_time):
+def FormatGroupStartTime(start_time):
   return start_time.strftime('%a %H:%M')
 
 def FormatCompetitorBirthday(birthday):

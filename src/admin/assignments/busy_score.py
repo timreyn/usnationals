@@ -17,7 +17,7 @@ def BusyScore(competitor, state):
       continue
     score += r.group_length * 1.0 / total_time
 
-    available_groups = state.GetAvailableHeats(competitor, r)
+    available_groups = state.GetAvailableGroups(competitor, r)
     if len(available_groups):
       score += 1.0 / len(available_groups)
     else:

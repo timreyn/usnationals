@@ -12,7 +12,7 @@ class Scorer(object):
     return 1.0
 
 
-class TimeBetweenHeatsScorer(Scorer):
+class TimeBetweenGroupsScorer(Scorer):
   def GetName(self):
     return "time_between"
 
@@ -50,8 +50,8 @@ class NumCompetitorsScorer(Scorer):
   def Score(self, group, previous_group, competitor, state):
     if group.number == 0:
       return 1.0
-    expected_count = state.GetDesiredHeatSize(group.round.get())
-    actual_count = len(state.GetCompetitorsInHeat(group))
+    expected_count = state.GetDesiredGroupSize(group.round.get())
+    actual_count = len(state.GetCompetitorsInGroup(group))
     spots_left = expected_count - actual_count
 
     if spots_left >= 3:
@@ -79,11 +79,11 @@ class SpeedScorer(Scorer):
   def Score(self, group, previous_group, competitor, state):
     if group.number != 1 or competitor.is_staff:
       return 1.0
-    expected_count = len(state.AllHeats(competitor, group.round.get()))
+    expected_count = len(state.AllGroups(competitor, group.round.get()))
     competitor_registration = state.GetCompetitorRegistrations(competitor)[group.round.get().event.id()]
     my_bucket = (competitor_registration.non_staff_rank + 1) / expected_count
     percentile_buckets = collections.defaultdict(lambda: 0)
-    for c in state.GetCompetitorsInHeat(group):
+    for c in state.GetCompetitorsInGroup(group):
       if c.is_staff:
         continue
       other_registration = state.GetCompetitorRegistrations(c)[group.round.get().event.id()]
@@ -113,7 +113,7 @@ class SpeedScorer(Scorer):
 
 def GetScorers():
   return [
-      TimeBetweenHeatsScorer(),
+      TimeBetweenGroupsScorer(),
       NumCompetitorsScorer(),
 #      SpeedScorer(),
   ]
