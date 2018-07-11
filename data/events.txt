@@ -12,9 +12,10 @@ event,sq1,Square-1,1,10
 event,clock,Clock,1,11
 event,666,6x6 Cube,1,12
 event,777,7x7 Cube,1,13
-event,444bf,4x4 Cube Blindfolded,1,14
-event,555bf,5x5 Cube Blindfolded,1,15
-event,333mbf,Multiple Blindfolded,1,16
-event,lun,Lunch,0,17
+event,333ft,3x3 With Feet,1,14
+event,444bf,4x4 Cube Blindfolded,1,15
+event,555bf,5x5 Cube Blindfolded,1,16
+event,333mbf,Multiple Blindfolded,1,17
+event,lun,Lunch,0,18
 event,reg,Registration,0,18
-event,misc,Miscellaneous,0,19
+event,misc,Miscellaneous,0,20
