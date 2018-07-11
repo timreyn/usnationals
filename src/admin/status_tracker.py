@@ -89,10 +89,10 @@ class StatusTracker(webapp2.RequestHandler):
     all_stages = [Stage.get_by_id(s) for s in ('r', 'b', 'g', 'o', 'y')]
     template = JINJA_ENVIRONMENT.get_template('status_tracker.html')
     all_days = [
-        (6, 'Thursday', day == 6),
-        (7, 'Friday', day == 7),
-        (8, 'Saturday', day == 8),
-        (9, 'Sunday', day == 9),
+        (26, 'Thursday', day == 26),
+        (27, 'Friday', day == 27),
+        (28, 'Saturday', day == 28),
+        (29, 'Sunday', day == 29),
     ]
     self.response.write(template.render({
         'heat_dict': heats_by_hour_and_stage,
