@@ -1,14 +1,14 @@
 function updateCounts() {
-  $(".heatCount").html("0");
-  $(".heatSelector").each(function() {
-    heat = $( this ).find(":selected").val();
-    heatCount = $("#" + heat);
-    if (heatCount) {
-      heatCount.html(parseInt(heatCount.html()) + 1);
+  $(".groupCount").html("0");
+  $(".groupSelector").each(function() {
+    group = $( this ).find(":selected").val();
+    groupCount = $("#" + group);
+    if (groupCount) {
+      groupCount.html(parseInt(groupCount.html()) + 1);
     }
   });
 }
 
-$(".heatSelector").change(updateCounts);
+$(".groupSelector").change(updateCounts);
 
 updateCounts();

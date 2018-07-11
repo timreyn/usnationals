@@ -13,9 +13,9 @@ class AssignStations(webapp2.RequestHandler):
     for assignment in staff_assignments:
       if stage_substr not in assignment.key.id():
         continue
-      heat = assignment.heat.get()
+      group = assignment.group.get()
       assignment.station = None
-      assignment_map[heat.start_time].append(assignment)
+      assignment_map[group.start_time].append(assignment)
     last_time = {}
     for time in sorted(assignment_map):
       assignments = assignment_map[time]
@@ -37,7 +37,7 @@ class AssignStations(webapp2.RequestHandler):
         self.response.write('Assigned %s to station %d for %s' %
                                 (assignment.staff_member.get().name,
                                  assignment.station,
-                                 assignment.heat.id()))
+                                 assignment.group.id()))
         futures.append(assignment.put_async())
       last_time = this_time
     for future in futures:

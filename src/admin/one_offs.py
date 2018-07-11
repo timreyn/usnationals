@@ -2,12 +2,12 @@ import datetime
 import webapp2
 
 from src.models import Competitor
-from src.models import Heat
+from src.models import Group
 from src.models import StaffAssignment
 
 def CloneAssignment(assignment, new_id):
   new_assignment = StaffAssignment(id = assignment.key.id().replace('533', '277'))
-  new_assignment.heat = assignment.heat
+  new_assignment.group = assignment.group
   if assignment.long_event:
     new_assignment.long_event = assignment.long_event
   new_assignment.staff_member = assignment.staff_member
@@ -28,7 +28,7 @@ class OneOffHandler(webapp2.RequestHandler):
       nathan = Competitor.get_by_id('533')
       sunday_start = datetime.datetime(2017, 7, 9, 0, 0, 0)
       for assignment in StaffAssignment.query(StaffAssignment.staff_member == nathan.key).iter():
-        if assignment.heat.get().start_time > sunday_start:
+        if assignment.group.get().start_time > sunday_start:
           continue
         new_assignment = CloneAssignment(assignment, assignment.key.id().replace('533', '277'))
         new_assignment.staff_member = garrett.key
@@ -41,7 +41,7 @@ class OneOffHandler(webapp2.RequestHandler):
       shelley = Competitor.get_by_id('678')
       sunday_start = datetime.datetime(2017, 7, 9, 0, 0, 0)
       for assignment in StaffAssignment.query(StaffAssignment.staff_member == dimitri.key).iter():
-        if assignment.heat.get().start_time > sunday_start:
+        if assignment.group.get().start_time > sunday_start:
           new_assignment = CloneAssignment(assignment, assignment.key.id().replace('215', '678'))
           new_assignment.staff_member = shelley.key
         else:
@@ -51,24 +51,24 @@ class OneOffHandler(webapp2.RequestHandler):
         futures.append(new_assignment.put_async())
     elif name == '333oh_3':
       # Blue stage pyra round 3 should really be OH round 3.
-      oh_heats = [Heat.get_by_id(Heat.Id('333oh', 3, 'b', num)) for num in [1, 2, 3]]
-      pyram_heats = [Heat.get_by_id(Heat.Id('pyram', 3, 'b', num)) for num in [1, 2, 3]]
-      for oh_heat, pyram_heat in zip(oh_heats, pyram_heats):
-        for assignment in StaffAssignment.query(StaffAssignment.heat == pyram_heat.key).iter():
-          assignment.heat = oh_heat.key
+      oh_groups = [Group.get_by_id(Group.Id('333oh', 3, 'b', num)) for num in [1, 2, 3]]
+      pyram_groups = [Group.get_by_id(Group.Id('pyram', 3, 'b', num)) for num in [1, 2, 3]]
+      for oh_group, pyram_group in zip(oh_groups, pyram_groups):
+        for assignment in StaffAssignment.query(StaffAssignment.group == pyram_group.key).iter():
+          assignment.group = oh_group.key
           futures.append(assignment.put_async())
-        for assignment in StaffAssignment.query(StaffAssignment.heat == oh_heat.key):
+        for assignment in StaffAssignment.query(StaffAssignment.group == oh_group.key):
           new_assignment = CloneAssignment(assignment, assignment.key.id().replace('pyram', '333oh'))
           futures.append(assignment.key.delete_async())
           futures.append(new_assignment.put_async())
-    elif name == 'staff_heat_numbers':
-      # Heats numbered -1 should be numbered 0 instead.
-      wrong_heats = [Heat.get_by_id(Heat.Id(event, 2, stage, -1)) for event in ['333oh', 'skewb', '222'] for stage in ['r', 'b', 'g', 'o']]
-      right_heats = [Heat.get_by_id(Heat.Id(event, 2, stage, 0)) for event in ['333oh', 'skewb', '222'] for stage in ['r', 'b', 'g', 'o']]
-      for wrong_heat, right_heat in zip(wrong_heats, right_heats):
-        for assignment in StaffAssignment.query(StaffAssignment.heat == wrong_heat.key).iter():
+    elif name == 'staff_group_numbers':
+      # Groups numbered -1 should be numbered 0 instead.
+      wrong_groups = [Group.get_by_id(Group.Id(event, 2, stage, -1)) for event in ['333oh', 'skewb', '222'] for stage in ['r', 'b', 'g', 'o']]
+      right_groups = [Group.get_by_id(Group.Id(event, 2, stage, 0)) for event in ['333oh', 'skewb', '222'] for stage in ['r', 'b', 'g', 'o']]
+      for wrong_group, right_group in zip(wrong_groups, right_groups):
+        for assignment in StaffAssignment.query(StaffAssignment.group == wrong_group.key).iter():
           new_assignment = CloneAssignment(assignment, assignment.key.id().replace('-1', '0'))
-          new_assignment.heat = right_heat.key
+          new_assignment.group = right_group.key
           futures.append(assignment.key.delete_async())
           futures.append(new_assignment.put_async())
     elif name == 'extra_C':

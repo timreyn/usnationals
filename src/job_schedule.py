@@ -40,10 +40,10 @@ class JobSchedule(webapp2.RequestHandler):
         'format': '%I:%M %p',
     }
     for staff_assignment in assignments_query.iter():
-      heat = staff_assignment.heat.get()
-      if stage and heat.stage.id() != stage_id:
+      group = staff_assignment.group.get()
+      if stage and group.stage.id() != stage_id:
         continue
-      jobs_by_time[heat.start_time].append(staff_assignment)
+      jobs_by_time[group.start_time].append(staff_assignment)
     for day in (7, 8, 9):
       active_staff = collections.defaultdict(list)
       for time in sorted(jobs_by_time.keys()):
@@ -56,7 +56,7 @@ class JobSchedule(webapp2.RequestHandler):
             continue
           contains_current_time = False
           for job in jobs:
-            if job.heat.get().end_time >= time:
+            if job.group.get().end_time >= time:
               contains_current_time = True
               break
           if contains_current_time:

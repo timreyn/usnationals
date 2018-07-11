@@ -8,7 +8,7 @@
       border: 1px solid black;
       border-collapse: collapse;
     }
-    td.heatcolumn {
+    td.groupcolumn {
       border-left: 1px solid black;
       border-right: 1px solid black;
     }
@@ -41,18 +41,18 @@
     {% for hour in all_hours %}
       <tr>
         {% for stage in all_stages %}
-          {% set heats = heat_dict[hour][stage.key.id()] %}
-          <td class="heatcolumn">
+          {% set groups = group_dict[hour][stage.key.id()] %}
+          <td class="groupcolumn">
             <table class="inner">
-              {% for heat in heats %}
+              {% for group in groups %}
                 <tr>
-                  <td>{{ Formatters.FormatTime(heat) }}</td>
-                  <td>{{ Formatters.FormatHeat(heat) }}</td>
-                  <td class="deltacell" style="color: {{ Formatters.DeltaColor(heat) }}">
-                    {{ Formatters.FormatDelta(heat) }}
+                  <td>{{ Formatters.FormatTime(group) }}</td>
+                  <td>{{ Formatters.FormatGroup(group) }}</td>
+                  <td class="deltacell" style="color: {{ Formatters.DeltaColor(group) }}">
+                    {{ Formatters.FormatDelta(group) }}
                   </td>
-                  {% if is_admin and heat.number >= 0 %}
-                    <td><a href="{{ uri_for('admin_notification', event_id=heat.round.get().event.id(), round_id=heat.round.get().number, stage_id=heat.stage.id(), heat_number=heat.number) }}">[call]</a></td>
+                  {% if is_admin and group.number >= 0 %}
+                    <td><a href="{{ uri_for('admin_notification', event_id=group.round.get().event.id(), round_id=group.round.get().number, stage_id=group.stage.id(), group_number=group.number) }}">[call]</a></td>
                   {% endif %}
                 </tr>
               {% endfor %}

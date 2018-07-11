@@ -9,18 +9,18 @@ import webapp2
 from src import firebase
 from src import twilio_sms
 from src.models import AdminDevice
-from src.models import Heat
-from src.models import HeatAssignment
+from src.models import Group
+from src.models import GroupAssignment
 from src.models import SMSSubscriber
 from src.models import StaffAssignment
 
 class SendNotification(webapp2.RequestHandler):
-  def get(self, event_id, round_id, stage_id, heat_number):
+  def get(self, event_id, round_id, stage_id, group_number):
     user = users.GetCurrentUser()
     is_admin = self.request.path.startswith('/admin/') and user
-    self.post(event_id, round_id, stage_id, heat_number, dry_run=not is_admin)
+    self.post(event_id, round_id, stage_id, group_number, dry_run=not is_admin)
 
-  def post(self, event_id, round_id, stage_id, heat_number, dry_run=False):
+  def post(self, event_id, round_id, stage_id, group_number, dry_run=False):
     user = users.GetCurrentUser()
     is_admin = self.request.path.startswith('/admin/') and user
     if not dry_run and not is_admin:
@@ -39,48 +39,48 @@ class SendNotification(webapp2.RequestHandler):
         admin_device.is_authorized = False
         admin_device.put()
     round_id = int(round_id)
-    heat_number = int(heat_number)
-    heat_id = Heat.Id(event_id, round_id, stage_id, heat_number)
-    heat = Heat.get_by_id(heat_id)
-    if not heat:
+    group_number = int(group_number)
+    group_id = Group.Id(event_id, round_id, stage_id, group_number)
+    group = Group.get_by_id(group_id)
+    if not group:
       self.response.set_status(400)
-      self.response.write('No heat found for ' + heat_id)
+      self.response.write('No group found for ' + group_id)
       return
-    if heat.call_time:
+    if group.call_time:
       self.response.set_status(403)
-      self.response.write('Heat has already been called')
+      self.response.write('Group has already been called')
       return
     if not dry_run:
-      heat.call_time = datetime.datetime.now() - datetime.timedelta(hours=7)
-      heat.call_device = admin_device.key
-    heat.put()
-    event = heat.round.get().event.get()
-    stage = heat.stage.get()
+      group.call_time = datetime.datetime.now() - datetime.timedelta(hours=7)
+      group.call_device = admin_device.key
+    group.put()
+    event = group.round.get().event.get()
+    stage = group.stage.get()
 
-    for heat_assignment in HeatAssignment.query(HeatAssignment.heat == heat.key).iter():
-      competitor = heat_assignment.competitor.get()
-      data = {'heatAssignmentId': heat_assignment.key.id(),
+    for group_assignment in GroupAssignment.query(GroupAssignment.group == group.key).iter():
+      competitor = group_assignment.competitor.get()
+      data = {'groupAssignmentId': group_assignment.key.id(),
               'eventId': event.key.id(),
               'eventName': event.name,
               'competitorName': competitor.name,
               'competitorId': competitor.key.id(),
-              'heatNumber': heat_number,
+              'groupNumber': group_number,
               'stageName': stage.name}
       topic = '/topics/competitor_' + competitor.key.id()
       if dry_run:
         self.response.write(json.dumps(data))
       else:
-        deferred.defer(firebase.SendPushNotification, topic, data, 'heatNotification')
+        deferred.defer(firebase.SendPushNotification, topic, data, 'groupNotification')
         for subscriber in SMSSubscriber.query(SMSSubscriber.competitor == competitor.key):
-          deferred.defer(twilio_sms.SendSMS, heat_assignment, subscriber)
+          deferred.defer(twilio_sms.SendSMS, group_assignment, subscriber)
 
-    for staff_assignment in StaffAssignment.query(StaffAssignment.heat == heat.key).iter():
+    for staff_assignment in StaffAssignment.query(StaffAssignment.group == group.key).iter():
       staff_member = staff_assignment.staff_member.get()
-      previous_heat = Heat.query(ndb.AND(Heat.end_time == heat.start_time,
-                                         Heat.stage == stage.key)).get()
-      if previous_heat:
+      previous_group = Group.query(ndb.AND(Group.end_time == group.start_time,
+                                         Group.stage == stage.key)).get()
+      if previous_group:
         previous_staff_assignment = StaffAssignment.query(
-            ndb.AND(StaffAssignment.heat == previous_heat.key,
+            ndb.AND(StaffAssignment.group == previous_group.key,
                     StaffAssignment.staff_member == staff_member.key)).get()
         if (previous_staff_assignment and
             previous_staff_assignment.job == staff_assignment.job and

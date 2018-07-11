@@ -5,7 +5,7 @@ import datetime
 import webapp2
 
 from src.jinja import JINJA_ENVIRONMENT
-from src.models import Heat
+from src.models import Group
 from src.models import Stage
 
 GRAY_R = 128
@@ -30,18 +30,18 @@ def scale(fraction, zero, one):
 
 class Formatters(object):
   @staticmethod
-  def FormatTime(heat):
-    return datetime.datetime.strftime(heat.start_time, '%I:%M %p').lstrip('0')
+  def FormatTime(group):
+    return datetime.datetime.strftime(group.start_time, '%I:%M %p').lstrip('0')
 
   @staticmethod
-  def FormatHeat(heat):
-    return '%s Heat %d' % (heat.round.get().event.get().name, heat.number)
+  def FormatGroup(group):
+    return '%s Group %d' % (group.round.get().event.get().name, group.number)
 
   @staticmethod
-  def DeltaColor(heat):
-    if not heat.call_time:
+  def DeltaColor(group):
+    if not group.call_time:
       return '#000000'
-    total_seconds_delta = (heat.call_time - heat.start_time).total_seconds()
+    total_seconds_delta = (group.call_time - group.start_time).total_seconds()
     # HACK HACK HACK HACK i messed up time zones
     total_seconds_delta = total_seconds_delta + 3 * 60 * 60
     if total_seconds_delta < MIDDLE:
@@ -57,10 +57,10 @@ class Formatters(object):
     return '#%02x%02x%02x' % (R, G, B)
 
   @staticmethod
-  def FormatDelta(heat):
-    if not heat.call_time:
+  def FormatDelta(group):
+    if not group.call_time:
       return ''
-    total_seconds_delta = (heat.call_time - heat.start_time).total_seconds()
+    total_seconds_delta = (group.call_time - group.start_time).total_seconds()
     total_seconds_delta = total_seconds_delta + 3 * 60 * 60
     total_seconds_delta_abs = abs(total_seconds_delta)
     minutes = total_seconds_delta_abs / 60
@@ -78,13 +78,13 @@ class StatusTracker(webapp2.RequestHandler):
       day = 7
     start_time = datetime.datetime(2018, 7, day, 0, 0, 0)
     end_time = datetime.datetime(2018, 7, day, 23, 59, 0)
-    heats_by_hour_and_stage = collections.defaultdict(lambda: collections.defaultdict(list))
+    groups_by_hour_and_stage = collections.defaultdict(lambda: collections.defaultdict(list))
     all_hours = set()
-    for heat in Heat.query().filter(Heat.start_time > start_time).filter(Heat.start_time < end_time).iter():
-      heats_by_hour_and_stage[heat.start_time.hour][heat.stage.id()].append(heat)
-    for hour in heats_by_hour_and_stage:
-      for stage in heats_by_hour_and_stage[hour]:
-        heats_by_hour_and_stage[hour][stage].sort(key=lambda heat: heat.start_time)
+    for group in Group.query().filter(Group.start_time > start_time).filter(Group.start_time < end_time).iter():
+      groups_by_hour_and_stage[group.start_time.hour][group.stage.id()].append(group)
+    for hour in groups_by_hour_and_stage:
+      for stage in groups_by_hour_and_stage[hour]:
+        groups_by_hour_and_stage[hour][stage].sort(key=lambda group: group.start_time)
         all_hours.add(hour)
     all_stages = [Stage.get_by_id(s) for s in ('r', 'b', 'g', 'o', 'y')]
     template = JINJA_ENVIRONMENT.get_template('status_tracker.html')
@@ -95,7 +95,7 @@ class StatusTracker(webapp2.RequestHandler):
         (29, 'Sunday', day == 29),
     ]
     self.response.write(template.render({
-        'heat_dict': heats_by_hour_and_stage,
+        'group_dict': groups_by_hour_and_stage,
         'all_stages': all_stages,
         'path': webapp2.uri_for('status_tracker'),
         'uri_for': webapp2.uri_for,

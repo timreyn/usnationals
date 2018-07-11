@@ -6,7 +6,7 @@ class Round(ndb.Model):
   event = ndb.KeyProperty(kind=Event)
   number = ndb.IntegerProperty()
   is_final = ndb.BooleanProperty()
-  heat_length = ndb.IntegerProperty()
+  group_length = ndb.IntegerProperty()
   num_competitors = ndb.IntegerProperty()
 
   @staticmethod

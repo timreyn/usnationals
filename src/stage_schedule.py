@@ -4,7 +4,7 @@ import json
 
 from src.handler import CacheHandler
 from src.models import AdminDevice
-from src.models import Heat
+from src.models import Group
 
 class GetStageSchedule(CacheHandler):
   def GetCached(self, stages='all'):
@@ -16,21 +16,21 @@ class GetStageSchedule(CacheHandler):
       is_admin = False
     output_dict = {
         'is_admin': is_admin,
-        'heats': [],
+        'groups': [],
     }
-    heats = Heat.query().iter()
-    heats_by_time = collections.defaultdict(list)
+    groups = Group.query().iter()
+    groups_by_time = collections.defaultdict(list)
     now = datetime.datetime.now() - datetime.timedelta(hours = 7)
-    for heat in heats:
-      if heat.call_time and now - heat.call_time > datetime.timedelta(minutes = 30):
+    for group in groups:
+      if group.call_time and now - group.call_time > datetime.timedelta(minutes = 30):
         continue
       # HACK HACK HACK
-      if heat.start_time < datetime.datetime(2018, 7, 27):
+      if group.start_time < datetime.datetime(2018, 7, 27):
         continue
-      if stages == 'all' or heat.stage.id() in stages:
-        heats_by_time[heat.start_time].append(heat)
-    for time in sorted(heats_by_time):
-      for heat in heats_by_time[time]:
-        if heat.round.get().event.get().is_real:
-          output_dict['heats'].append(heat.ToDict())
+      if stages == 'all' or group.stage.id() in stages:
+        groups_by_time[group.start_time].append(group)
+    for time in sorted(groups_by_time):
+      for group in groups_by_time[time]:
+        if group.round.get().event.get().is_real:
+          output_dict['groups'].append(group.ToDict())
     return json.dumps(output_dict), 5 * 60

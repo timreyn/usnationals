@@ -2,7 +2,7 @@
 {% autoescape true %}
 <html>
 <head>
-  <title>Heat Assignment Status</title>
+  <title>Group Assignment Status</title>
   <script src="/static/common.js"></script>
   <style type="text/css">
 div {
@@ -29,34 +29,34 @@ div.eventname {
   padding: 5px;
   float: left;
 }
-div.heatinfo {
+div.groupinfo {
   width: 100%;
   overflow: auto;
   padding-top: 5px;
   padding-bottom: 5px;
 }
-div.heattime {
+div.grouptime {
   padding-right: 15px;
   padding-left: 5px;
   float: left;
 }
-div.heatname {
+div.groupname {
   float: right;
   padding-right: 5px;
 }
-div.comp_in_heat {
+div.comp_in_group {
   clear: right;
   padding: 5px;
 }
-div.comp_in_heat div.name {
+div.comp_in_group div.name {
   float: left;
   padding-right: 10px;
 }
-div.comp_in_heat div.besttime {
+div.comp_in_group div.besttime {
   float: right;
   padding-right: 10px;
 }
-div.comp_in_heat div.birthday {
+div.comp_in_group div.birthday {
   float: right;
 }
 div.eventinfo {
@@ -83,9 +83,9 @@ div.stage_y {
   </style>
 </head>
 <body>
-  <h1>Heat Assignment Status</h1>
+  <h1>Group Assignment Status</h1>
   <div class="container">
-    <h3>Heats</h3>
+    <h3>Groups</h3>
     {% for r in rounds %}
       <div class="roundinfo">
         <div class="eventinfo">
@@ -94,18 +94,18 @@ div.stage_y {
             {{ r.event.get().name }} ({{ desired_competitors_by_round[r.key.id()] }})
           </div>
         </div>
-        {% for h in heats_by_round[r.key.id()] %}
-          <div class="heatinfo stage_{{ h.stage.id() }}" onclick="toggle('complist_{{ h.key.id() }}');">
-            <div class="heattime">
-              {{ formats.FormatHeatStartTime(h.start_time) }}
+        {% for h in groups_by_round[r.key.id()] %}
+          <div class="groupinfo stage_{{ h.stage.id() }}" onclick="toggle('complist_{{ h.key.id() }}');">
+            <div class="grouptime">
+              {{ formats.FormatGroupStartTime(h.start_time) }}
             </div>
-            <div class="heatname">
-              {{ h.stage.get().name }} {{ h.number }}: {{ len(competitors_by_heat[h.key.id()]) }}
+            <div class="groupname">
+              {{ h.stage.get().name }} {{ h.number }}: {{ len(competitors_by_group[h.key.id()]) }}
             </div>
           </div>
-          <div class="heat_complist" id="complist_{{ h.key.id() }}" style="display: none;">
-            {% for c in competitors_by_heat[h.key.id()] %}
-              <div class="comp_in_heat">
+          <div class="group_complist" id="complist_{{ h.key.id() }}" style="display: none;">
+            {% for c in competitors_by_group[h.key.id()] %}
+              <div class="comp_in_group">
                 <div class="name">
                   {{ c.name }}
                 </div>
@@ -129,8 +129,8 @@ div.stage_y {
         {{ c.key.id() }} {{ c.name }}
       </div>
       <div class="competitorinfo">
-        {% for h in heats_by_competitor[c.key.id()] %}
-          <div class="heatassignment">
+        {% for h in groups_by_competitor[c.key.id()] %}
+          <div class="groupassignment">
             <img class="eventicon" src="/static/img/e_{{ h.round.get().event.id() }}.png"></img>
             {{ h.key.id() }} - {{ debug_info[c.key.id()][1][h.key.id()] }}
           </div>

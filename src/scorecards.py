@@ -4,8 +4,8 @@ import webapp2
 
 from src.jinja import JINJA_ENVIRONMENT
 from src.models import Event
-from src.models import Heat
-from src.models import HeatAssignment
+from src.models import Group
+from src.models import GroupAssignment
 from src.models import Round
 
 DEFAULT = 0
@@ -33,22 +33,22 @@ class GetScorecards(webapp2.RequestHandler):
       else:
         event_name = '%s Round %d' % (r.event.get().name, r.number)
       competitors = []
-      for heat in Heat.query(Heat.round == r.key).iter():
-        if self.request.get('s') and heat.stage.id() not in self.request.get('s'):
+      for group in Group.query(Group.round == r.key).iter():
+        if self.request.get('s') and group.stage.id() not in self.request.get('s'):
           continue
-        if staff_status == STAFF_ONLY and heat.number != 0:
+        if staff_status == STAFF_ONLY and group.number != 0:
           continue
-        if staff_status == NON_STAFF_ONLY and heat.number == 0:
+        if staff_status == NON_STAFF_ONLY and group.number == 0:
           continue
-        heat_string = '%s%d' % (heat.stage.id().upper(), heat.number)
-        for heat_assignment in HeatAssignment.query(HeatAssignment.heat == heat.key).iter():
-          competitor = heat_assignment.competitor.get()
-          competitors.append({'name': competitor.name, 'heat': heat_string, 'wcaid': competitor.wca_id, 'id': competitor.key.id()})
+        group_string = '%s%d' % (group.stage.id().upper(), group.number)
+        for group_assignment in GroupAssignment.query(GroupAssignment.group == group.key).iter():
+          competitor = group_assignment.competitor.get()
+          competitors.append({'name': competitor.name, 'group': group_string, 'wcaid': competitor.wca_id, 'id': competitor.key.id()})
           if len(competitors) == 4:
             pages.append({'event': event_name, 'competitors': competitors})
             competitors = []
       if competitors:
         while len(competitors) < 4:
-          competitors.append({'name': '', 'heat': '', 'wcaid': '', 'id': ''})
+          competitors.append({'name': '', 'group': '', 'wcaid': '', 'id': ''})
         pages.append({'event': event_name, 'competitors': competitors})
     self.response.write(template.render({'pages': pages}))

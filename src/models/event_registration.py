@@ -3,12 +3,12 @@ from google.appengine.ext import ndb
 from src import common
 from src.models.competitor import Competitor
 from src.models.event import Event
-from src.models.heat import HeatAssignment
+from src.models.group import GroupAssignment
 
 class EventRegistration(ndb.Model):
   competitor = ndb.KeyProperty(kind=Competitor)
   event = ndb.KeyProperty(kind=Event)
-  heat_assignment = ndb.KeyProperty(kind=HeatAssignment)
+  group_assignment = ndb.KeyProperty(kind=GroupAssignment)
   single = ndb.IntegerProperty()
   average = ndb.IntegerProperty()
   projected_rounds = ndb.IntegerProperty()

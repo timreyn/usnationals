@@ -6,7 +6,7 @@ from src.models.admin_device import AdminDevice
 from src.models.round import Round
 from src.models.stage import Stage
 
-class Heat(ndb.Model):
+class Group(ndb.Model):
   round = ndb.KeyProperty(kind=Round)
   stage = ndb.KeyProperty(kind=Stage)
   number = ndb.IntegerProperty()
@@ -33,8 +33,8 @@ class Heat(ndb.Model):
     return output
 
 
-class HeatAssignment(ndb.Model):
-  heat = ndb.KeyProperty(kind=Heat)
+class GroupAssignment(ndb.Model):
+  group = ndb.KeyProperty(kind=Group)
   competitor = ndb.KeyProperty(kind=Competitor)
 
   @staticmethod

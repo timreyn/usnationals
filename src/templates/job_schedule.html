@@ -2,30 +2,30 @@
 <table>
   <tr>
     <th>Time</th>
-    <th>Heats</th>
+    <th>Groups</th>
     <th>Name</th>
   </tr>
   {% set current_day = 28 %}
   {% for assignment in all_assignments %}
     {% set first = assignment['jobs'][0] %}
     {% set last = assignment['jobs'][-1] %}
-    {% if first.heat.get().start_time.day != current_day %}
+    {% if first.group.get().start_time.day != current_day %}
       <tr>
         <td colspan=3>
-          <b>{{ first.heat.get().start_time.strftime('%A') }}</b>
+          <b>{{ first.group.get().start_time.strftime('%A') }}</b>
         </td>
       </tr>
-      {% set current_day = first.heat.get().start_time.day %}
+      {% set current_day = first.group.get().start_time.day %}
     {% endif %}
     <tr>
       <td>
-        {{ first.heat.get().start_time.strftime(format) }} &mdash;
-        {{ last.heat.get().end_time.strftime(format) }}
+        {{ first.group.get().start_time.strftime(format) }} &mdash;
+        {{ last.group.get().end_time.strftime(format) }}
       </td>
       <td>
-        {{ first.heat.get().round.get().event.get().name }} Heat {{ first.heat.get().number }}
+        {{ first.group.get().round.get().event.get().name }} Group {{ first.group.get().number }}
         {% if first != last %}
-          &mdash; {{ last.heat.get().round.get().event.get().name }} Heat {{ last.heat.get().number }}
+          &mdash; {{ last.group.get().round.get().event.get().name }} Group {{ last.group.get().number }}
         {% endif %}
       </td>
       <td>

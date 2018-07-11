@@ -1,11 +1,11 @@
 from google.appengine.ext import ndb
 
 from src.models.competitor import Competitor
-from src.models.heat import Heat
+from src.models.group import Group
 from src.models.round import Round
 
 class StaffAssignment(ndb.Model):
-  heat = ndb.KeyProperty(kind=Heat)
+  group = ndb.KeyProperty(kind=Group)
   long_event = ndb.KeyProperty(kind=Round)
   staff_member = ndb.KeyProperty(kind=Competitor)
   job = ndb.StringProperty()
@@ -13,12 +13,12 @@ class StaffAssignment(ndb.Model):
   misc = ndb.StringProperty()
 
   @staticmethod
-  def Id(event_id, round_id, stage, heat_number, competitor_id):
-    return '%s_%s' % (Heat.Id(event_id, round_id, stage, heat_number), competitor_id)
+  def Id(event_id, round_id, stage, group_number, competitor_id):
+    return '%s_%s' % (Group.Id(event_id, round_id, stage, group_number), competitor_id)
 
   def ToDict(self):
     output = {
-        'heat': self.heat.get().ToDict(),
+        'group': self.group.get().ToDict(),
         'staff_member': self.staff_member.get().ToDict(),
         'job': self.job,
     }

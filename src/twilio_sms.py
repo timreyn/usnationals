@@ -2,12 +2,12 @@ from twilio.rest import TwilioRestClient
 
 from src.models import TwilioConfig
 
-def SendSMS(heat_assignment, subscriber):
-  heat = heat_assignment.heat.get()
+def SendSMS(group_assignment, subscriber):
+  group = group_assignment.group.get()
   message = 'It\'s time for %s to compete in %s on the %s stage!' % (
-      heat_assignment.competitor.get().name,
-      heat.round.get().event.get().name,
-      heat.stage.get().name)
+      group_assignment.competitor.get().name,
+      group.round.get().event.get().name,
+      group.stage.get().name)
   twilio_config = TwilioConfig.get_by_id("1")
   if not twilio_config:
     raise Exception('No twilio config found!')
