@@ -21,6 +21,8 @@ def AssignmentScoreImpl(competitor, assignments, state, is_debug):
       if subscore > 1.0:
         subscore = 1.0
       score *= subscore
+      if score == 0:
+        break
       if is_debug:
         current_debug['s'][scorer.GetName()] = subscore
     if is_debug:

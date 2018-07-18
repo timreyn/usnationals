@@ -27,6 +27,8 @@ class TimeBetweenGroupsScorer(Scorer):
     spare_time = time_between_groups.total_seconds() / 60 - expected_time
     if spare_time < 0:
       return 0.0
+    if group.round.get().number > 1 and previous_group.round.get().number > 1:
+      return 1.0
     if spare_time < 5:
       return 0.3
     if spare_time < 10:
@@ -111,8 +113,31 @@ class SpeedScorer(Scorer):
     return 0.5
 
 
+# HACK 2018 manual assignments
+class FootScorer(Scorer):
+  def GetName(self):
+    return 'feet'
+
+  def Score(self, group, previous_group, competitor, state):
+    if group.round.get().event.id() != '333ft':
+      return 1
+    if competitor.key.id() in ('179', '548', '375', '108', '546', '609', '313', '221', '67', '238', '239', '347'):
+      return 1 if group.number == 1 else 0
+    if group.number == 1:
+      return 0
+    if competitor.key.id() in ('436', '137'):
+      return 1 if group.number == 2 else 0
+    if competitor.key.id() == '656':
+      return 1 if group.number == 4 else 0
+    return 1
+
+  def GetMinimumScore(self):
+    return 0
+
+
 def GetScorers():
   return [
+      FootScorer(),
       TimeBetweenGroupsScorer(),
       NumCompetitorsScorer(),
 #      SpeedScorer(),

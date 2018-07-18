@@ -1,3 +1,4 @@
+from src.models.active_assignment import ActiveAssignment
 from src.models.admin_device import AdminDevice
 from src.models.competitor import Competitor
 from src.models.debug_info import DebugInfo

@@ -1,9 +1,12 @@
+import datetime
+
 from google.appengine.ext import ndb
 
 from src.admin.assignments.assignment_score import AssignmentScore
 from src.admin.assignments.assignment_score import AssignmentScoreDebug
 from src.admin.assignments.assignment_state import AssignmentState
 from src.admin.assignments.busy_score import BusyScore
+from src.models import ActiveAssignment
 from src.models import DebugInfo
 from src.models import EventRegistration
 from src.models import Group
@@ -12,11 +15,14 @@ from src.models import GroupAssignment
 import random
 
 def PopulateState(state, rounds):
+  done_events = set()
   for r in rounds:
     for h in Group.query(Group.round == r.key).iter():
       state.RegisterGroup(h)
-    for reg in EventRegistration.query(EventRegistration.event == r.event).iter():
-      state.RegisterCompetitorForEvent(reg)
+    if r.event.id() not in done_events:
+      for reg in EventRegistration.query(EventRegistration.event == r.event).iter():
+        state.RegisterCompetitorForEvent(reg)
+    done_events.add(r.event.id())
   state.FinalizeEntryList()
 
 
@@ -39,10 +45,22 @@ def GetGroupAssignments(competitor, state, rounds, assignments = [], best_score 
   random.shuffle(groups)
   group_and_score = []
   considered_times = set()
+  used_times = set()
+  for assignment in assignments:
+    time = assignment.start_time
+    while time < assignment.end_time:
+      used_times.add(time)
+      time += datetime.timedelta(minutes=5)
   for group in groups:
     if group.start_time in considered_times:
       continue
+    def tostr(g):
+      return '%s: %s' % (g.key.id(), g.start_time.strftime('%H:%M'))
+    if group.start_time in used_times:
+      #print 'Rejecting %s' % tostr(group)
+      continue
     score = AssignmentScore(competitor, assignments + [group], state)
+    #print '%s: [%s]: %.02f' % (competitor.name, ','.join(tostr(k) for k in assignments + [group]), score)
     if len(rounds) == 1 and score == incoming_score:
       return assignments + [group], score
     # If the new group has a perfect score, recurse right now.
@@ -50,7 +68,7 @@ def GetGroupAssignments(competitor, state, rounds, assignments = [], best_score 
       considered_times.add(group.start_time)
       new_assignments, new_score = GetGroupAssignments(competitor, state, rounds[1:], assignments + [group], best_score, incoming_score)
       # If this group was optimal, or the total assignment was good enough, return.
-      if new_score == incoming_score or new_score >= 0.8:
+      if new_score == incoming_score or new_score >= 0.5:
         return new_assignments, new_score
       if new_score > best_score:
         best_assignments = new_assignments
@@ -69,7 +87,7 @@ def GetGroupAssignments(competitor, state, rounds, assignments = [], best_score 
     else:
       new_assignments, new_score = GetGroupAssignments(competitor, state, rounds[1:], assignments + [group], best_score, intermediate_score)
     # If this group was optimal, or the total assignment was good enough, return.
-    if new_score == incoming_score or new_score >= 0.8:
+    if new_score == incoming_score or new_score >= 0.5:
       return new_assignments, new_score
     if new_score > best_score:
       best_assignments = new_assignments
@@ -81,8 +99,16 @@ def GetGroupAssignments(competitor, state, rounds, assignments = [], best_score 
 
 # Main method for group assignment.
 def AssignGroups(rounds, request_id):
+  print request_id
+  active_assignment = ActiveAssignment.get_by_id('1')
+  if not active_assignment or active_assignment.request_id != request_id:
+    return
   state = AssignmentState()
   debug_info = DebugInfo.get_by_id(request_id) or DebugInfo(id=request_id)
+
+  round_to_key = {}
+  for i, r in enumerate(rounds):
+    round_to_key[r.key.id()] = i
 
   # Clear existing groups
   futures = []
@@ -98,7 +124,8 @@ def AssignGroups(rounds, request_id):
   while state.HasMoreCompetitors():
     competitor = GetNextCompetitor(state)
     print 'Assigning ' + competitor.name
-    rounds = sorted(state.GetCompetitorRounds(competitor), key = lambda r: r.group_length, reverse=True)
+    rounds = sorted(state.GetCompetitorRounds(competitor), key = lambda r: round_to_key[r.key.id()])
+    #rounds = sorted(state.GetCompetitorRounds(competitor), key = lambda r: r.group_length, reverse=True)
     group_assignments, score = GetGroupAssignments(competitor, state, rounds)
     if score == 0.0:
       print competitor.name
@@ -110,4 +137,5 @@ def AssignGroups(rounds, request_id):
     state.FinishCompetitor(competitor)
     debug_info.info = state.DebugInfo()
     debug_info.put()
+  print 'Success!!'
   state.Finish()
