@@ -29,9 +29,9 @@ public class MenuHandler {
             case R.id.action_cubingusa_link:
                 Uri cubingusa_uri = new Uri.Builder()
                         .scheme("https")
-                        .authority("www.cubingusa.com")
-                        .appendPath("nationals2017")
-                        .appendPath("index.php")
+                        .authority("www.cubingusa.org")
+                        .appendPath("nationals")
+                        .appendPath("2018")
                         .build();
                 intent.setAction(Intent.ACTION_VIEW);
                 intent.setData(cubingusa_uri);
