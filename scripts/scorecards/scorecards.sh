@@ -1,4 +1,4 @@
-URL="https://usnationals2017.appspot.com/scorecards?$2&$3"
+URL="https://usnationals2018.appspot.com/scorecards?$2&$3"
 
 if [[ -n "$4" ]]; then
   URL="$URL&$4"
