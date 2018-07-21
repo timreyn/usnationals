@@ -4,7 +4,7 @@
 {% for page in pages -%}
 \thispagestyle{empty}
 {% for competitor in page.competitors -%}
-\scoresheetwithgroup{CubingUSA Nationals 2018 | {{ page.event|safe }} {{ page.round }} }{\bf {{ competitor.name|safe }} }{ {{ competitor.wcaid }} }{ {{ competitor.id }} }{ {{ competitor.group }} }{# -#}
+\scoresheetwithgroup{CubingUSA Nationals 2018 | {{ page.event|safe }} {{ page.round }} }{\bf {{ competitor.name|safe }} }{ {{ competitor.wcaid }} }{ {{ competitor.id }} }{ {{ competitor.group }} }{ {{ competitor.is_top }} }{# -#}
 {% if loop.index in (1, 3) -%}
 \hspace{.05in}
 {% endif -%}

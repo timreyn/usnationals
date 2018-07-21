@@ -4,6 +4,7 @@ import webapp2
 
 from src.jinja import JINJA_ENVIRONMENT
 from src.models import Event
+from src.models import EventRegistration
 from src.models import Group
 from src.models import GroupAssignment
 from src.models import Round
@@ -22,6 +23,8 @@ class GetScorecards(webapp2.RequestHandler):
       staff_status = STAFF_ONLY
     elif self.request.get('staff') == 'no':
       staff_status = NON_STAFF_ONLY
+    per_group = self.request.get('per') or 4
+    overall = self.request.get('overall') or 16
     for round_id in self.request.get('r').split(','):
       r = Round.get_by_id(round_id)
       if not r:
@@ -33,6 +36,10 @@ class GetScorecards(webapp2.RequestHandler):
       else:
         event_name = '%s Round %d' % (r.event.get().name, r.number)
       competitors = []
+      times_by_competitor = {}
+      for event_registration in EventRegistration.query(EventRegistration.event == r.event).iter():
+        times_by_competitor[event_registration.competitor.id()] = event_registration.single
+      top_times = sorted(times_by_competitor.values())[:overall]
       for group in Group.query(Group.round == r.key).iter():
         if self.request.get('s') and group.stage.id() not in self.request.get('s'):
           continue
@@ -41,14 +48,23 @@ class GetScorecards(webapp2.RequestHandler):
         if staff_status == NON_STAFF_ONLY and group.number == 0:
           continue
         group_string = '%s%d' % (group.stage.id().upper(), group.number)
+        competitors_in_group = []
+        times_in_group = []
         for group_assignment in GroupAssignment.query(GroupAssignment.group == group.key).iter():
           competitor = group_assignment.competitor.get()
-          competitors.append({'name': competitor.name, 'group': group_string, 'wcaid': competitor.wca_id, 'id': competitor.key.id()})
-          if len(competitors) == 4:
-            pages.append({'event': event_name, 'competitors': competitors})
-            competitors = []
-        if competitors:
-          while len(competitors) < 4:
-            competitors.append({'name': '', 'group': '', 'wcaid': '', 'id': ''})
-          pages.append({'event': event_name, 'competitors': competitors})
+          competitors_in_group.append({'name': competitor.name, 'group': group_string, 'wcaid': competitor.wca_id, 'id': competitor.key.id()})
+          times_in_group.append(times_by_competitor[competitor.key.id()])
+        top_times_in_group = sorted(times_in_group)[:per_group]
+
+        competitors_on_page = []
+        for competitor in competitors_in_group:
+          competitor['is_top'] = times_by_competitor[competitor['id']] in top_times + top_times_in_group
+          competitors_on_page.append(competitor)
+          if len(competitors_on_page) == 4:
+            pages.append({'event': event_name, 'competitors': competitors_on_page})
+            competitors_on_page = []
+        if competitors_on_page:
+          while len(competitors_on_page) < 4:
+            competitors_on_page.append({'name': '', 'group': '', 'wcaid': '', 'id': '', 'is_top': False})
+          pages.append({'event': event_name, 'competitors': competitors_on_page})
     self.response.write(template.render({'pages': pages}))

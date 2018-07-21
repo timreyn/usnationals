@@ -4,22 +4,27 @@
 \usepackage{fullpage}
 \usepackage{array}
 \usepackage{simplemargins}
+\usepackage{amssymb}
+\usepackage{xstring}
 \renewcommand{\arraystretch}{1.44}
 \setallmargins{.05in}
 \setleftmargin{0in}
 \setrightmargin{0in}
 
+
+\newcommand{\maybestar}[1]{\IfEqCase{#1}{{ True }{$\bigstar$}{ False }{}}}
 % Arguments:
 % Competition and Event
 % Name
 % wca id
 % cubecomps id
-% heat
-\newcommand{\scoresheetwithheat}[5]{
+% group
+% is top competitor
+\newcommand{\scoresheetwithgroup}[6]{
 \begin{tabular}{|>{\centering\arraybackslash}p{.75in}|>{\centering\arraybackslash}p{2.25in}|>{\centering\arraybackslash}p{.75in}|>{\centering\arraybackslash}p{.75in}|}\hline
 \multicolumn{4}{|c|}{#1}\\
 \hline
-\multirow{2}{*}{\Huge{\textbf{#4}}}&\multicolumn{2}{|c|}{\multirow{2}{*}{\begin{tabular}{c}\multirow{2}{*}{\large{#2}}\\\tiny{#3}\end{tabular}}}&\multirow{2}{*}{\Huge{\textbf{#5}}}\\
+\multirow{2}{*}{\Huge{\textbf{#4}}}&\multicolumn{2}{|c|}{\multirow{2}{*}{\begin{tabular}{c}\multirow{2}{*}{\large{#2} \maybestar{#6}}\\\tiny{#3}\end{tabular}}}&\multirow{2}{*}{\Huge{\textbf{#5}}}\\
 &\multicolumn{2}{|c|}{}&\\
 \hline
 &Solve Time&Judge&Comp\\
