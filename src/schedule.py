@@ -33,7 +33,7 @@ class GetSchedule(CacheHandler):
       if hide_old and group.call_time and now - group.call_time > datetime.timedelta(minutes = 30):
         continue
       jobs_by_time[group.start_time].append(staff_assignment)
-    for time in sorted(groups_by_time.keys() + jobs_by_time.keys()):
+    for time in sorted(list(set(groups_by_time.keys() + jobs_by_time.keys()))):
       for group in groups_by_time[time]:
         schedule_dict['groups'].append({'competing': group.ToDict()})
       for job in jobs_by_time[time]:
