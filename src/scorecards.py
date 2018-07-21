@@ -23,8 +23,8 @@ class GetScorecards(webapp2.RequestHandler):
       staff_status = STAFF_ONLY
     elif self.request.get('staff') == 'no':
       staff_status = NON_STAFF_ONLY
-    per_group = self.request.get('per') or 4
-    overall = self.request.get('overall') or 16
+    per_group = int(self.request.get('per') or 4)
+    overall = int(self.request.get('overall') or 16)
     for round_id in self.request.get('r').split(','):
       r = Round.get_by_id(round_id)
       if not r:
