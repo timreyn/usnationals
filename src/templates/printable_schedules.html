@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <style type="text/css">
+    .lotsofgroups {
+      font-size: 12px;
+    }
+    .start-time {}
+    .event-icon-container {}
+    .event-icon {
+      width: 20px;
+    }
+    .lotsofgroups .event-icon {
+      width: 15px;
+    }
+    .event-name {}
+    .group-name {}
+    .date-cell {
+      font-weight: bold;
+    }
+    .competitor-name {}
+    .date-cell-row {
+      border-top-width: 3px;
+      font-weight: bold;
+    }
+    h3,h4,h5,h6 {
+      text-align: center;
+    }
+    @media print {
+      .force-page-break { page-break-after: always; }
+    }
+    .schedule {
+      height: 766px;
+    }
+  </style>
+</head>
+<body>
+  <div class="row">
+    {% for competitor in competitors %}
+      <div class="col col-sm-6 schedule">
+        <h3 class="competitor-name">{{ competitor.name }}</h3>
+        <h5 class="competition-name">CubingUSA Nationals 2018 Groups</h4>
+        <h6 class="groups-link">cubingusa.org/groups/{{ competitor.wca_id }}</h5>
+        <table class="table table-sm">
+          <tbody>
+            {% set ns = namespace(last_day='Wednesday') %}
+            {% set groups = groups_by_competitor[competitor.key.id()] %}
+            {% for group in groups %}
+              {% if day(group) != ns.last_day %}
+                {% set ns.last_day = day(group) %}
+                <tr class="date-cell-row {% if len(groups) > 15 %}lotsofgroups{% endif %}">
+                  <td colspan="4" class="date-cell">
+                    {{ ns.last_day }}
+                  </td>
+                </tr>
+              {% endif %}
+              <tr class="grouprow {% if len(groups) > 15 %}lotsofgroups{% endif %}">
+                <td class="start-time">
+                  {{ group.start_time.strftime('%-I:%M %p') }}
+                </td>
+                <td class="event-icon-container">
+                  <img src="/static/img/e_{{ group.round.get().event.id() }}.png" class="event-icon">
+                </td>
+                <td class="event-name">
+                  {{ group.round.get().event.get().name }}
+                </td>
+                <td class="group-name">
+                  {{ group.stage.get().name }} {{ group.number }}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% if loop.index % 4 == 0 %}
+        <div class="force-page-break"></div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</body>
+</html>
+{% endautoescape %}

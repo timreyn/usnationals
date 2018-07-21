@@ -5,6 +5,7 @@ from src import get_competitors
 from src import get_group_info
 from src import get_stages
 from src import job_schedule
+from src import printable_schedules
 from src import register_device
 from src import schedule
 from src import scorecards
@@ -43,6 +44,7 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/job_schedule', handler=job_schedule.JobSchedule),
     webapp2.Route('/twiml', handler=twiml.Twiml),
     webapp2.Route(r'/current_group/<stage_id:.>', handler=current_group.CurrentGroup),
+    webapp2.Route('/printable_schedules', handler=printable_schedules.PrintableSchedulesHandler),
     webapp2.Route('/admin/add_data', handler=add_data.AddData, name='add_data'),
     webapp2.Route(r'/admin/assign_stations/<stage_id:.>', handler=assign_stations.AssignStations),
     webapp2.Route('/admin/edit_users', handler=edit_users.EditUsers, name='edit_users'),
