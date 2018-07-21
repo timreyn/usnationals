@@ -47,8 +47,8 @@ class GetScorecards(webapp2.RequestHandler):
           if len(competitors) == 4:
             pages.append({'event': event_name, 'competitors': competitors})
             competitors = []
-      if competitors:
-        while len(competitors) < 4:
-          competitors.append({'name': '', 'group': '', 'wcaid': '', 'id': ''})
-        pages.append({'event': event_name, 'competitors': competitors})
+        if competitors:
+          while len(competitors) < 4:
+            competitors.append({'name': '', 'group': '', 'wcaid': '', 'id': ''})
+          pages.append({'event': event_name, 'competitors': competitors})
     self.response.write(template.render({'pages': pages}))
