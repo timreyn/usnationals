@@ -112,11 +112,9 @@ public class CompetitorScheduleActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (!mResultsLoaded) {
                     Uri cubecompsUri = new Uri.Builder()
-                            .scheme("http")
-                            .authority("m.cubecomps.com")
-                            .appendPath("competitions")
-                            .appendPath("2323")
-                            .appendPath("competitors")
+                            .scheme("https")
+                            .authority(Constants.HOSTNAME)
+                            .appendPath("cubecomps")
                             .appendPath(mCompetitorId)
                             .build();
                     Log.d(TAG, "Loading " + cubecompsUri.toString());

@@ -21,7 +21,8 @@ public class MenuHandler {
             case R.id.action_cubecomps_link:
                 Uri cubecomps_uri = new Uri.Builder()
                         .scheme("https")
-                        .authority("m.cubecomps.com")
+                        .authority(Constants.HOSTNAME)
+                        .appendPath("cubecomps")
                         .build();
                 intent.setAction(Intent.ACTION_VIEW);
                 intent.setData(cubecomps_uri);
