@@ -23,6 +23,6 @@ NUM_MOVED=0
 while [[ $NUM_MOVED -lt $NUM_GROUPS ]]; do
   NUM_MOVED=$(( $NUM_MOVED + 1 ))
   FILE_TO_MOVE=$(ls $DIR | grep "\.pdf$" | head -1)
-  TARGET=$(echo "$FILE_TO_MOVE" | sed -s "s/Group .*\.pdf/$STAGE_NAME $NUM_MOVED.pdf/")
+  TARGET=$(echo "$FILE_TO_MOVE" | sed -s "s/Scramble Set .*\.pdf/$STAGE_NAME $NUM_MOVED.pdf/")
   mv "$DIR/$FILE_TO_MOVE" "$DIR/$STAGE_CODE/$TARGET"
 done
