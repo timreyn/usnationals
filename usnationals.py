@@ -1,5 +1,6 @@
 import webapp2
 
+from src import cubecomps
 from src import current_group
 from src import get_competitors
 from src import get_group_info
@@ -24,6 +25,7 @@ from src.admin.assignments import handler as assignments_handler
 from src.admin.assignments import debug_handler as assignments_debug_handler
 
 app = webapp2.WSGIApplication([
+    webapp2.Route(r'/cubecomps/<person_id:\d*>', handler=cubecomps.CubecompsRedirect),
     webapp2.Route(r'/get_schedule/<person_id:\d*>', handler=schedule.GetSchedule),
     webapp2.Route(r'/stage_schedule/<stages:.*>', handler=stage_schedule.GetStageSchedule),
     webapp2.Route('/full_schedule', handler=stage_schedule.GetStageSchedule),
