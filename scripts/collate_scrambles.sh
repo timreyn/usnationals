@@ -9,12 +9,12 @@
 # etc
 #
 # Usage:
-# ./collate_scrambles.sh <event/round> <number of groups> <stage_name> <stage_code>
+# ./collate_scrambles.sh <stage_name> <stage_code> <event/round> <number of groups>
 
-DIR=$1
-NUM_GROUPS=$2
-STAGE_NAME=$3
-STAGE_CODE=$4
+STAGE_NAME=$1
+STAGE_CODE=$2
+DIR=$3
+NUM_GROUPS=$4
 
 mkdir -p $DIR/$STAGE_CODE
 
