@@ -1,6 +1,8 @@
 import datetime
 import webapp2
 
+from google.appengine.ext import ndb
+
 from src.models import Competitor
 from src.models import Group
 from src.models import StaffAssignment
