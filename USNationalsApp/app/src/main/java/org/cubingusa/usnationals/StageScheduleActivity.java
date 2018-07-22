@@ -52,7 +52,7 @@ public class StageScheduleActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         Uri uri = new Uri.Builder()
-                .scheme("http")
+                .scheme("https")
                 .authority(Constants.HOSTNAME)
                 .appendPath("full_schedule")
                 .build();

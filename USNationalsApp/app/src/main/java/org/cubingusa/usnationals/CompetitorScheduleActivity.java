@@ -139,7 +139,7 @@ public class CompetitorScheduleActivity extends AppCompatActivity {
         });
 
         Uri uri = new Uri.Builder()
-                .scheme("http")
+                .scheme("https")
                 .authority(Constants.HOSTNAME)
                 .appendPath("get_schedule")
                 .appendPath(mCompetitorId)

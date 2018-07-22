@@ -49,7 +49,7 @@ public class CompetitorListActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Uri uri = new Uri.Builder()
-                .scheme("http")
+                .scheme("https")
                 .authority(Constants.HOSTNAME)
                 .appendPath("get_competitors")
                 .build();
