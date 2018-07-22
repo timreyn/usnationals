@@ -33,5 +33,17 @@ class OneOffHandler(webapp2.RequestHandler):
         new_assignment.staff_member = bradley
         futures.append(assignment.key.delete_async())
         futures.append(new_assignment.put_async())
+    if name == 'brad':
+      # Give Bradley's morning jobs to Felix
+      bradley = ndb.Key(Competitor, '79')
+      felix = ndb.Key(Competitor, '243')
+      bradley_arrives = datetime.datetime(2018, 7, 27, 10, 55, 0)
+      for assignment in StaffAssignment.query(StaffAssignment.staff_member == bradley).iter():
+        if assignment.start_time > bradley_arrives:
+          continue
+        new_assignment = CloneAssignment(assignment, assignment.key.id().replace('479', '243').replace('79', '243'))
+        new_assignment.staff_member = felix
+        futures.append(assignment.key.delete_async())
+        futures.append(new_assignment.put_async())
     for future in futures:
       future.get_result()
