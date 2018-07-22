@@ -8,7 +8,7 @@ from src.models import Group
 from src.models import StaffAssignment
 
 def CloneAssignment(assignment, new_id):
-  new_assignment = StaffAssignment(id = assignment.key.id().replace('533', '277'))
+  new_assignment = StaffAssignment(id = new_id)
   new_assignment.group = assignment.group
   if assignment.long_event:
     new_assignment.long_event = assignment.long_event
