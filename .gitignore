@@ -10,6 +10,7 @@ USNationalsApp/.DS_Store
 USNationalsApp/build
 USNationalsApp/app/app-release.apk
 USNationalsApp/app/build
+USNationalsApp/app/release
 USNationalsApp/app/google-services.json
 scripts/scorecards/*.aux
 scripts/scorecards/*.log
