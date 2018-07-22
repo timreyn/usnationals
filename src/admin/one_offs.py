@@ -39,7 +39,7 @@ class OneOffHandler(webapp2.RequestHandler):
       felix = ndb.Key(Competitor, '243')
       bradley_arrives = datetime.datetime(2018, 7, 27, 10, 55, 0)
       for assignment in StaffAssignment.query(StaffAssignment.staff_member == bradley).iter():
-        if assignment.start_time > bradley_arrives:
+        if assignment.group.get().start_time > bradley_arrives:
           continue
         new_assignment = CloneAssignment(assignment, assignment.key.id().replace('479', '243').replace('79', '243'))
         new_assignment.staff_member = felix
