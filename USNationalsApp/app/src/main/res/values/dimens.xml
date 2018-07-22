@@ -31,8 +31,8 @@
     <dimen name="divider_text_size">20sp</dimen>
     <dimen name="competitor_search_result_number_width">20dp</dimen>
     <dimen name="competitor_search_result_number_margin">5dp</dimen>
-    <dimen name="heat_info_header_margin">5dp</dimen>
-    <dimen name="heat_info_header_text_size">20sp</dimen>
+    <dimen name="group_info_header_margin">5dp</dimen>
+    <dimen name="group_info_header_text_size">20sp</dimen>
     <dimen name="schedule_bottom_margin">16dp</dimen>
     <dimen name="stage_chip_margin">5dp</dimen>
     <dimen name="schedule_top_margin">16dp</dimen>

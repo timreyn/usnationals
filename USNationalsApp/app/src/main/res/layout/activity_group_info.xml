@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="org.cubingusa.usnationals.HeatInfoActivity">
+    tools:context="org.cubingusa.usnationals.GroupInfoActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -34,7 +34,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <include layout="@layout/content_heat_info" />
+        <include layout="@layout/content_group_info" />
     </ScrollView>
 
 </android.support.design.widget.CoordinatorLayout>
