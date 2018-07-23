@@ -14,7 +14,7 @@ class Twiml(webapp2.RequestHandler):
         self.response.write("Sorry, you can only subscribe to 5 competitors per phone number!")
         return
       wca_id = msg_split[-1]
-      competitor = Competitor.query(Competitor.wca_id == wca_id)
+      competitor = Competitor.query(Competitor.wca_id == wca_id).get()
       if not competitor:
         self.response.write('Sorry, I can\'t find a competitor with ID ' + wca_id)
         return
