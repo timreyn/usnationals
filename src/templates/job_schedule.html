@@ -5,17 +5,17 @@
     <th>Groups</th>
     <th>Name</th>
   </tr>
-  {% set current_day = 28 %}
+  {% set ns = namespace(current_day = 28) %}
   {% for assignment in all_assignments %}
     {% set first = assignment['jobs'][0] %}
     {% set last = assignment['jobs'][-1] %}
-    {% if first.group.get().start_time.day != current_day %}
+    {% if first.group.get().start_time.day != ns.current_day %}
       <tr>
         <td colspan=3>
           <b>{{ first.group.get().start_time.strftime('%A') }}</b>
         </td>
       </tr>
-      {% set current_day = first.group.get().start_time.day %}
+      {% set ns.current_day = first.group.get().start_time.day %}
     {% endif %}
     <tr>
       <td>
