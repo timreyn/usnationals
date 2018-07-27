@@ -14,7 +14,7 @@ class CurrentGroup(webapp2.RequestHandler):
     current_group = None
     next_group = None
     output = {}
-    now = datetime.datetime.now() - datetime.timedelta(hours=4) # hack! time zones are hard
+    now = datetime.datetime.now() - datetime.timedelta(hours=6) # hack! time zones are hard
     for group in Group.query(Group.stage == stage.key).iter():
       if not group.round.get().event.get().is_real:
         continue
