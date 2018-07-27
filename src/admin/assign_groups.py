@@ -60,8 +60,8 @@ class AssignGroups(webapp2.RequestHandler):
       competitors.append(c)
       competitor_ids.add(c.key.id())
 
-#    if r.is_final:
-#      competitors = competitors[::2] + competitors[1::2]
+    if r.is_final and r.key.id() != '333_4':
+      competitors = competitors[::2] + competitors[1::2]
     competitor_to_conflicting_groups = collections.defaultdict(list)
     round_groups = [h for h in Group.query(Group.round == r.key).iter()]
     round_group_keys = [h.key for h in round_groups]
@@ -84,7 +84,7 @@ class AssignGroups(webapp2.RequestHandler):
         if assignment.staff_member.id() in competitor_ids:
           competitor_to_conflicting_groups[assignment.staff_member.id()].append((assignment.group.get(), assignment.job))
 
-    has_staff_groups = r.key.id() in ('333oh_2', 'skewb_2', '222_2', '444_2', 'pyram_2')
+    has_staff_groups = False
     num_staff_competitors = 0
     num_non_staff_competitors = 0
 
