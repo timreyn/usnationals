@@ -43,7 +43,7 @@ class Formatters(object):
       return '#000000'
     total_seconds_delta = (group.call_time - group.start_time).total_seconds()
     # HACK HACK HACK HACK i messed up time zones
-    total_seconds_delta = total_seconds_delta + 3 * 60 * 60
+    total_seconds_delta = total_seconds_delta + 1 * 60 * 60
     if total_seconds_delta < MIDDLE:
       fraction = float(MIDDLE - total_seconds_delta)/(MIDDLE - FULL_GREEN)
       R = scale(fraction, GRAY_R, GREEN_R)
@@ -61,7 +61,7 @@ class Formatters(object):
     if not group.call_time:
       return ''
     total_seconds_delta = (group.call_time - group.start_time).total_seconds()
-    total_seconds_delta = total_seconds_delta + 3 * 60 * 60
+    total_seconds_delta = total_seconds_delta + 1 * 60 * 60
     total_seconds_delta_abs = abs(total_seconds_delta)
     minutes = total_seconds_delta_abs / 60
     seconds = total_seconds_delta_abs % 60
