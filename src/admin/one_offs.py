@@ -81,5 +81,9 @@ class OneOffHandler(webapp2.RequestHandler):
       # And undo part of that, since I transferred too much.
       TransferAssignments('243', '167', futures,
                           end=datetime.datetime(2018, 7, 28, 0, 0))
+    if name == 'spackman':
+      # Give Matthew Spackman's jobs to Lachance starting on Saturday.
+      TransferAssignment('454', '298', futures,
+                         start=datetime.datetime(2018, 7, 28, 0, 0))
     for future in futures:
       future.get_result()
