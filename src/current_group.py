@@ -31,7 +31,7 @@ class CurrentGroup(webapp2.RequestHandler):
     if next_group:
       output['next_group'] = {'group': next_group.ToDict()}
       if current_group and current_group.end_time >= next_group.start_time:
-        estimated_call_time = next_group.start_time + (current_group.call_time - current_group.start_time) + datetime.timedelta(hours=3)
+        estimated_call_time = next_group.start_time + (current_group.call_time - current_group.start_time) + datetime.timedelta(hours=1)  # OMG time zones
       else:
         estimated_call_time = next_group.start_time
       expected_seconds = max(0, int((estimated_call_time - now).total_seconds()))
