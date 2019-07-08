@@ -1,4 +1,4 @@
-import csv
+import unicodecsv
 import datetime
 import StringIO
 import webapp2
@@ -10,7 +10,8 @@ from src.models import *
 
 class AddData(webapp2.RequestHandler):
   def post(self):
-    memfile = StringIO.StringIO(self.request.get('data').replace('\t', '').replace(';', '\n'))
+    memfile = StringIO.StringIO(
+                self.request.get('data').replace('\t', '').replace(';', '\n').encode('utf-8'))
     result = self.ReadData(memfile)
     template = JINJA_ENVIRONMENT.get_template('add_data.html')
     self.response.write(template.render({
@@ -27,7 +28,7 @@ class AddData(webapp2.RequestHandler):
 
   def ReadData(self, memfile):
     futures = []
-    for row in csv.reader(memfile):
+    for row in unicodecsv.reader(memfile, encoding='utf-8'):
       if not row:
         continue
       if row[0][0] == '#':
