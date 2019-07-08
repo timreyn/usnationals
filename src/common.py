@@ -1,3 +1,5 @@
+import pytz
+
 def DatetimeToDict(datetime):
   return {
       'year' : datetime.year,
@@ -54,3 +56,5 @@ def FormatTime(value, eventId, average=False):
 
 def ShouldUseAverage(eventId):
   return eventId not in ['333bf', '444bf', '555bf', '333mbf', '333fm']
+
+TZ = pytz.timezone('America/New_York')

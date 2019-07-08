@@ -5,6 +5,7 @@ import webapp2
 
 from google.appengine.ext import ndb
 
+from src.common import TZ
 from src.jinja import JINJA_ENVIRONMENT
 from src.models import *
 
@@ -192,8 +193,9 @@ def AddGroup(futures, event_id, round_id, stage, number, start_minutes, end_minu
   start_minutes = start_minutes % 60
   end_hours = end_minutes / 60
   end_minutes = end_minutes % 60
-  start_time = datetime.datetime(2018, 7, day, start_hours, start_minutes, 0)
-  end_time = datetime.datetime(2018, 7, day, end_hours, end_minutes, 0)
+
+  start_time = datetime.datetime(2019, 8, day, start_hours, start_minutes, 0, 0, TZ)
+  end_time = datetime.datetime(2019, 8, day, end_hours, end_minutes, 0, 0, TZ)
   group_id = Group.Id(event_id, round_id, stage, number)
 
   group = Group.get_by_id(group_id) or Group(id = group_id)

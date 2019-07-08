@@ -3,6 +3,7 @@ import json
 import pytz
 import webapp2
 
+from src.common import TZ
 from src.models import Group
 from src.models import Stage
 
@@ -14,11 +15,9 @@ class CurrentGroup(webapp2.RequestHandler):
     current_group = None
     next_group = None
     output = {}
-    now = datetime.datetime.now() - datetime.timedelta(hours=6) # hack! time zones are hard
+    now = TZ.localize(datetime.datetime.utcnow())
     for group in Group.query(Group.stage == stage.key).iter():
       if not group.round.get().event.get().is_real:
-        continue
-      if group.start_time < datetime.datetime(2018, 7, 27):
         continue
       if group.call_time:
         if not current_group or group.call_time > current_group.call_time:
@@ -31,7 +30,7 @@ class CurrentGroup(webapp2.RequestHandler):
     if next_group:
       output['next_group'] = {'group': next_group.ToDict()}
       if current_group and current_group.end_time >= next_group.start_time:
-        estimated_call_time = next_group.start_time + (current_group.call_time - current_group.start_time) + datetime.timedelta(hours=1)  # OMG time zones
+        estimated_call_time = next_group.start_time + (current_group.call_time - current_group.start_time)
       else:
         estimated_call_time = next_group.start_time
       expected_seconds = max(0, int((estimated_call_time - now).total_seconds()))

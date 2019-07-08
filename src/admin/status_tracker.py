@@ -4,6 +4,7 @@ import collections
 import datetime
 import webapp2
 
+from src.common import TZ
 from src.jinja import JINJA_ENVIRONMENT
 from src.models import Group
 from src.models import Stage
@@ -76,8 +77,8 @@ class StatusTracker(webapp2.RequestHandler):
     day = int(self.request.get('day'))
     if not day:
       day = 7
-    start_time = datetime.datetime(2018, 7, day, 0, 0, 0)
-    end_time = datetime.datetime(2018, 7, day, 23, 59, 0)
+    start_time = datetime.datetime(2019, 8, day, 0, 0, 0, 0, TZ)
+    end_time = datetime.datetime(2019, 8, day, 23, 59, 0, 0, TZ)
     groups_by_hour_and_stage = collections.defaultdict(lambda: collections.defaultdict(list))
     all_hours = set()
     for group in Group.query().filter(Group.start_time > start_time).filter(Group.start_time < end_time).iter():

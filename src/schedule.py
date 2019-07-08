@@ -2,6 +2,7 @@ import collections
 import datetime
 import json
 
+from src.common import TZ
 from src.handler import CacheHandler
 from src.models import Competitor
 from src.models import GroupAssignment
@@ -19,13 +20,10 @@ class GetSchedule(CacheHandler):
     }
     groups_by_time = collections.defaultdict(list)
     jobs_by_time = collections.defaultdict(list)
-    now = datetime.datetime.now() - datetime.timedelta(hours=7)
+    now = TZ.localize(datetime.datetime.utcnow())
     for group_assignment in group_assignments:
       group = group_assignment.group.get()
       if hide_old and group.call_time and now - group.call_time > datetime.timedelta(minutes = 30):
-        continue
-      # HACK HACK HACK
-      if hide_old and group.start_time < datetime.datetime(2018, 7, 27):
         continue
       groups_by_time[group.start_time].append(group)
     for staff_assignment in staff_assignments:

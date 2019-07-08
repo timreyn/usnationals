@@ -34,7 +34,7 @@ class SendNotification(webapp2.RequestHandler):
       admin_device = AdminDevice.get_by_id(user.email())
       if not admin_device:
         admin_device = AdminDevice(id = user.email())
-        admin_device.authorized_time = datetime.datetime.now()
+        admin_device.authorized_time = datetime.datetime.utcnow()
         # Synthetic admin accounts can't be used to call via the app.
         admin_device.is_authorized = False
         admin_device.put()
@@ -51,7 +51,7 @@ class SendNotification(webapp2.RequestHandler):
       self.response.write('Group has already been called')
       return
     if not dry_run:
-      group.call_time = datetime.datetime.now() - datetime.timedelta(hours=7)
+      group.call_time = datetime.datetime.utcnow()
       group.call_device = admin_device.key
     group.put()
     event = group.round.get().event.get()

@@ -2,6 +2,7 @@ import collections
 import datetime
 import json
 
+from src.common import TZ
 from src.handler import CacheHandler
 from src.models import AdminDevice
 from src.models import Group
@@ -20,12 +21,9 @@ class GetStageSchedule(CacheHandler):
     }
     groups = Group.query().iter()
     groups_by_time = collections.defaultdict(list)
-    now = datetime.datetime.now() - datetime.timedelta(hours = 7)
+    now = TZ.localize(datetime.datetime.utcnow())
     for group in groups:
       if group.call_time and now - group.call_time > datetime.timedelta(minutes = 30):
-        continue
-      # HACK HACK HACK
-      if group.start_time < datetime.datetime(2018, 7, 27):
         continue
       if stages == 'all' or group.stage.id() in stages:
         groups_by_time[group.start_time].append(group)
