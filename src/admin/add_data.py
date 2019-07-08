@@ -1,3 +1,4 @@
+import pytz
 import unicodecsv
 import datetime
 import StringIO
@@ -194,8 +195,8 @@ def AddGroup(futures, event_id, round_id, stage, number, start_minutes, end_minu
   end_hours = end_minutes / 60
   end_minutes = end_minutes % 60
 
-  start_time = datetime.datetime(2019, 8, day, start_hours, start_minutes, 0, 0, TZ)
-  end_time = datetime.datetime(2019, 8, day, end_hours, end_minutes, 0, 0, TZ)
+  start_time = TZ.localize(datetime.datetime(2019, 8, day, start_hours, start_minutes, 0)).astimezone(pytz.UTC).replace(tzinfo=None)
+  end_time = TZ.localize(datetime.datetime(2019, 8, day, end_hours, end_minutes, 0)).astimezone(pytz.UTC).replace(tzinfo=None)
   group_id = Group.Id(event_id, round_id, stage, number)
 
   group = Group.get_by_id(group_id) or Group(id = group_id)

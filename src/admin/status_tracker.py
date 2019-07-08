@@ -43,8 +43,6 @@ class Formatters(object):
     if not group.call_time:
       return '#000000'
     total_seconds_delta = (group.call_time - group.start_time).total_seconds()
-    # HACK HACK HACK HACK i messed up time zones
-    total_seconds_delta = total_seconds_delta + 1 * 60 * 60
     if total_seconds_delta < MIDDLE:
       fraction = float(MIDDLE - total_seconds_delta)/(MIDDLE - FULL_GREEN)
       R = scale(fraction, GRAY_R, GREEN_R)
@@ -77,7 +75,7 @@ class StatusTracker(webapp2.RequestHandler):
     day = int(self.request.get('day'))
     if not day:
       day = 7
-    start_time = datetime.datetime(2019, 8, day, 0, 0, 0, 0, TZ)
+    start_time = TZ.localize(datetime.datetime(2019, 8, day, 0, 0, 0)
     end_time = datetime.datetime(2019, 8, day, 23, 59, 0, 0, TZ)
     groups_by_hour_and_stage = collections.defaultdict(lambda: collections.defaultdict(list))
     all_hours = set()
