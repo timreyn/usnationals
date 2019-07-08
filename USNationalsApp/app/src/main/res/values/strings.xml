@@ -29,10 +29,10 @@
     <string name="runners_divider">Runners</string>
     <string name="judges_divider">Judges</string>
     <string name="group_info_header_nonfinal">
-        %1$s Round %2$d - %3$s %4$d
+        %1$s Round %2$d - %3$s %4$s
     </string>
     <string name="group_info_header_final">
-        %1$s Final %2$s Stage Group %3$d
+        %1$s Final %2$s Stage Group %3$s
     </string>
     <string name="group_info_start_time">
         Start Time: %1$s %2$s

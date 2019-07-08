@@ -54,8 +54,8 @@ public class GroupInfoActivity extends AppCompatActivity {
             "org.cubingusa.usnationals.ROUND_ID";
     public static final String STAGE_ID_EXTRA =
             "org.cubingusa.usnationals.STAGE_ID";
-    public static final String HEAT_ID_EXTRA =
-            "org.cubingusa.usnationals.HEAT_ID";
+    public static final String GROUP_ID_EXTRA =
+            "org.cubingusa.usnationals.GROUP_ID";
 
     private static final Map<String, ImageView> mCompetitorIdToSaveIcon = new HashMap<>();
     private SharedPreferences mSharedPreferences;
@@ -88,7 +88,7 @@ public class GroupInfoActivity extends AppCompatActivity {
                 .appendPath(intent.getStringExtra(EVENT_ID_EXTRA))
                 .appendPath(Integer.toString(intent.getIntExtra(ROUND_ID_EXTRA, 1)))
                 .appendPath(intent.getStringExtra(STAGE_ID_EXTRA))
-                .appendPath(Integer.toString(intent.getIntExtra(HEAT_ID_EXTRA, 1)))
+                .appendPath(Integer.toString(intent.getStringExtra(GROUP_ID_EXTRA, "1")))
                 .build();
         mClient = new AsyncHttpClient();
         mSharedPreferences = getSharedPreferences(Constants.PREFRENCES, MODE_PRIVATE);
@@ -145,7 +145,7 @@ public class GroupInfoActivity extends AppCompatActivity {
                 .appendPath(intent.getStringExtra(EVENT_ID_EXTRA))
                 .appendPath(Integer.toString(intent.getIntExtra(ROUND_ID_EXTRA, 1)))
                 .appendPath(intent.getStringExtra(STAGE_ID_EXTRA))
-                .appendPath(Integer.toString(intent.getIntExtra(HEAT_ID_EXTRA, 1)))
+                .appendPath(Integer.toString(intent.getIntExtra(GROUP_ID_EXTRA, "1")))
                 .build();
         RequestParams params = new RequestParams();
         params.add("device_id", DeviceId.getDeviceId(mSharedPreferences));

@@ -43,11 +43,11 @@ class GetScorecards(webapp2.RequestHandler):
       for group in Group.query(Group.round == r.key).iter():
         if self.request.get('s') and group.stage.id() not in self.request.get('s'):
           continue
-        if staff_status == STAFF_ONLY and group.number != 0:
+        if staff_status == STAFF_ONLY and not group.staff:
           continue
-        if staff_status == NON_STAFF_ONLY and group.number == 0:
+        if staff_status == NON_STAFF_ONLY and group.staff:
           continue
-        group_string = '%s%d' % (group.stage.id().upper(), group.number)
+        group_string = '%s%s%d' % (group.stage.id().upper(), 'S' if group.staff else '', group.number)
         competitors_in_group = []
         times_in_group = []
         for group_assignment in GroupAssignment.query(GroupAssignment.group == group.key).iter():

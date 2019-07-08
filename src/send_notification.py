@@ -39,7 +39,7 @@ class SendNotification(webapp2.RequestHandler):
         admin_device.is_authorized = False
         admin_device.put()
     round_id = int(round_id)
-    group_number = int(group_number)
+    group_number = group_number
     group_id = Group.Id(event_id, round_id, stage_id, group_number)
     group = Group.get_by_id(group_id)
     if not group:

@@ -65,8 +65,8 @@ class AssignGroups(webapp2.RequestHandler):
     competitor_to_conflicting_groups = collections.defaultdict(list)
     round_groups = [h for h in Group.query(Group.round == r.key).iter()]
     round_group_keys = [h.key for h in round_groups]
-    beginning = min([h.start_time for h in round_groups if h.number > 0])
-    end = max([h.end_time for h in round_groups if h.number > 0])
+    beginning = min([h.start_time for h in round_groups if not h.staff])
+    end = max([h.end_time for h in round_groups if not h.staff])
     conflicting_groups = [h for h in Group.query()
                                         .filter(Group.end_time > beginning)
                                         .iter()
@@ -103,7 +103,7 @@ class AssignGroups(webapp2.RequestHandler):
             break
         if valid:
           if has_staff_groups:
-            if competitor.is_staff == (group.number == 0):
+            if competitor.is_staff == group.staff:
               competitor_to_valid_groups[competitor.key.id()].add(group.key.id())
           else:
             competitor_to_valid_groups[competitor.key.id()].add(group.key.id())
@@ -116,7 +116,7 @@ class AssignGroups(webapp2.RequestHandler):
       num_competitors_eligible = len(competitors)
       num_groups_eligible = len(round_groups)
       if has_staff_groups:
-        if group.number > 0:
+        if not group.staff:
           num_competitors_eligible = num_non_staff_competitors
           num_groups_eligible = len(round_groups) - 4
         else:

@@ -149,7 +149,7 @@ public class ScheduleParser {
             public void onClick(View v) {
                 Intent intent = new Intent();
                 intent.setClass(mContext, GroupInfoActivity.class);
-                intent.putExtra(GroupInfoActivity.HEAT_ID_EXTRA, group.number);
+                intent.putExtra(GroupInfoActivity.GROUP_ID_EXTRA, group.number);
                 intent.putExtra(GroupInfoActivity.STAGE_ID_EXTRA, group.stage.id);
                 intent.putExtra(GroupInfoActivity.ROUND_ID_EXTRA, group.round.number);
                 intent.putExtra(GroupInfoActivity.EVENT_ID_EXTRA, group.event.id);

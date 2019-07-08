@@ -23,9 +23,9 @@
         {{ last.group.get().end_time.strftime(format) }}
       </td>
       <td>
-        {{ first.group.get().round.get().event.get().name }} Group {{ first.group.get().number }}
+        {{ first.group.get().round.get().event.get().name }} Group {{ first.group.get().Num() }}
         {% if first != last %}
-          &mdash; {{ last.group.get().round.get().event.get().name }} Group {{ last.group.get().number }}
+          &mdash; {{ last.group.get().round.get().event.get().name }} Group {{ last.group.get().Num() }}
         {% endif %}
       </td>
       <td>

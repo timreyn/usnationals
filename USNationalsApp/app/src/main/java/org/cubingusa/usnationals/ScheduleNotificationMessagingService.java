@@ -48,7 +48,7 @@ public class ScheduleNotificationMessagingService extends FirebaseMessagingServi
                 String eventName = data.get("eventName");
                 String competitorName = data.get("competitorName");
                 String competitorId = data.get("competitorId");
-                int groupNumber = Integer.parseInt(data.get("groupNumber"));
+                String groupNumber = data.get("groupNumber");
                 String stageName = data.get("stageName");
 
                 StringBuffer titleBuffer = new StringBuffer()

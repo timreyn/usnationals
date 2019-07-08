@@ -184,7 +184,7 @@ public class StageScheduleActivity extends AppCompatActivity {
             final Group group = groupAndLayout.first;
             LayoutContainer layoutContainer = new LayoutContainer();
             layoutContainer.layout = groupAndLayout.second;
-            if (group.number > 0) {
+            if (!group.number.startsWith("S")) {
                 layoutContainer.canShowRound = false;
                 layoutContainer.layout.setVisibility(View.GONE);
                 final String roundStageKey = group.round.id + "_" + group.stage.id;

@@ -10,6 +10,7 @@ class Group(ndb.Model):
   round = ndb.KeyProperty(kind=Round)
   stage = ndb.KeyProperty(kind=Stage)
   number = ndb.IntegerProperty()
+  staff = ndb.BooleanProperty()
   start_time = ndb.DateTimeProperty()
   end_time = ndb.DateTimeProperty()
   call_time = ndb.DateTimeProperty()
@@ -17,20 +18,25 @@ class Group(ndb.Model):
 
   @staticmethod
   def Id(event_id, round_id, stage, number):
-    return '%s_%s_%d' % (Round.Id(event_id, round_id), stage, number)
+    return '%s_%s_%s' % (Round.Id(event_id, round_id), stage, number)
 
   def ToDict(self):
     output = {
         'id' : self.key.id(),
         'round' : self.round.get().ToDict(),
         'stage' : self.stage.get().ToDict(),
-        'number' : self.number,
+        'number' : '%s%d%' % ('S' if self.staff else '', self.number),
         'start_time' : common.DatetimeToDict(self.start_time),
         'end_time' : common.DatetimeToDict(self.end_time),
     }
     if self.call_time:
       output['call_time'] = common.DatetimeToDict(self.call_time)
     return output
+
+  def Num(self):
+    if self.staff:
+      return 'S%d' % self.number
+    return str(self.number)
 
 
 class GroupAssignment(ndb.Model):

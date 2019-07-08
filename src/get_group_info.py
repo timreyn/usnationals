@@ -9,7 +9,7 @@ from src.models import StaffAssignment
 
 class GetGroupInfo(CacheHandler):
   def GetCached(self, event_id, round_id, stage, number):
-    group = Group.get_by_id(Group.Id(event_id, int(round_id), stage, int(number)))
+    group = Group.get_by_id(Group.Id(event_id, int(round_id), stage, number))
     if not group:
       return '', 60
     group_info = {

@@ -10,7 +10,7 @@ public class Group {
     // For convenience.  This is always round.event.
     public Event event;
     public Stage stage;
-    public int number;
+    public String number;
     public GregorianCalendar startTime;
     public GregorianCalendar endTime;
 
@@ -34,7 +34,7 @@ public class Group {
                     event = round.event;
                     break;
                 case "number":
-                    number = reader.nextInt();
+                    number = reader.nextString();
                     break;
                 default:
                     reader.skipValue();

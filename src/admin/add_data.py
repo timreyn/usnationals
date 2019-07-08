@@ -65,7 +65,7 @@ class AddData(webapp2.RequestHandler):
         event_id = row[1]
         round_id = int(row[2])
         stage = row[3]
-        number = int(row[4])
+        number = row[4]
         start_minutes = int(row[5])
         end_minutes = int(row[6])
         day = int(row[7])
@@ -87,7 +87,7 @@ class AddData(webapp2.RequestHandler):
         event_id = row[1]
         round_id = int(row[2])
         stage = row[3]
-        group = int(row[4])
+        group = row[4]
         person_id = row[5]
         ret_value = AssignGroup(futures, event_id, round_id, stage, group, person_id)
         if ret_value != 'ok':
@@ -98,7 +98,7 @@ class AddData(webapp2.RequestHandler):
         event_id = row[1]
         round_id = int(row[2])
         stage = row[3]
-        group = int(row[4])
+        group = row[4]
         staff_id = row[5]
         job = row[6]
         long_event = None
@@ -199,7 +199,11 @@ def AddGroup(futures, event_id, round_id, stage, number, start_minutes, end_minu
   group = Group.get_by_id(group_id) or Group(id = group_id)
   group.round = round.key
   group.stage = Stage.get_by_id(stage).key
-  group.number = number
+  group.staff = 'S' in number
+  if group.staff:
+    group.number = int(number[1:])
+  else:
+    group.number = int(number)
   group.start_time = start_time
   group.end_time = end_time
   group.call_time = None
