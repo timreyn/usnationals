@@ -1,3 +1,7 @@
 [submodule "external/icons"]
 	path = external/icons
 	url = https://github.com/cubing/icons.git
+[submodule "external/groupifier-next"]
+	path = external/groupifier-next
+	url = https://github.com/jonatanklosko/groupifier-next.git
+	branch = wcif-to-scorecards
