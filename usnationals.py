@@ -41,7 +41,7 @@ app = webapp2.WSGIApplication([
                   r'/<event_id:.*>/<round_id:\d*>/<stage_id:.*>/<group_number:\d*>',
                   handler=send_notification.SendNotification),
     webapp2.Route(r'/admin/send_notification' +
-                  r'/<event_id:.*>/<round_id:\d*>/<stage_id:.*>/<group_number:\d*>',
+                  r'/<event_id:.*>/<round_id:\d*>/<stage_id:.*>/<group_number:.*>',
                   handler=send_notification.SendNotification,
                   name='admin_notification'),
     webapp2.Route('/job_schedule', handler=job_schedule.JobSchedule),
