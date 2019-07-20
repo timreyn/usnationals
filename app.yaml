@@ -8,6 +8,7 @@ skip_files:
  - ^(.*/)?.*/RCS/.*$
  - ^(.*/)?\..*$
  - USNationalsApp/
+ - external/groupifier-next
  - external/icons
  - scripts/
 builtins:
