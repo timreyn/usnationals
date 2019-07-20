@@ -32,11 +32,12 @@ def scale(fraction, zero, one):
 class Formatters(object):
   @staticmethod
   def FormatTime(group):
-    return datetime.datetime.strftime(group.start_time, '%I:%M %p').lstrip('0')
+    return datetime.datetime.strftime(TZ.localize(group.start_time), '%I:%M %p').lstrip('0')
 
   @staticmethod
   def FormatGroup(group):
-    return '%s Group %d' % (group.round.get().event.get().name, group.number)
+    return '%s Group %s%d' % (group.round.get().event.get().name,
+                              'S' if group.staff else '', group.number)
 
   @staticmethod
   def DeltaColor(group):
@@ -88,10 +89,10 @@ class StatusTracker(webapp2.RequestHandler):
     all_stages = [Stage.get_by_id(s) for s in ('r', 'b', 'g', 'o', 'y')]
     template = JINJA_ENVIRONMENT.get_template('status_tracker.html')
     all_days = [
-        (26, 'Thursday', day == 26),
-        (27, 'Friday', day == 27),
-        (28, 'Saturday', day == 28),
-        (29, 'Sunday', day == 29),
+        (1, 'Thursday', day == 1),
+        (2, 'Friday', day == 2),
+        (3, 'Saturday', day == 3),
+        (4, 'Sunday', day == 4),
     ]
     self.response.write(template.render({
         'group_dict': groups_by_hour_and_stage,
