@@ -5,6 +5,7 @@ import webapp2
 from google.appengine.ext import ndb
 
 from src.models import Competitor
+from src.models import EventRegistration
 from src.models import Group
 from src.models import GroupAssignment
 from src.models import Round
@@ -69,8 +70,11 @@ class ScorecardWcifHandler(webapp2.RequestHandler):
 
     }
     stage = self.request.get('s')
+    use_stars = stage in ('r', 'b')
     rounds = self.request.get('r').split(',')
+    events = [r[:-2] for r in rounds]
     round_to_id = {}
+    id_to_event = {}
     sched = out['schedule']['venues'][0]['rooms'][0]['activities']
     for i, r in enumerate(rounds):
       sched.append({
@@ -95,11 +99,23 @@ class ScorecardWcifHandler(webapp2.RequestHandler):
         'activityCode': GroupActivityCode(group),
       })
       group_to_id[group.key.id()] = next_id
+      id_to_event[next_id] = group.round.get().event.id()
       next_id += 1
       all_group_keys.append(group.key)
+      if use_stars:
+        r['childActivities'].append({
+          'id': next_id,
+          'name': GroupName(group) + 'X',
+          'activityCode': GroupActivityCode(group) + 'X'})
+        group_to_id[group.key.id() + 'X'] = next_id
+        next_id += 1
+        all_group_keys.append(group.key.id() + 'X')
 
     assignments_by_competitor = collections.defaultdict(list)
     events_by_competitor = collections.defaultdict(list)
+    registrations_by_competitor = collections.defaultdict(dict)
+    registrations_by_group = collections.defaultdict(dict)
+
     for assignment in GroupAssignment.query().iter():
       if assignment.group not in all_group_keys:
         continue
@@ -107,7 +123,36 @@ class ScorecardWcifHandler(webapp2.RequestHandler):
         'activityId': group_to_id[assignment.group.id()],
         'assignmentCode': 'competitor',
       })
-      events_by_competitor[assignment.competitor.id()].append(assignment.group.get().round.get().event.id())
+      event_id = assignment.group.get().round.get().event.id()
+      events_by_competitor[assignment.competitor.id()].append(event_id)
+      if not assignment.group.get().staff:
+        registrations_by_group[assignment.group.id()][assignment.competitor.id()] = None
+
+    if use_stars:
+      for registration in EventRegistration.query().iter():
+        event_id = registration.event.id()
+        if registration.event.id() not in events:
+          continue
+        for group_id, registrations in registrations_by_group.iteritems():
+          if not group_id.startswith(event_id + "_"):
+            continue
+          if registration.competitor.id() not in registrations:
+            continue
+          registrations[registration.competitor.id()] = registration
+
+      # keyed by event_id
+      competitors_to_star = collections.defaultdict(list)
+      for group_id, registrations in registrations_by_group.iteritems():
+        competitors_to_star[group_id.split("_")[0]] += [
+            registration.competitor.id() for registration in
+            sorted(registrations.values(), key=lambda r: r.average)[:3]]
+      print competitors_to_star
+
+      for competitor_id, assignments in assignments_by_competitor.iteritems():
+        for assignment in assignments:
+          event_id = id_to_event[assignment['activityId']]
+          if competitor_id in competitors_to_star[event_id]:
+            assignment['activityId'] += 1
 
     for competitor in Competitor.query().iter():
       if competitor.key.id() not in events_by_competitor:
