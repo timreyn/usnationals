@@ -143,6 +143,9 @@ class ScorecardWcifHandler(webapp2.RequestHandler):
       # keyed by event_id
       competitors_to_star = collections.defaultdict(list)
       for group_id, registrations in registrations_by_group.iteritems():
+        for person_id, r in registrations.iteritems():
+          if not r:
+            print 'Couldn\'t find ' + person_id + ' in ' + group_id
         competitors_to_star[group_id.split("_")[0]] += [
             registration.competitor.id() for registration in
             sorted(registrations.values(), key=lambda r: r.average)[:3]]
