@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+<head>
+  <title>US Nationals Conflictss</title>
+  <style type="text/css">
+    table {
+      border: 1px solid black;
+      border-collapse: collapse;
+    }
+    td,th {
+      border: 1px solid black;
+      padding: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h3>Conflicts</h3>
+  <table>
+    <tr>
+      <th>Minutes</th>
+      <th>Name</th>
+      <th>Event 1</th>
+      <th>Event 2</th>
+    </tr>
+    {% for conflict in conflicts %}
+      <tr>
+        <td>{{ conflict.timediff.total_seconds() / 60 }}</td>
+        <td>{{ conflict.competitor.name }}</td>
+        <td>{{ conflict.group1.key.id() }} {{ format_time(conflict.group1.start_time) }} &mdash; {{ format_time(conflict.group1.end_time) }} </td>
+        <td>{{ conflict.group2.key.id() }} {{ format_time(conflict.group2.start_time) }} &mdash; {{ format_time(conflict.group2.end_time) }} </td>
+      </tr>
+    {% endfor %}
+  </table>
+</body>
+</html>
+{% endautoescape %}

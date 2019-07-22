@@ -17,6 +17,7 @@ from src.admin import add_data
 from src.admin import assign_groups
 from src.admin import assign_stations
 from src.admin import clear_notifications
+from src.admin import conflicts
 from src.admin import edit_users
 from src.admin import one_offs
 from src.admin import scorecard_wcif
@@ -59,4 +60,5 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/admin/assign_groups_debug/<request_id:.*>', handler=assignments_debug_handler.AssignmentsDebugHandler, name='assign_groups_debug'),
     webapp2.Route('/admin/one_off/<name:.*>', handler=one_offs.OneOffHandler),
     webapp2.Route('/admin/scorecard_wcif', handler=scorecard_wcif.ScorecardWcifHandler),
+    webapp2.Route('/admin/conflicts', handler=conflicts.ConflictsHandler),
 ], debug=True)
