@@ -22,7 +22,7 @@ def GroupName(g):
   return '%d' % g.number
 
 def RoundActivityCode(r):
-  if r.event.id() in ['333mbf', '333fm']:
+  if r.event.id() in ['333fm']:
     return '%s-r1-a%d' % (r.event.id(), r.number)
   return '%s-r%d' % (r.event.id(), r.number)
 
@@ -102,7 +102,7 @@ class ScorecardWcifHandler(webapp2.RequestHandler):
       id_to_event[next_id] = group.round.get().event.id()
       next_id += 1
       all_group_keys.append(group.key)
-      if use_stars:
+      if use_stars and not group.staff:
         r['childActivities'].append({
           'id': next_id,
           'name': GroupName(group) + 'X',
@@ -146,10 +146,11 @@ class ScorecardWcifHandler(webapp2.RequestHandler):
         for person_id, r in registrations.iteritems():
           if not r:
             print 'Couldn\'t find ' + person_id + ' in ' + group_id
+        if Group.get_by_id(group_id).staff:
+          continue
         competitors_to_star[group_id.split("_")[0]] += [
             registration.competitor.id() for registration in
             sorted(registrations.values(), key=lambda r: r.average)[:3]]
-      print competitors_to_star
 
       for competitor_id, assignments in assignments_by_competitor.iteritems():
         for assignment in assignments:
