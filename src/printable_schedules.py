@@ -1,6 +1,7 @@
 import collections
 import webapp2
 
+from src import common
 from src.jinja import JINJA_ENVIRONMENT
 from src.models import Competitor
 from src.models import Event
@@ -14,6 +15,8 @@ def day(group):
 
 def sortkey(competitor):
   lastname = competitor.name.split(' ')[-1]
+  if '(' in lastname:
+    lastname = competitor.name.split(' ')[-2]
   if competitor.is_staff:
     return '0' + lastname
   return lastname
@@ -40,4 +43,5 @@ class PrintableSchedulesHandler(webapp2.RequestHandler):
         'groups_by_competitor': groups_by_competitor,
         'day': day,
         'len': len,
+        'c': common,
     }))

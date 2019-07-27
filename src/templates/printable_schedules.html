@@ -58,7 +58,7 @@
               {% endif %}
               <tr class="grouprow {% if len(groups) > 15 %}lotsofgroups{% endif %}">
                 <td class="start-time">
-                  {{ group.start_time.strftime('%-I:%M %p') }}
+                  {{ group.start_time.replace(tzinfo=c.pytz.UTC).astimezone(c.TZ).strftime('%-I:%M %p') }}
                 </td>
                 <td class="event-icon-container">
                   <img src="/static/img/e_{{ group.round.get().event.id() }}.png" class="event-icon">
