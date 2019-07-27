@@ -25,7 +25,7 @@ class Group(ndb.Model):
         'id' : self.key.id(),
         'round' : self.round.get().ToDict(),
         'stage' : self.stage.get().ToDict(),
-        'number' : '%s%d%' % ('S' if self.staff else '', self.number),
+        'number' : '%s%d' % ('S' if self.staff else '', self.number),
         'start_time' : common.DatetimeToDict(self.start_time),
         'end_time' : common.DatetimeToDict(self.end_time),
     }
