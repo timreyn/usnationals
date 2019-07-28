@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CubingUSA Nationals 2018</string>
+    <string name="app_name">CubingUSA Nationals 2019</string>
     <string name="title_activity_competitor_list">Select a Competitor</string>
     <string name="subscribed">Subscribed to alerts</string>
     <string name="saved_competitor">Saved competitor as favorite</string>
