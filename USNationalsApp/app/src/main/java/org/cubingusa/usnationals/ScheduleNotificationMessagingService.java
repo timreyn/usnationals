@@ -9,7 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -35,7 +35,7 @@ public class ScheduleNotificationMessagingService extends FirebaseMessagingServi
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         Map<String, String> data = message.getData();
-        Log.d(TAG, "Message received of type " + data.get("type"));
+        Log.i(TAG, "Message received of type " + data.get("type"));
 
         SharedPreferences preferences =
                 getSharedPreferences(Constants.PREFRENCES, MODE_PRIVATE);
@@ -81,7 +81,7 @@ public class ScheduleNotificationMessagingService extends FirebaseMessagingServi
                 Uri ringtoneUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                 Bitmap largeIcon = BitmapFactory.decodeResource(
                         getResources(), mIcons.getDrawableId(eventId));
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NotificationUtils.CHANNEL_ID)
                         .setContentTitle(titleBuffer.toString())
                         .setContentText(contentBuffer.toString())
                         .setSmallIcon(mIcons.getTransparentDrawableId(eventId))
@@ -188,7 +188,7 @@ public class ScheduleNotificationMessagingService extends FirebaseMessagingServi
                 ringtoneUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                 largeIcon = BitmapFactory.decodeResource(
                         getResources(), mIcons.getDrawableId(eventId));
-                builder = new NotificationCompat.Builder(this)
+                builder = new NotificationCompat.Builder(this, NotificationUtils.CHANNEL_ID)
                         .setContentTitle(titleBuffer.toString())
                         .setContentText(contentBuffer.toString())
                         .setSmallIcon(mIcons.getTransparentDrawableId(eventId))

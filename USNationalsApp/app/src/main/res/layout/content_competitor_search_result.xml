@@ -23,14 +23,14 @@
         android:layout_weight="1"
         android:textSize="@dimen/competitor_search_result_text_size"
         android:gravity="left|center_vertical"/>
-    <android.support.v7.widget.AppCompatImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/wca_icon"
         android:layout_width="@dimen/competitor_search_result_icon_size"
         android:layout_height="@dimen/competitor_search_result_icon_size"
         android:layout_gravity="right|center_vertical"
         android:layout_margin="@dimen/competitor_search_result_icon_margin"
         android:src="@drawable/wcalogo"/>
-    <android.support.v7.widget.AppCompatImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/save_button"
         android:layout_width="@dimen/competitor_search_result_icon_size"
         android:layout_height="@dimen/competitor_search_result_icon_size"

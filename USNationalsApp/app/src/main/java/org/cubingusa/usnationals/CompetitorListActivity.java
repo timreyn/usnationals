@@ -4,10 +4,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.UiThread;
-import android.support.design.widget.TextInputEditText;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.UiThread;
+import com.google.android.material.textfield.TextInputEditText;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.JsonReader;
@@ -40,10 +40,12 @@ public class CompetitorListActivity extends AppCompatActivity {
     private static final Map<String, ImageView> mCompetitorIdToSaveIcon = new HashMap<>();
     private SharedPreferences mSharedPreferences;
     private ArrayList<Competitor> mCompetitors = new ArrayList<Competitor>();
+    private NotificationUtils mNotificationUtils;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mNotificationUtils = new NotificationUtils(this);
         setContentView(R.layout.activity_competitor_list);
         setTitle(R.string.title_activity_competitor_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

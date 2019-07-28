@@ -5,15 +5,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.UiThread;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputEditText;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
+import androidx.annotation.UiThread;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.util.JsonReader;
 import android.util.Log;
 import android.view.Menu;
@@ -88,7 +83,7 @@ public class GroupInfoActivity extends AppCompatActivity {
                 .appendPath(intent.getStringExtra(EVENT_ID_EXTRA))
                 .appendPath(Integer.toString(intent.getIntExtra(ROUND_ID_EXTRA, 1)))
                 .appendPath(intent.getStringExtra(STAGE_ID_EXTRA))
-                .appendPath(Integer.toString(intent.getStringExtra(GROUP_ID_EXTRA, "1")))
+                .appendPath(intent.getStringExtra(GROUP_ID_EXTRA))
                 .build();
         mClient = new AsyncHttpClient();
         mSharedPreferences = getSharedPreferences(Constants.PREFRENCES, MODE_PRIVATE);
@@ -145,7 +140,7 @@ public class GroupInfoActivity extends AppCompatActivity {
                 .appendPath(intent.getStringExtra(EVENT_ID_EXTRA))
                 .appendPath(Integer.toString(intent.getIntExtra(ROUND_ID_EXTRA, 1)))
                 .appendPath(intent.getStringExtra(STAGE_ID_EXTRA))
-                .appendPath(Integer.toString(intent.getIntExtra(GROUP_ID_EXTRA, "1")))
+                .appendPath(intent.getStringExtra(GROUP_ID_EXTRA))
                 .build();
         RequestParams params = new RequestParams();
         params.add("device_id", DeviceId.getDeviceId(mSharedPreferences));

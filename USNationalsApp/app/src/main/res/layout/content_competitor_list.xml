@@ -13,11 +13,11 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/competitor_input_height"
         android:layout_margin="@dimen/competitor_input_margin">
-        <android.support.v7.widget.AppCompatImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:src="@android:drawable/ic_menu_search"
             android:layout_height="match_parent"
             android:layout_width="@dimen/competitor_input_height"/>
-        <android.support.design.widget.TextInputEditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/competitor_input"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
