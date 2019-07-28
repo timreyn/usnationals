@@ -32,7 +32,7 @@ public class MenuHandler {
                         .scheme("https")
                         .authority("www.cubingusa.org")
                         .appendPath("nationals")
-                        .appendPath("2018")
+                        .appendPath("2019")
                         .build();
                 intent.setAction(Intent.ACTION_VIEW);
                 intent.setData(cubingusa_uri);
