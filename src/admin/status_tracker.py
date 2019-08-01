@@ -2,6 +2,7 @@ from google.appengine.api import users
 
 import collections
 import datetime
+import pytz
 import webapp2
 
 from src.common import TZ
@@ -32,7 +33,7 @@ def scale(fraction, zero, one):
 class Formatters(object):
   @staticmethod
   def FormatTime(group):
-    return datetime.datetime.strftime(TZ.localize(group.start_time), '%I:%M %p').lstrip('0')
+    return group.start_time.replace(tzinfo=pytz.UTC).astimezone(TZ).strftime('%I:%M %p')
 
   @staticmethod
   def FormatGroup(group):
