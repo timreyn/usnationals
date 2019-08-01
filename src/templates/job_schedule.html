@@ -19,8 +19,8 @@
     {% endif %}
     <tr>
       <td>
-        {{ first.group.get().start_time.strftime(format) }} &mdash;
-        {{ last.group.get().end_time.strftime(format) }}
+        {{ format(first.group.get().start_time) }} &mdash;
+        {{ format(last.group.get().end_time) }}
       </td>
       <td>
         {{ first.group.get().round.get().event.get().name }} Group {{ first.group.get().Num() }}

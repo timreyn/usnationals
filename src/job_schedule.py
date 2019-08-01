@@ -1,6 +1,8 @@
 import collections
+import pytz
 import webapp2
 
+from src import common
 from src.jinja import JINJA_ENVIRONMENT
 from src.models import StaffAssignment
 from src.models import Stage
@@ -37,13 +39,13 @@ class JobSchedule(webapp2.RequestHandler):
     output = {
         'title': title,
         'all_assignments': [],
-        'format': '%I:%M %p',
+        'format': lambda t: t.replace(tzinfo=pytz.UTC).astimezone(common.TZ).strftime('%I:%M %p'),
     }
     for staff_assignment in assignments_query.iter():
       group = staff_assignment.group.get()
       if stage and group.stage.id() != stage_id:
         continue
-      jobs_by_time[group.start_time].append(staff_assignment)
+      jobs_by_time[group.start_time.replace(tzinfo=pytz.UTC).astimezone(common.TZ)].append(staff_assignment)
     for day in (1, 2, 3, 4):
       active_staff = collections.defaultdict(list)
       for time in sorted(jobs_by_time.keys()):
@@ -56,7 +58,7 @@ class JobSchedule(webapp2.RequestHandler):
             continue
           contains_current_time = False
           for job in jobs:
-            if job.group.get().end_time >= time:
+            if job.group.get().end_time.replace(tzinfo=pytz.UTC).astimezone(common.TZ) > time:
               contains_current_time = True
               break
           if contains_current_time:
@@ -72,4 +74,5 @@ class JobSchedule(webapp2.RequestHandler):
               'staff_member': jobs[0].staff_member.get(),
               'jobs': jobs,
           })
+    output['all_assignments'].sort(key=lambda a: a['jobs'][0].group.get().start_time)
     self.response.write(JINJA_ENVIRONMENT.get_template('job_schedule.html').render(output))

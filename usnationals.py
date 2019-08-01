@@ -33,13 +33,13 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/full_schedule', handler=stage_schedule.GetStageSchedule),
     webapp2.Route('/get_competitors', handler=get_competitors.GetCompetitors),
     webapp2.Route(
-        r'/get_group_info/<event_id:.*>/<round_id:\d>/<stage:.>/<number:\d*>',
+        r'/get_group_info/<event_id:.*>/<round_id:\d>/<stage:.>/<number:.*>',
         handler=get_group_info.GetGroupInfo),
     webapp2.Route('/get_stages', handler=get_stages.GetStages),
     webapp2.Route('/register_device', handler=register_device.RegisterDevice),
     webapp2.Route('/scorecards', handler=scorecards.GetScorecards),
     webapp2.Route(r'/send_notification' +
-                  r'/<event_id:.*>/<round_id:\d*>/<stage_id:.*>/<group_number:\d*>',
+                  r'/<event_id:.*>/<round_id:\d*>/<stage_id:.*>/<group_number:.*>',
                   handler=send_notification.SendNotification),
     webapp2.Route(r'/admin/send_notification' +
                   r'/<event_id:.*>/<round_id:\d*>/<stage_id:.*>/<group_number:.*>',

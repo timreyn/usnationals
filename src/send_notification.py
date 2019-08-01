@@ -65,7 +65,7 @@ class SendNotification(webapp2.RequestHandler):
               'competitorId': competitor.key.id(),
               'groupNumber': group_number,
               'stageName': stage.name}
-      topic = '/topics/competitor_' + competitor.key.id()
+      topic = '/topics/competitor19_' + competitor.key.id()
       if dry_run:
         self.response.write(json.dumps(data))
       else:

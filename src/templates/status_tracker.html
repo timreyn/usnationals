@@ -51,6 +51,7 @@
                   <td class="deltacell" style="color: {{ Formatters.DeltaColor(group) }}">
                     {{ Formatters.FormatDelta(group) }}
                   </td>
+                  <td><a href="https://cubingusa.org/nationals/2019/groups/{{ group.round.get().event.id() }}/{{ group.round.get().number }}/{{ group.stage.id() }}/{% if group.staff %}S{% endif %}{{ group.number }}">[info]</a></td>
                   {% if is_admin and group.number >= 0 %}
                     <td><a href="{{ uri_for('admin_notification', event_id=group.round.get().event.id(), round_id=group.round.get().number, stage_id=group.stage.id(), group_number=group.Num()) }}">[call]</a></td>
                   {% endif %}

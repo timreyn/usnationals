@@ -20,7 +20,7 @@ class GetSchedule(CacheHandler):
     }
     groups_by_time = collections.defaultdict(list)
     jobs_by_time = collections.defaultdict(list)
-    now = TZ.localize(datetime.datetime.utcnow())
+    now = datetime.datetime.utcnow()
     for group_assignment in group_assignments:
       group = group_assignment.group.get()
       if hide_old and group.call_time and now - group.call_time > datetime.timedelta(minutes = 30):
